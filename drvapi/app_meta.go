@@ -17,10 +17,11 @@ package drvapi
 
 // StepVersion records a particular version of a nextcloud or postgres release.
 type StepVersion struct {
-	Major   int
-	Version string
-	Source  string `json:",omitempty"`
-	Image   string
+	Major    int
+	Version  string
+	Source   string `json:",omitempty"`
+	Image    string
+	ImageSum string `json:",omitempty"`
 }
 
 // AppMeta stores the meta information of an HomeDrive application
@@ -39,6 +40,9 @@ type AppMeta struct {
 
 	// Image ID, for simple single container apps.
 	Image string `json:",omitempty"`
+
+	// ImageSum is the checksum of the image's gzipped tarball.
+	ImageSum string `json:",omitempty"`
 
 	// Steps is for apps that needs an upgrade ladder.
 	Steps []*StepVersion `json:",omitempty"`

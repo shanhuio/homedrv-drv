@@ -63,6 +63,9 @@ type Artifacts struct {
 	// Upgrade path for nextcloud
 	Nextclouds []*StepVersion `json:",omitempty"`
 	Postgreses []*StepVersion `json:",omitempty"`
+
+	// Checksums for images
+	ImageSums map[string]string `json:",omitempty"`
 }
 
 // ReleaseRequest sets the release of a particular channel to the given
