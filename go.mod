@@ -3,7 +3,9 @@ module shanhu.io/homedrv
 go 1.16
 
 require (
+	cloud.google.com/go v0.88.0 // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
+	github.com/digitalocean/godo v1.64.2 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/hashicorp/mdns v1.0.4
 	github.com/lib/pq v1.10.2
