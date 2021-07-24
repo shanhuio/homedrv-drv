@@ -92,6 +92,7 @@ func (b *builder) buildRelease(name, typ string) error {
 	}
 
 	images := make(map[string]*dockerImage)
+	imageObjs := make(map[string]string)
 	for _, d := range []string{
 		"nextcloud20",
 		"nextcloud21",
@@ -111,6 +112,7 @@ func (b *builder) buildRelease(name, typ string) error {
 			return errcode.Annotatef(err, "checksum for %q", d)
 		}
 		images[d] = img
+		imageObjs[img.sum] = tgz
 	}
 
 	log.Println("building artifacts jsonx")
@@ -203,6 +205,12 @@ func (b *builder) buildRelease(name, typ string) error {
 	relOut := filePath(b.out, "homedrv/release.json")
 	if err := jsonutil.WriteFileReadable(relOut, rel); err != nil {
 		return errcode.Annotate(err, "write out release")
+	}
+
+	log.Printf("writing out objects")
+	objOut := filePath(b.out, "homedrv/objs.tar")
+	if err := writeObjects(objOut, imageObjs); err != nil {
+		return errcode.Annotate(err, "writing out object archive")
 	}
 
 	return nil
