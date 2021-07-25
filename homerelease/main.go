@@ -34,7 +34,8 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
-func makeReleaseName(typ string) (string, error) {
+// MakeReleaseName makes a new release name.
+func MakeReleaseName(typ string) (string, error) {
 	ch := typ
 	if typ == "dev" {
 		u, err := creds.CurrentUser()
@@ -67,7 +68,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		return errcode.InvalidArgf("type must be 'dev' or 'prod'")
 	}
 	if name == "" {
-		n, err := makeReleaseName(typ)
+		n, err := MakeReleaseName(typ)
 		if err != nil {
 			return errcode.Annotate(err, "make release name")
 		}
