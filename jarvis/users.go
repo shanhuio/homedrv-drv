@@ -19,22 +19,10 @@ import (
 	"log"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
 	"shanhu.io/aries"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces"
 )
-
-const rootUser = "root"
-
-type userInfo struct {
-	Name string
-
-	BcryptPassword []byte
-	TwoFactor      *twoFactorInfo `json:",omitempty"`
-
-	RecentLoginFailures *recentFailures `json:",omitempty"`
-}
 
 type users struct {
 	t *pisces.KV
@@ -42,10 +30,6 @@ type users struct {
 
 func newUsers(b *pisces.Tables) *users {
 	return &users{t: b.NewKV("users")}
-}
-
-func bcryptPassword(pw string) ([]byte, error) {
-	return bcrypt.GenerateFromPassword([]byte(pw), 0)
 }
 
 func (b *users) create(user, password string) error {
@@ -90,11 +74,6 @@ func (b *users) setPassword(user, password string) error {
 	})
 }
 
-var (
-	errWrongPassword   = errcode.Unauthorizedf("wrong password")
-	errTooManyFailures = errcode.Unauthorizedf("too many recent failures")
-)
-
 func (b *users) checkPassword(user, password string) error {
 	now := time.Now()
 	if err := b.loginRateLimit(user, now); err != nil {
@@ -108,16 +87,12 @@ func (b *users) checkPassword(user, password string) error {
 	if err := b.t.Get(user, info); err != nil {
 		return err
 	}
-	if err := bcrypt.CompareHashAndPassword(
-		info.BcryptPassword, []byte(password),
-	); err != nil {
-		if err == bcrypt.ErrMismatchedHashAndPassword {
+	if err := checkUserPassword(info, password); err != nil {
+		if err == errWrongPassword {
 			b.recordLoginFailure(user, now)
-			return errWrongPassword
 		}
 		return err
 	}
-
 	b.recordLoginSuccess(user)
 	return nil
 }
@@ -125,12 +100,9 @@ func (b *users) checkPassword(user, password string) error {
 func (b *users) totpInfo(user string) (*totpInfo, error) {
 	info := new(userInfo)
 	if err := b.t.Get(user, info); err != nil {
-		return nil, errcode.Annotate(err, "get TOTPInfo")
+		return nil, errcode.Annotate(err, "get user info")
 	}
-	if info.TwoFactor == nil {
-		return nil, nil
-	}
-	return info.TwoFactor.TOTP, nil
+	return userTOTPInfo(info), nil
 }
 
 type changePasswordRequest struct {
@@ -151,10 +123,8 @@ func (b *users) apiChangePassword(c *aries.C, req *changePasswordRequest) (
 	}
 	resp := new(changePasswordResponse)
 	if err := b.mutate(c.User, func(info *userInfo) error {
-		if err := bcrypt.CompareHashAndPassword(
-			info.BcryptPassword, []byte(req.OldPassword),
-		); err != nil {
-			if err == bcrypt.ErrMismatchedHashAndPassword {
+		if err := checkUserPassword(info, req.OldPassword); err != nil {
+			if err == errWrongPassword {
 				resp.Error = "Incorrect old password."
 				return nil
 			}
@@ -182,9 +152,7 @@ func (b *users) activateTOTP(user string, secret string) error {
 		if info.TwoFactor == nil {
 			info.TwoFactor = new(twoFactorInfo)
 		}
-		info.TwoFactor.TOTP = &totpInfo{
-			Secret: secret,
-		}
+		info.TwoFactor.TOTP = &totpInfo{Secret: secret}
 		return nil
 	})
 }

@@ -17,6 +17,8 @@ package jarvis
 
 import (
 	"time"
+
+	"shanhu.io/misc/errcode"
 )
 
 const failureWindow = 3 * time.Minute
@@ -50,3 +52,5 @@ func (r *recentFailures) add(now time.Time) int {
 func (r *recentFailures) clear() {
 	r.Timestamps = nil
 }
+
+var errTooManyFailures = errcode.Unauthorizedf("too many recent failures")
