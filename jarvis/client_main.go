@@ -17,17 +17,14 @@ package jarvis
 
 import (
 	"fmt"
-	"sort"
-	"strings"
+	"io/ioutil"
 
 	"shanhu.io/homedrv/burmilla"
 	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/jsonutil"
-	"shanhu.io/misc/nameutil"
 	"shanhu.io/misc/subcmd"
-	"shanhu.io/pisces/settings"
 )
 
 func clientCommands() *subcmd.List {
@@ -143,98 +140,21 @@ func cmdSetPassword(args []string) error {
 	return c.Call("/api/set-password", req, nil)
 }
 
-func cmdCustomSubs(args []string) error {
+func cmdSetAPIKey(args []string) error {
 	flags := cmdFlags.New()
 	sock := flags.String(
 		"sock", "jarvis.sock", "jarvis unix domain socket",
 	)
-	add := flags.Bool("add", false, "adds a sub domain")
-	remove := flags.Bool("remove", false, "removes a sub domain")
-	cflags := newClientFlags(flags)
+	keyFile := flags.String("key", "", "key file")
 	args = flags.ParseArgs(args)
-	list := !*add && !*remove
 
-	d, err := newClientDrive(cflags)
+	if *keyFile == "" {
+		return errcode.InvalidArgf("key file is empty")
+	}
+	key, err := ioutil.ReadFile(*keyFile)
 	if err != nil {
-		return err
+		return errcode.Annotate(err, "read key file")
 	}
-
-	subMap, err := loadCustomSubs(d.settings)
-	if err != nil {
-		return errcode.Annotate(err, "read custom subdomains")
-	}
-
-	if list {
-		if len(args) != 0 {
-			return errcode.InvalidArgf("list takes no command")
-		}
-		subs := []string{}
-		for sub := range subMap {
-			subs = append(subs, sub)
-		}
-		sort.Strings(subs)
-		for _, sub := range subs {
-			fmt.Printf("%s -> %s\n", sub, subMap[sub])
-		}
-		return nil
-	}
-
-	fullDomain := func(sub string) (string, error) {
-		// See if user specified a full domain name or just the subdomain.
-		idx := strings.Index(sub, ".")
-		if idx > 0 {
-			// User specified a full domain name. Nothing else to do.
-			return sub, nil
-		}
-		if idx == 0 {
-			return "", errcode.InvalidArgf("subdomain can not start with dot")
-		}
-
-		// User only specified the custom subdomain label.
-		if err := nameutil.CheckLabel(sub); err != nil {
-			return "", errcode.Annotate(err, "check subdomain")
-		}
-
-		mainDomain, err := settings.String(d.settings, keyMainDomain)
-		if err != nil {
-			return "", errcode.Annotate(err, "expand subdomain")
-		}
-		return sub + "." + mainDomain, nil
-	}
-
-	if *add {
-		if len(args) != 2 {
-			return errcode.InvalidArgf("add command takes 2 arguments")
-		}
-		domain, err := fullDomain(args[0])
-		if err != nil {
-			return errcode.Annotate(err, "get full domain name")
-		}
-		dest := args[1]
-
-		if _, ok := subMap[domain]; ok {
-			return errcode.InvalidArgf("subdomain %q already exist", domain)
-		}
-		subMap[domain] = dest
-	} else if *remove {
-		if len(args) != 1 {
-			return errcode.InvalidArgf("remove command takes 1 argument")
-		}
-		domain, err := fullDomain(args[0])
-		if err != nil {
-			return errcode.Annotate(err, "get full domain name")
-		}
-		if _, ok := subMap[domain]; !ok {
-			return errcode.InvalidArgf("subdomain %q not in sub list", domain)
-		}
-		delete(subMap, domain)
-	}
-
-	if err := d.settings.Set(keyCustomSubs, subMap); err != nil {
-		return errcode.Annotate(err, "save custom subdomain map")
-	}
-
-	// Ping jarvis to recreate doorway so that hostmap will be updated.
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/recreate-doorway", nil, nil)
+	return c.Call("/api/set-api-key", key, nil)
 }
