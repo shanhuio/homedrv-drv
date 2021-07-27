@@ -34,6 +34,7 @@ func clientCommands() *subcmd.List {
 	c.Add("occ", "runs occ on nextcloud", cmdOCC)
 	c.Add("settings", "prints settings", cmdSettings)
 	c.Add("set-password", "sets password of a user", cmdSetPassword)
+	c.Add("set-api-key", "sets API key", cmdSetAPIKey)
 	c.Add("version", "prints release info", cmdVersion)
 	c.Add(
 		"nextcloud-domains", "view or modify nextcloud domains",
