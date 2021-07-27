@@ -18,9 +18,7 @@ package jarvis
 import (
 	"log"
 	"net/url"
-	"time"
 
-	totppkg "github.com/pquerna/otp/totp"
 	"shanhu.io/aries"
 	"shanhu.io/misc/errcode"
 )
@@ -102,11 +100,7 @@ func serveCheckTOTP(s *server, c *aries.C) error {
 	totp := c.Req.PostFormValue("totp")
 	remoteIP := aries.RemoteIP(c)
 
-	opts := totppkg.ValidateOpts{
-		Digits:    totpDigits,
-		Algorithm: totpAlgorithm,
-	}
-	ok, err := totppkg.ValidateCustom(totp, totpInfo.Secret, time.Now(), opts)
+	ok, err := totpValidate(totp, totpInfo.Secret)
 	if !ok || err != nil {
 		if err := s.securityLogs.recordFailedLogin(
 			user, remoteIP, "totp",

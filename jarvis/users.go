@@ -19,8 +19,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/pquerna/otp"
-	totppkg "github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
 	"shanhu.io/aries"
 	"shanhu.io/misc/errcode"
@@ -63,8 +61,22 @@ func (b *users) create(user, password string) error {
 	return b.t.Add(user, info)
 }
 
-func (b *users) remove(user string) error {
-	return b.t.Remove(user)
+func (b *users) get(user string) (*userInfo, error) {
+	info := new(userInfo)
+	if err := b.t.Get(user, info); err != nil {
+		return nil, err
+	}
+	return info, nil
+}
+
+func (b *users) has(user string) (bool, error) { return b.t.Has(user) }
+func (b *users) remove(user string) error      { return b.t.Remove(user) }
+
+func (b *users) mutate(user string, f func(info *userInfo) error) error {
+	info := new(userInfo)
+	return b.t.Mutate(user, info, func(v interface{}) error {
+		return f(v.(*userInfo))
+	})
 }
 
 func (b *users) setPassword(user, password string) error {
@@ -72,10 +84,7 @@ func (b *users) setPassword(user, password string) error {
 	if err != nil {
 		return err
 	}
-
-	info := new(userInfo)
-	return b.t.Mutate(user, info, func(v interface{}) error {
-		info := v.(*userInfo)
+	return b.mutate(user, func(info *userInfo) error {
 		info.BcryptPassword = crypt
 		return nil
 	})
@@ -111,23 +120,6 @@ func (b *users) checkPassword(user, password string) error {
 
 	b.recordLoginSuccess(user)
 	return nil
-}
-
-func (b *users) get(user string) (*userInfo, error) {
-	info := new(userInfo)
-	if err := b.t.Get(user, info); err != nil {
-		return nil, err
-	}
-	return info, nil
-}
-
-func (b *users) has(user string) (bool, error) { return b.t.Has(user) }
-
-func (b *users) mutate(user string, f func(info *userInfo) error) error {
-	info := new(userInfo)
-	return b.t.Mutate(user, info, func(v interface{}) error {
-		return f(v.(*userInfo))
-	})
 }
 
 func (b *users) totpInfo(user string) (*totpInfo, error) {
@@ -181,27 +173,6 @@ func (b *users) disableTOTP(c *aries.C) error {
 		info.TwoFactor = nil
 		return nil
 	})
-}
-
-const totpDigits = otp.DigitsSix
-const totpAlgorithm = otp.AlgorithmSHA256
-
-// totpKey creates a new TOTP key for user.
-// It does NOT activate TOTP for authentication just yet.
-// Returns the newly created key and error.
-func (b *users) totpKey(user, issuer string) (*otp.Key, error) {
-	// Refresh secret everytime TOTP is enabled.
-	opts := totppkg.GenerateOpts{
-		Issuer:      issuer,
-		AccountName: user,
-		Digits:      totpDigits,
-		Algorithm:   totpAlgorithm,
-	}
-	key, err := totppkg.Generate(opts)
-	if err != nil {
-		return nil, errcode.Annotate(err, "generate TOTP key")
-	}
-	return key, nil
 }
 
 // activateTOTP actually activates TOTP as a 2-Factor authentication

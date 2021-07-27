@@ -29,6 +29,29 @@ import (
 	"shanhu.io/misc/signer"
 )
 
+const (
+	totpDigits    = otp.DigitsSix
+	totpAlgorithm = otp.AlgorithmSHA256
+)
+
+// newTOTPKey creates a new TOTP key for user.
+// It does NOT activate TOTP for authentication just yet.
+// Returns the newly created key and error.
+func newTOTPKey(user, issuer string) (*otp.Key, error) {
+	// Refresh secret everytime TOTP is enabled.
+	opts := totppkg.GenerateOpts{
+		Issuer:      issuer,
+		AccountName: user,
+		Digits:      totpDigits,
+		Algorithm:   totpAlgorithm,
+	}
+	key, err := totppkg.Generate(opts)
+	if err != nil {
+		return nil, errcode.Annotate(err, "generate TOTP key")
+	}
+	return key, nil
+}
+
 type sessionChecker interface {
 	Check(c *aries.C) error
 }
@@ -135,7 +158,7 @@ func (t *totp) setup(user string) (*TOTPSetup, error) {
 	if err != nil {
 		return nil, errcode.Annotate(err, "get issuer")
 	}
-	key, err := t.users.totpKey(user, issuer)
+	key, err := newTOTPKey(user, issuer)
 	if err != nil {
 		return nil, errcode.Annotate(err, "enable totp")
 	}
@@ -214,4 +237,14 @@ func (t *totp) api() *aries.Router {
 	r.Call("disable", t.apiDisable)
 	r.Call("enable", t.apiEnable)
 	return r
+}
+
+func totpValidate(passcode, secret string) (bool, error) {
+	opts := totppkg.ValidateOpts{
+		Digits:    totpDigits,
+		Algorithm: totpAlgorithm,
+	}
+	t := time.Now()
+	ok, err := totppkg.ValidateCustom(passcode, secret, t, opts)
+	return ok, err
 }
