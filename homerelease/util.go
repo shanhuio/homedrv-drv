@@ -16,14 +16,32 @@
 package homerelease
 
 import (
-	"shanhu.io/misc/subcmd"
+	"fmt"
+	"path"
+	"path/filepath"
+	"time"
+
+	"shanhu.io/aries/creds"
+	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/rand"
 )
 
-func cmd() *subcmd.List {
-	c := subcmd.New()
-	c.Add("build", "build a release", cmdBuild)
-	return c
+// MakeReleaseName makes a new release name.
+func MakeReleaseName(typ string) (string, error) {
+	ch := typ
+	if typ == "dev" {
+		u, err := creds.CurrentUser()
+		if err != nil {
+			return "", errcode.Annotate(err, "get current user")
+		}
+		ch = "dev-" + u
+	}
+
+	date := time.Now().Format("20060102")
+	return fmt.Sprintf("%s-%s-%s", ch, date, rand.HexBytes(3)), nil
 }
 
-// Main is the main entrance function.
-func Main() { cmd().Main() }
+func filePath(base string, parts ...string) string {
+	p := path.Join(parts...)
+	return filepath.Join(base, filepath.FromSlash(p))
+}

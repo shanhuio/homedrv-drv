@@ -65,6 +65,9 @@ func userRouter(s *server) *aries.Router {
 
 func apiRouter(s *server) *aries.Router {
 	r := aries.NewRouter()
+	r.Call("hello", func(c *aries.C, msg string) (string, error) {
+		return msg, nil
+	})
 	r.DirService("user", s.users.api())
 	r.DirService("totp", s.totp.api())
 	r.DirService("sshkeys", s.sshKeys.api())

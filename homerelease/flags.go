@@ -16,14 +16,7 @@
 package homerelease
 
 import (
-	"shanhu.io/misc/subcmd"
+	"shanhu.io/misc/flagutil"
 )
 
-func cmd() *subcmd.List {
-	c := subcmd.New()
-	c.Add("build", "build a release", cmdBuild)
-	return c
-}
-
-// Main is the main entrance function.
-func Main() { cmd().Main() }
+var cmdFlags = flagutil.NewFactory("homerelease")
