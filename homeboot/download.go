@@ -133,12 +133,27 @@ func (d *Downloader) DownloadRelease(c *InstallConfig) (
 			display = fmt.Sprintf("%s:%s", img.name, img.tag)
 		}
 		if !found {
-			log.Printf("downloading image %q", display)
-			p := path.Join("/dl/docker", img.name, img.hash+".tar.gz")
-			if err := d.DownloadImage(p); err != nil {
-				return nil, errcode.Annotatef(
-					err, "download image %q", display,
-				)
+			if r.ImageSums == nil {
+				log.Printf("downloading image %q", display)
+				p := path.Join("/dl/docker", img.name, img.hash+".tar.gz")
+				if err := d.DownloadImage(p); err != nil {
+					return nil, errcode.Annotatef(
+						err, "download image %q", display,
+					)
+				}
+			} else {
+				obj, ok := r.ImageSums[img.hash]
+				if !ok {
+					return nil, errcode.InvalidArgf(
+						"object for image %q missing", display,
+					)
+				}
+				p := path.Join("/dl/obj", obj)
+				if err := d.DownloadImage(p); err != nil {
+					return nil, errcode.Annotatef(
+						err, "download image %q", display,
+					)
+				}
 			}
 		}
 		repo := img.repo
