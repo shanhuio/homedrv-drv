@@ -14,6 +14,8 @@ type userInfo struct {
 	TwoFactor      *twoFactorInfo `json:",omitempty"`
 
 	RecentLoginFailures *recentFailures `json:",omitempty"`
+
+	APIKeys []byte
 }
 
 func bcryptPassword(pw string) ([]byte, error) {

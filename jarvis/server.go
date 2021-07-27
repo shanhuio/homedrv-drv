@@ -39,6 +39,7 @@ type server struct {
 	loginSessions *loginSessions
 	totp          *totp
 	sshKeys       *sshKeys
+	keyRegistry   *keyRegistry
 
 	tmpls  *aries.Templates
 	static *aries.StaticFiles
@@ -98,12 +99,14 @@ func newServer(c *drvcfg.Config) (*server, error) {
 	}
 	sudoSessions := newSudoSessions(sessionKey)
 	loginSessions := newLoginSessions(sessionKey)
+	keyRegistry := newKeyRegistry(back.users)
 	auth := oauth.NewModule(&oauth.Config{
 		SessionKey: []byte(sessionKey),
 		PreSignOut: func(c *aries.C) error {
 			sudoSessions.ClearCookie(c)
 			return nil
 		},
+		KeyRegistry: keyRegistry,
 	})
 
 	signerKey := sha256.Sum256([]byte("state:" + sessionKey))
@@ -134,6 +137,7 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		loginSessions: loginSessions,
 		totp:          totp,
 		sshKeys:       newSSHKeys(drive),
+		keyRegistry:   keyRegistry,
 
 		tmpls:  aries.NewTemplates("_/tmpl", nil),
 		static: aries.NewStaticFiles("_/static"),
