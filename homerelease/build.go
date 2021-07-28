@@ -41,13 +41,6 @@ func (b *builder) buildRelease(name, typ string) error {
 	default:
 		return errcode.InvalidArgf("type must be 'dev' or 'prod'")
 	}
-	if name == "" {
-		n, err := MakeReleaseName(typ)
-		if err != nil {
-			return errcode.Annotate(err, "make release name")
-		}
-		name = n
-	}
 
 	arts := new(drvapi.Artifacts)
 
@@ -195,7 +188,7 @@ func cmdBuild(args []string) error {
 	flags := cmdFlags.New()
 	src := flags.String("src", "src", "source directory")
 	out := flags.String("out", "out", "output directory")
-	name := flags.String("name", "", "release name; will auto gen when empty")
+	name := flags.String("name", "", "release name")
 	typ := flags.String("type", "", "release type")
 	args = flags.ParseArgs(args)
 

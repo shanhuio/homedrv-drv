@@ -33,6 +33,7 @@ type server struct {
 	drive       *drive
 	appRegistry *appRegistry
 	apps        *apps
+	objects     *objects
 
 	auth          *oauth.Module
 	sudoSessions  *sudoSessions
@@ -126,11 +127,17 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		return nil, errcode.Annotate(err, "create totp")
 	}
 
+	objs, err := newObjects("var/objs")
+	if err != nil {
+		return nil, errcode.Annotate(err, "create objects store")
+	}
+
 	return &server{
 		backend:     back,
 		drive:       drive,
 		appRegistry: appReg,
 		apps:        apps,
+		objects:     objs,
 
 		auth:          auth,
 		sudoSessions:  sudoSessions,

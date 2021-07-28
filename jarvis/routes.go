@@ -60,6 +60,7 @@ func guestRouter(s *server) *aries.Router {
 func userRouter(s *server) *aries.Router {
 	r := aries.NewRouter()
 	r.DirService("api", apiRouter(s))
+	r.DirService("obj", s.objects)
 	return r
 }
 
@@ -73,6 +74,7 @@ func apiRouter(s *server) *aries.Router {
 	r.DirService("sshkeys", s.sshKeys.api())
 	r.DirService("dashboard", dashboardAPI(s))
 	r.DirService("id", identity.NewService(s.identity))
+	r.DirService("obj", s.objects.api())
 	return r
 }
 

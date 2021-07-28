@@ -17,7 +17,9 @@ package homerelease
 
 import (
 	"shanhu.io/aries/creds"
+	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/jsonutil"
 )
 
 func cmdPush(server string, args []string) error {
@@ -25,7 +27,7 @@ func cmdPush(server string, args []string) error {
 	objs := flags.String(
 		"objs", "out/homedrv/objs.tar", "path to objects tarball",
 	)
-	release := flags.String(
+	rel := flags.String(
 		"release", "out/homedrv/release.json", "path to release info",
 	)
 	user := flags.String(
@@ -47,7 +49,15 @@ func cmdPush(server string, args []string) error {
 		return errcode.Annotate(err, "upload objects")
 	}
 
-	_ = release
+	release := new(drvapi.Release)
+	if err := jsonutil.ReadFile(*rel, release); err != nil {
+		return errcode.Annotate(err, "read release file")
+	}
+	newName, err := MakeReleaseName(release.Type)
+	if err != nil {
+		return errcode.Annotate(err, "make release name")
+	}
+	release.Name = newName
 
-	return nil
+	return c.Call("/api/update/push", release, nil)
 }

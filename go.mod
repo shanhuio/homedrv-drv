@@ -13,8 +13,9 @@ require (
 	github.com/miekg/dns v1.1.43 // indirect
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
-	shanhu.io/aries v0.0.0-20210721173427-e510c4aa044b
-	shanhu.io/misc v0.0.0-20210719202230-af35579e1ef9
+	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
+	shanhu.io/aries v0.0.0-20210727221528-d3fe428ab886
+	shanhu.io/misc v0.0.0-20210727232908-86e01d6576a5
 	shanhu.io/pisces v0.0.0-20210721202308-3a69d8803ead
 	shanhu.io/virgo v0.0.0-20210720024748-35591d173522
 )
