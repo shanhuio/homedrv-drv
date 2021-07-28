@@ -126,7 +126,7 @@ func writeFile(f string, bs []byte, mode os.FileMode) error {
 }
 
 func (b *boot) downloadCore(
-	client *dock.Client, config *drvcfg.Config, pem []byte,
+	dock *dock.Client, config *drvcfg.Config, pem []byte,
 ) (string, error) {
 	drv := b.Drive
 	user := "~" + drv.Name
@@ -137,7 +137,7 @@ func (b *boot) downloadCore(
 		return "", err
 	}
 
-	d := NewDownloader(c, client)
+	d := NewOfficialDownloader(c, dock)
 	rel, err := d.DownloadRelease(&InstallConfig{
 		Build:    drv.Build,
 		Channel:  drv.Channel,

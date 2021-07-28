@@ -48,13 +48,10 @@ func queryUpdate(c *httputil.Client, ch, build, tags string, manual bool) (
 	return resp.Release, nil
 }
 
-func updateHomeDrive(
+func updateDrive(
 	d *drive, c *homeboot.InstallConfig, manual bool,
 ) error {
 	tags := d.tags()
-
-	d.updateMutex.Lock()
-	defer d.updateMutex.Unlock()
 
 	cur := new(drvapi.Release)
 	if err := d.settings.Get(keyBuild, cur); err != nil {
@@ -66,7 +63,9 @@ func updateHomeDrive(
 		return errcode.Annotate(err, "dial server")
 	}
 	var toInstall *drvapi.Release
-	if c.Build != "" {
+	if c.Release != nil {
+		toInstall = c.Release
+	} else if c.Build != "" {
 		if cur.Name == c.Build {
 			return errAlreadyUpToDate
 		}
@@ -88,27 +87,37 @@ func updateHomeDrive(
 		return errcode.Internalf("not sure how to update")
 	}
 
-	dl := homeboot.NewDownloader(client, d.dock)
-	newConfig := &homeboot.InstallConfig{
-		Release: toInstall,
+	return updateDriveToRelease(d, toInstall) // not returning
+}
+
+func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
+	d.systemMu.Lock()
+	defer d.systemMu.Unlock()
+
+	dl, err := downloader(d)
+	if err != nil {
+		return errcode.Annotate(err, "init downloader")
+	}
+	config := &homeboot.InstallConfig{
+		Release: rel,
 		Naming:  d.config.Naming,
 	}
-	if _, err := dl.DownloadRelease(newConfig); err != nil {
+	if _, err := dl.DownloadRelease(config); err != nil {
 		return errcode.Annotate(err, "download release")
 	}
 
-	if err := d.settings.Set(keyBuildUpdating, toInstall); err != nil {
+	if err := d.settings.Set(keyBuildUpdating, rel); err != nil {
 		return errcode.Annotatef(err, "set %q", keyBuildUpdating)
 	}
 
 	// If update succeeds, the core will be swapped with a new
 	// instance, and updateCore() will never return.
-	if err := updateCore(d, toInstall.Jarvis); err != nil {
+	if err := updateCore(d, rel.Jarvis); err != nil {
 		if err != errSameImage {
 			return errcode.Annotate(err, "update core")
 		}
 		// Core did not update, finish the rest of the system.
-		return finishUpdate(d, toInstall)
+		return finishUpdate(d, rel)
 	}
 
 	// This point should be unreachable.
@@ -128,7 +137,7 @@ func bgUpdate(d *drive, c *homeboot.InstallConfig, requests <-chan string) {
 	for {
 		for {
 			const errInterval = time.Minute * 5
-			if err := updateHomeDrive(d, c, manual); err != nil {
+			if err := updateDrive(d, c, manual); err != nil {
 				if err == errAlreadyUpToDate {
 					break
 				}
@@ -168,22 +177,21 @@ func maybeFinishUpdate(d *drive) error {
 }
 
 func finishUpdate(d *drive, r *drvapi.Release) error {
-	client, err := d.dialServer()
+	dl, err := downloader(d)
 	if err != nil {
-		return errcode.Annotate(err, "dial server")
+		return errcode.Annotate(err, "init downloader")
 	}
 
 	// Need to refetch the release info because the one fetched from the
 	// last version is unmarshalled by an older core, and the JSON blob might
 	// be incomplete.
-	refetched, err := homeboot.FetchBuildRelease(client, r.Name)
+	refetched, err := dl.FetchBuild(r.Name)
 	if err != nil {
 		return errcode.Annotate(err, "refetch release info")
 	}
 	r = refetched
 
 	// And also need to download again.
-	dl := homeboot.NewDownloader(client, d.dock)
 	dlConfig := &homeboot.InstallConfig{
 		Release: r,
 		Naming:  d.config.Naming,
@@ -221,24 +229,6 @@ func updateCleanUp(d *drive, r *drvapi.Release) error {
 	opt := &dock.PruneImagesOption{}
 	if err := dock.PruneImages(d.dock, opt); err != nil {
 		return errcode.Annotate(err, "prune docker images")
-	}
-	return nil
-}
-
-func recreateDoorway(d *drive) error {
-	d.updateMutex.Lock()
-	defer d.updateMutex.Unlock()
-
-	log.Println("re-creating doorway.")
-
-	c := dock.NewCont(d.dock, d.cont(nameDoorway))
-	info, err := c.Inspect()
-	if err != nil {
-		return errcode.Annotate(err, "inspect current doorway")
-	}
-	// Force update current doorway to recreate the container.
-	if err := updateDoorway(d, info.Image); err != nil {
-		return errcode.Annotate(err, "recreate doorway")
 	}
 	return nil
 }

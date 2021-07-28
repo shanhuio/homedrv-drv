@@ -66,8 +66,9 @@ type drive struct {
 	// HomeDrive kernel.
 	*kernel
 
-	// Mutex lock to block certain operations when update is running.
-	updateMutex sync.Mutex
+	// Mutex lock to block certain operations when one of the systems
+	// operation is running.
+	systemMu sync.Mutex
 }
 
 func parseServer(s string) (*url.URL, error) {

@@ -149,11 +149,10 @@ func maybeInstall(d *drive, c *homeboot.InstallConfig) error {
 		return errcode.InvalidArgf("install target not specified")
 	}
 
-	client, err := d.dialServer()
+	dl, err := downloader(d)
 	if err != nil {
-		return errcode.Annotate(err, "dial for release info")
+		return errcode.Annotate(err, "init downloader")
 	}
-	dl := homeboot.NewDownloader(client, d.dock)
 	release, err := dl.DownloadRelease(c)
 	if err != nil {
 		return errcode.Annotate(err, "download release")
@@ -161,7 +160,6 @@ func maybeInstall(d *drive, c *homeboot.InstallConfig) error {
 	if err := install(d, release); err != nil {
 		return errcode.Annotate(err, "install failed")
 	}
-
 	if err := d.settings.Set(keyBuild, release); err != nil {
 		return errcode.Annotate(err, "commit build")
 	}

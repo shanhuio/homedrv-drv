@@ -16,8 +16,11 @@
 package jarvis
 
 import (
+	"log"
+
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces/settings"
+	"shanhu.io/virgo/dock"
 )
 
 func loadDoorwayConfig(d *drive) (*doorwayConfig, error) {
@@ -46,4 +49,22 @@ func updateDoorway(d *drive, img string) error {
 	}
 	dw := newDoorway(d, config)
 	return dw.update(img)
+}
+
+func recreateDoorway(d *drive) error {
+	d.systemMu.Lock()
+	defer d.systemMu.Unlock()
+
+	log.Println("re-creating doorway.")
+
+	c := dock.NewCont(d.dock, d.cont(nameDoorway))
+	info, err := c.Inspect()
+	if err != nil {
+		return errcode.Annotate(err, "inspect current doorway")
+	}
+	// Force update current doorway to recreate the container.
+	if err := updateDoorway(d, info.Image); err != nil {
+		return errcode.Annotate(err, "recreate doorway")
+	}
+	return nil
 }

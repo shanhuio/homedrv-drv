@@ -59,5 +59,5 @@ func cmdPush(server string, args []string) error {
 	}
 	release.Name = newName
 
-	return c.Call("/api/update/push", release, nil)
+	return c.Call("/api/sys/push-update", release, nil)
 }

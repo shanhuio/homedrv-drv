@@ -20,6 +20,7 @@ import (
 
 	"shanhu.io/aries"
 	"shanhu.io/aries/identity"
+	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
 )
 
@@ -75,6 +76,12 @@ func apiRouter(s *server) *aries.Router {
 	r.DirService("dashboard", dashboardAPI(s))
 	r.DirService("id", identity.NewService(s.identity))
 	r.DirService("obj", s.objects.api())
+
+	// just stubbing
+	r.Call("sys/push-update", func(c *aries.C, rel *drvapi.Release) error {
+		log.Println(rel.Name)
+		return nil
+	})
 	return r
 }
 
