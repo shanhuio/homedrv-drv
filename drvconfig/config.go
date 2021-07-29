@@ -29,10 +29,6 @@ type Config struct {
 	// Subscribe to which release channel.
 	Channel string `json:",omitempty"`
 
-	// Read init release from this file, and run in manual build mode.
-	// Manual build mode does not query the server for the latest updates.
-	ManualBuild string `json:",omitempty"`
-
 	// Naming conventions. When this is null, using legacy naming.
 	Naming *Naming `json:",omitempty"`
 
