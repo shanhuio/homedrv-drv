@@ -613,6 +613,8 @@ shanhu.io/misc v0.0.0-20210719202230-af35579e1ef9 h1:pZEZQ69N+frXmVwN3MB13PiZFtN
 shanhu.io/misc v0.0.0-20210719202230-af35579e1ef9/go.mod h1:KaWiid/1iHOTiq4bCZTJG7QKPypoco4CrzRFqh69HWc=
 shanhu.io/misc v0.0.0-20210727232908-86e01d6576a5 h1:IzJJvcuI+5y4FO5m67znimRKPoJ2QNXvH6xl/ziVRlo=
 shanhu.io/misc v0.0.0-20210727232908-86e01d6576a5/go.mod h1:6fQR5CxAm70Qly/NJOUWa+6gYxdyDhQXASGCERrK9r4=
+shanhu.io/misc v0.0.0-20210727233346-04a4e7a1bf7a h1:jeYhyfpLbSAc1J4/CkeGTSsVluAa1KgGVx7bMYJFAGE=
+shanhu.io/misc v0.0.0-20210727233346-04a4e7a1bf7a/go.mod h1:6fQR5CxAm70Qly/NJOUWa+6gYxdyDhQXASGCERrK9r4=
 shanhu.io/pisces v0.0.0-20210721202308-3a69d8803ead h1:jsbU/HnB0EZMdGLMmmq241J9x2dK+TRl0eDf9O5kb9c=
 shanhu.io/pisces v0.0.0-20210721202308-3a69d8803ead/go.mod h1:hS7bBDRurtQX6dxXQLN0r9s4XaIgr7bi+4xH/doCFso=
 shanhu.io/text v0.0.0-20210719201909-537e563f9279 h1:nEr+/FK0cwKJDsBPOgvsFJAy7DwgSOls5aiiWwUz8UM=
