@@ -16,6 +16,6 @@ require (
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
 	shanhu.io/aries v0.0.0-20210729001737-6e6495fd0086
 	shanhu.io/misc v0.0.0-20210727233346-04a4e7a1bf7a
-	shanhu.io/pisces v0.0.0-20210721202308-3a69d8803ead
+	shanhu.io/pisces v0.0.0-20210729002116-688ad9c000c3
 	shanhu.io/virgo v0.0.0-20210729001812-4c4ea628d680
 )
