@@ -27,8 +27,8 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
-func pushManualUpdate(d *drive, rel *drvapi.Release) error {
-	if err := d.settings.Set(keyManualBuild, rel); err != nil {
+func pushManualUpdate(d *drive, relBytes []byte) error {
+	if err := d.settings.Set(keyManualBuild, relBytes); err != nil {
 		return errcode.Annotate(err, "set to local build mode")
 	}
 	go func() {
@@ -40,9 +40,9 @@ func pushManualUpdate(d *drive, rel *drvapi.Release) error {
 }
 
 func updateDriveToManualBuild(d *drive) error {
-	r := new(drvapi.Release)
-	if err := d.settings.Get(keyManualBuild, r); err != nil {
-		return errcode.Annotate(err, "read manual release")
+	r, err := readManualBuild(d)
+	if err != nil {
+		return errcode.Annotate(err, "read manual build release")
 	}
 	return updateDriveToRelease(d, r)
 }
@@ -147,16 +147,21 @@ func cronUpdateOnChannel(d *drive, signal <-chan bool) {
 		return
 	}
 
-	var tickerChan <-chan time.Time
-
 	const interval = time.Minute * 10
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
-	tickerChan = ticker.C
+	tickerChan := ticker.C
 
 	manual := false
 	stop := false
 	for !stop {
+		if mb, err := d.settings.Has(keyManualBuild); err != nil {
+			log.Println(errcode.Annotate(err, "check manual build"))
+		} else if mb {
+			log.Println("on manual build mode; no cron update needed")
+			return
+		}
+
 		for {
 			const errInterval = time.Minute * 5
 			if err := updateDriveOnChannel(d, ch, manual); err != nil {

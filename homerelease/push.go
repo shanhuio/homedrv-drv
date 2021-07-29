@@ -16,6 +16,8 @@
 package homerelease
 
 import (
+	"encoding/json"
+
 	"shanhu.io/aries/creds"
 	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
@@ -59,5 +61,9 @@ func cmdPush(server string, args []string) error {
 	}
 	release.Name = newName
 
-	return c.Call("/api/sys/push-update", release, nil)
+	bs, err := json.Marshal(release)
+	if err != nil {
+		return errcode.Annotate(err, "marshal  release")
+	}
+	return c.Call("/api/sys/push-update", bs, nil)
 }

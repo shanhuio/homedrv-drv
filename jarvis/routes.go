@@ -20,7 +20,6 @@ import (
 
 	"shanhu.io/aries"
 	"shanhu.io/aries/identity"
-	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
 )
 
@@ -78,8 +77,8 @@ func apiRouter(s *server) *aries.Router {
 	r.DirService("obj", s.drive.objects.api())
 
 	// just stubbing
-	r.Call("sys/push-update", func(c *aries.C, rel *drvapi.Release) error {
-		return pushManualUpdate(s.drive, rel)
+	r.Call("sys/push-update", func(c *aries.C, bs []byte) error {
+		return pushManualUpdate(s.drive, bs)
 	})
 	return r
 }

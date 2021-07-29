@@ -16,6 +16,7 @@
 package jarvis
 
 import (
+	"encoding/json"
 	"io"
 
 	"shanhu.io/homedrv/drvapi"
@@ -23,12 +24,20 @@ import (
 	"shanhu.io/misc/errcode"
 )
 
-func noBuildInManual(string) (*drvapi.Release, error) {
-	return nil, errcode.InvalidArgf("no build in manual mode")
-}
-
 func noOpenDockerInManual(_, _ string) (io.ReadCloser, error) {
 	return nil, errcode.InvalidArgf("no docker loading in manual mode")
+}
+
+func readManualBuild(d *drive) (*drvapi.Release, error) {
+	var bs []byte
+	if err := d.settings.Get(keyManualBuild, &bs); err != nil {
+		return nil, err
+	}
+	rel := new(drvapi.Release)
+	if err := json.Unmarshal(bs, rel); err != nil {
+		return nil, err
+	}
+	return rel, nil
 }
 
 func downloader(d *drive) (*homeboot.Downloader, error) {
@@ -37,10 +46,15 @@ func downloader(d *drive) (*homeboot.Downloader, error) {
 		return nil, errcode.Annotate(err, "check manual build mode")
 	}
 
+	getRelease := func(string) (*drvapi.Release, error) {
+		// When in manual build mode, always returns the release
+		// from keyManualBuild.
+		return readManualBuild(d)
+	}
 	if manual {
 		src := &homeboot.DownloadSource{
-			Build:      noBuildInManual,
-			Channel:    noBuildInManual,
+			Build:      getRelease,
+			Channel:    getRelease,
 			OpenDocker: noOpenDockerInManual,
 			OpenObject: func(name string) (io.ReadCloser, error) {
 				f, err := d.objects.open(name)
