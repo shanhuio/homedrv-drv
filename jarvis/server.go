@@ -123,7 +123,11 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		stateSigner: stateSigner,
 		logs:        back.securityLogs,
 		issuer: func() (string, error) {
-			return settings.String(back.settings, keyMainDomain)
+			v, err := settings.String(back.settings, keyMainDomain)
+			if errcode.IsNotFound(err) {
+				return "unknown.homedrive.io", nil
+			}
+			return v, err
 		},
 		now: time.Now,
 	}
