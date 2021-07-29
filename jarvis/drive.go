@@ -23,6 +23,7 @@ import (
 	"shanhu.io/aries/creds"
 	"shanhu.io/homedrv/burmilla"
 	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/homeboot"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/osutil"
@@ -42,6 +43,9 @@ type kernel struct {
 
 	// Applications.
 	apps *apps
+
+	// Objects store.
+	objects *objects
 }
 
 type drive struct {
@@ -185,4 +189,12 @@ func (d *drive) tags() string {
 		return "-"
 	}
 	return strings.Join(tags, ",")
+}
+
+func (d *drive) downloadConfig() *homeboot.DownloadConfig {
+	return &homeboot.DownloadConfig{
+		Channel: d.config.Channel,
+		Build:   d.config.Build,
+		Naming:  d.config.Naming,
+	}
 }

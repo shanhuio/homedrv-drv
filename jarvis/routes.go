@@ -61,7 +61,7 @@ func guestRouter(s *server) *aries.Router {
 func userRouter(s *server) *aries.Router {
 	r := aries.NewRouter()
 	r.DirService("api", apiRouter(s))
-	r.DirService("obj", s.objects)
+	r.DirService("obj", s.drive.objects)
 	return r
 }
 
@@ -75,12 +75,11 @@ func apiRouter(s *server) *aries.Router {
 	r.DirService("sshkeys", s.sshKeys.api())
 	r.DirService("dashboard", dashboardAPI(s))
 	r.DirService("id", identity.NewService(s.identity))
-	r.DirService("obj", s.objects.api())
+	r.DirService("obj", s.drive.objects.api())
 
 	// just stubbing
 	r.Call("sys/push-update", func(c *aries.C, rel *drvapi.Release) error {
-		log.Println(rel.Name)
-		return nil
+		return pushManualUpdate(s.drive, rel)
 	})
 	return r
 }
@@ -93,11 +92,8 @@ func adminRouter(s *server) *aries.Router {
 
 func adminAPIRouter(s *server) *aries.Router {
 	r := aries.NewRouter()
-	r.Call("update", func(c *aries.C, build string) error {
-		select {
-		case s.updateRequest <- build:
-		default:
-		}
+	r.Call("update", func(c *aries.C, sig bool) error {
+		s.updateSignal <- sig
 		return nil
 	})
 	r.Call("recreate-doorway", func(c *aries.C) error {

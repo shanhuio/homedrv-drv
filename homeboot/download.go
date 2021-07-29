@@ -48,7 +48,7 @@ func NewDownloader(src *DownloadSource, dock *dock.Client) *Downloader {
 	return &Downloader{src: src, dock: dock}
 }
 
-func (d *Downloader) downloadImage(r io.ReadCloser, err error) error {
+func (d *Downloader) loadImage(r io.ReadCloser, err error) error {
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (d *Downloader) FetchBuild(b string) (*drvapi.Release, error) {
 	return d.src.Build(b)
 }
 
-func (d *Downloader) fetchRelease(config *InstallConfig) (
+func (d *Downloader) fetchRelease(config *DownloadConfig) (
 	*drvapi.Release, error,
 ) {
 	if config.Release != nil {
@@ -76,78 +76,54 @@ func (d *Downloader) fetchRelease(config *InstallConfig) (
 	return nil, errcode.InvalidArgf("no build specified")
 }
 
-// DownloadRelease downloads an entire release.
-func (d *Downloader) DownloadRelease(c *InstallConfig) (
-	*drvapi.Release, error,
-) {
-	r, err := d.fetchRelease(c)
-	if err != nil {
-		return nil, errcode.Annotate(err, "fetch release")
-	}
-	type image struct{ name, repo, tag, hash string }
-	images := []*image{{
-		name: "jarvis",
-		hash: r.Jarvis,
-		repo: drvcfg.Image(c.Naming, "core"),
-	}}
-	if !c.CoreOnly {
-		images = append(images, &image{name: "doorway", hash: r.Doorway})
+type downloadImage struct {
+	name, repo, tag, hash string
+}
 
-		images = append(images, []*image{
-			{name: "redis", hash: r.Redis},
-			{name: "postgres", hash: r.Postgres},
-		}...)
-
-		images = append(images, &image{name: "ncfront", hash: r.NCFront})
-		// TODO(h8liu): do not download the full ladder every time.
-		for _, nc := range r.Nextclouds {
-			images = append(images, &image{
-				name: "nextcloud",
-				tag:  strconv.Itoa(nc.Major),
-				hash: nc.Image,
-			})
-		}
+func (d *Downloader) downloadImage(
+	img *downloadImage, display string,
+	sums map[string]string,
+) error {
+	log.Printf("downloading image %q", display)
+	if sums == nil {
+		return d.loadImage(d.src.OpenDocker(img.name, img.hash))
 	}
 
-	for _, img := range images {
+	obj, ok := sums[img.hash]
+	if !ok {
+		return errcode.InvalidArgf(
+			"object for image %q missing", display,
+		)
+	}
+	return d.loadImage(d.src.OpenObject(obj))
+}
+
+func (d *Downloader) downloadImages(
+	imgs []*downloadImage, naming *drvcfg.Naming,
+	sums map[string]string,
+) error {
+	for _, img := range imgs {
 		if img.hash == "" {
 			continue // Hash missing, just skip.
-		}
-		found, err := dock.HasImage(d.dock, img.hash)
-		if err != nil {
-			return nil, errcode.Annotatef(err, "check image %q", img.name)
 		}
 		display := img.name
 		if img.tag != "" {
 			display = fmt.Sprintf("%s:%s", img.name, img.tag)
 		}
+
+		found, err := dock.HasImage(d.dock, img.hash)
+		if err != nil {
+			return errcode.Annotatef(err, "check image %q", img.name)
+		}
 		if !found {
-			if r.ImageSums == nil {
-				log.Printf("downloading image %q", display)
-				if err := d.downloadImage(
-					d.src.OpenDocker(img.name, img.hash),
-				); err != nil {
-					return nil, errcode.Annotatef(
-						err, "download image %q", display,
-					)
-				}
-			} else {
-				obj, ok := r.ImageSums[img.hash]
-				if !ok {
-					return nil, errcode.InvalidArgf(
-						"object for image %q missing", display,
-					)
-				}
-				if err := d.downloadImage(d.src.OpenObject(obj)); err != nil {
-					return nil, errcode.Annotatef(
-						err, "download image %q", display,
-					)
-				}
+			if err := d.downloadImage(img, display, sums); err != nil {
+				return errcode.Annotatef(err, "download %q", display)
 			}
 		}
+
 		repo := img.repo
 		if repo == "" {
-			repo = drvcfg.Image(c.Naming, img.name)
+			repo = drvcfg.Image(naming, img.name)
 		}
 		tag := img.tag
 		if tag == "" {
@@ -155,10 +131,50 @@ func (d *Downloader) DownloadRelease(c *InstallConfig) (
 		}
 		log.Printf("tag image as %s:%s", repo, tag)
 		if err := dock.TagImage(d.dock, img.hash, repo, tag); err != nil {
-			return nil, errcode.Annotatef(
-				err, "tag image %q", display,
-			)
+			return errcode.Annotatef(err, "tag image %q", display)
 		}
+	}
+	return nil
+}
+
+// DownloadRelease downloads an entire release.
+func (d *Downloader) DownloadRelease(c *DownloadConfig) (
+	*drvapi.Release, error,
+) {
+	r, err := d.fetchRelease(c)
+	if err != nil {
+		return nil, errcode.Annotate(err, "fetch release")
+	}
+	images := []*downloadImage{{
+		name: "jarvis",
+		hash: r.Jarvis,
+		repo: drvcfg.Image(c.Naming, "core"),
+	}}
+	if !c.CoreOnly {
+		images = append(images, &downloadImage{
+			name: "doorway", hash: r.Doorway,
+		})
+
+		images = append(images, []*downloadImage{
+			{name: "redis", hash: r.Redis},
+			{name: "postgres", hash: r.Postgres},
+		}...)
+
+		images = append(images, &downloadImage{
+			name: "ncfront", hash: r.NCFront,
+		})
+		// TODO(h8liu): do not download the full ladder every time.
+		for _, nc := range r.Nextclouds {
+			images = append(images, &downloadImage{
+				name: "nextcloud",
+				tag:  strconv.Itoa(nc.Major),
+				hash: nc.Image,
+			})
+		}
+	}
+
+	if err := d.downloadImages(images, c.Naming, r.ImageSums); err != nil {
+		return nil, err
 	}
 
 	return r, nil

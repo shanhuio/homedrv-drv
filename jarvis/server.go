@@ -33,7 +33,6 @@ type server struct {
 	drive       *drive
 	appRegistry *appRegistry
 	apps        *apps
-	objects     *objects
 
 	auth          *oauth.Module
 	sudoSessions  *sudoSessions
@@ -45,7 +44,7 @@ type server struct {
 	tmpls  *aries.Templates
 	static *aries.StaticFiles
 
-	updateRequest chan string
+	updateSignal chan bool
 }
 
 func newServer(c *drvcfg.Config) (*server, error) {
@@ -79,11 +78,17 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		return nil, errcode.Annotate(err, "build apps control")
 	}
 
+	objs, err := newObjects("var/objs")
+	if err != nil {
+		return nil, errcode.Annotate(err, "create objects store")
+	}
+
 	kernel := &kernel{
 		settings:    back.settings,
 		appDomains:  back.appDomains,
 		appRegistry: appReg,
 		apps:        apps,
+		objects:     objs,
 	}
 	drive, err := newDrive(c, kernel)
 	if err != nil {
@@ -127,17 +132,11 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		return nil, errcode.Annotate(err, "create totp")
 	}
 
-	objs, err := newObjects("var/objs")
-	if err != nil {
-		return nil, errcode.Annotate(err, "create objects store")
-	}
-
 	return &server{
 		backend:     back,
 		drive:       drive,
 		appRegistry: appReg,
 		apps:        apps,
-		objects:     objs,
 
 		auth:          auth,
 		sudoSessions:  sudoSessions,
@@ -149,7 +148,7 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		tmpls:  aries.NewTemplates("_/tmpl", nil),
 		static: aries.NewStaticFiles("_/static"),
 
-		updateRequest: make(chan string),
+		updateSignal: make(chan bool),
 	}, nil
 }
 

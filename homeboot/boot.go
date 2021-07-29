@@ -138,7 +138,7 @@ func (b *boot) downloadCore(
 	}
 
 	d := NewOfficialDownloader(c, dock)
-	rel, err := d.DownloadRelease(&InstallConfig{
+	rel, err := d.DownloadRelease(&DownloadConfig{
 		Build:    drv.Build,
 		Channel:  drv.Channel,
 		CoreOnly: true,

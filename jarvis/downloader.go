@@ -16,11 +16,43 @@
 package jarvis
 
 import (
+	"io"
+
+	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/homedrv/homeboot"
 	"shanhu.io/misc/errcode"
 )
 
+func noBuildInManual(string) (*drvapi.Release, error) {
+	return nil, errcode.InvalidArgf("no build in manual mode")
+}
+
+func noOpenDockerInManual(_, _ string) (io.ReadCloser, error) {
+	return nil, errcode.InvalidArgf("no docker loading in manual mode")
+}
+
 func downloader(d *drive) (*homeboot.Downloader, error) {
+	manual, err := d.settings.Has(keyManualBuild)
+	if err != nil {
+		return nil, errcode.Annotate(err, "check manual build mode")
+	}
+
+	if manual {
+		src := &homeboot.DownloadSource{
+			Build:      noBuildInManual,
+			Channel:    noBuildInManual,
+			OpenDocker: noOpenDockerInManual,
+			OpenObject: func(name string) (io.ReadCloser, error) {
+				f, err := d.objects.open(name)
+				if err != nil {
+					return nil, err
+				}
+				return f, nil
+			},
+		}
+		return homeboot.NewDownloader(src, d.dock), nil
+	}
+
 	client, err := d.dialServer()
 	if err != nil {
 		return nil, errcode.Annotate(err, "dial server")

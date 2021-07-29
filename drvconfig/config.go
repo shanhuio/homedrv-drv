@@ -26,14 +26,23 @@ type Config struct {
 	// Pin to a particular build.
 	Build string `json:",omitempty"`
 
-	// Naming conventions. When this is null, using legacy naming.
-	Naming *Naming `json:",omitempty"`
-
 	// Subscribe to which release channel.
 	Channel string `json:",omitempty"`
 
-	IdentityPem      string `json:",omitempty"`
-	DockerSock       string `json:",omitempty"`
+	// Read init release from this file, and run in manual build mode.
+	// Manual build mode does not query the server for the latest updates.
+	ManualBuild string `json:",omitempty"`
+
+	// Naming conventions. When this is null, using legacy naming.
+	Naming *Naming `json:",omitempty"`
+
+	// Identity PEM key file.
+	IdentityPem string `json:",omitempty"`
+
+	// Path to docker unix domain socket.
+	DockerSock string `json:",omitempty"`
+
+	// Path to system docker unix domain socket.
 	SystemDockerSock string `json:",omitempty"`
 
 	// Running outside a docker. Useful for testing.

@@ -54,13 +54,15 @@ func clientMain() { clientCommands().Main() }
 
 func cmdUpdate(args []string) error {
 	flags := cmdFlags.New()
-	build := flags.String("build", "", "release to install")
 	sock := flags.String(
 		"sock", "jarvis.sock", "UDS where jarvis is listening",
 	)
+	stop := flags.Bool(
+		"stop", false, "stop the channel update cron job",
+	)
 	args = flags.ParseArgs(args)
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/update", *build, nil)
+	return c.Call("/api/update", !*stop, nil)
 }
 
 func cmdListOS(args []string) error {

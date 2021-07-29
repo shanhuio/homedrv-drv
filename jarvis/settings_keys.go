@@ -33,6 +33,7 @@ const (
 
 	keyBuild         = "build"
 	keyBuildUpdating = "build-updating"
+	keyManualBuild   = "manual-build"
 
 	keyNextcloud18Fixed = "nextcloud-18-fixed"
 	keyNextcloud19Fixed = "nextcloud-19-fixed"

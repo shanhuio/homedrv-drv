@@ -97,7 +97,7 @@ func runServer(addr, configFile string) error {
 		return errcode.Annotate(err, "update os")
 	}
 
-	go func(d *drive, updateRequest <-chan string) {
+	go func(d *drive, updateSignal <-chan bool) {
 		if err := maybeFinishUpdate(d); err != nil {
 			log.Println("update failed: ", err)
 			// It is important to proceed here, as the next update might be
@@ -105,23 +105,18 @@ func runServer(addr, configFile string) error {
 			// state, but jarvis is already on the latest.
 		}
 
-		c := &homeboot.InstallConfig{
-			Build:   d.config.Build,
-			Channel: d.config.Channel,
-			Naming:  d.config.Naming,
-		}
-		if err := maybeInstall(d, c); err != nil {
+		if err := maybeInstall(d); err != nil {
 			log.Println("install failed: ", err)
 		}
 
 		fixThings(d)
 
-		if !d.config.Bare {
-			bgUpdate(d, c, updateRequest) // This will never return.
-		} else {
+		if d.config.Bare {
 			log.Println("running in bare mode, no update in background")
+		} else if d.config.Channel != "" {
+			go cronUpdateOnChannel(d, updateSignal)
 		}
-	}(d, s.updateRequest)
+	}(d, s.updateSignal)
 
 	const sock = "jarvis.sock"
 	log.Printf("serve on %s and %s", sock, addr)

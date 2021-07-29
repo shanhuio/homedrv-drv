@@ -20,15 +20,15 @@ import (
 	drvcfg "shanhu.io/homedrv/drvconfig"
 )
 
-// InstallConfig is the install config. This is the configuration
+// DownloadConfig is the install config. This is the configuration
 // for downloading and installing.
-type InstallConfig struct {
+type DownloadConfig struct {
 	Release *drvapi.Release
 	Channel string
 	Build   string
 
 	Naming *drvcfg.Naming // Naming conventions.
 
-	// Install core only; only used in homeboot for bootstraping.
+	// Download the core only; only used in homeboot for bootstraping.
 	CoreOnly bool
 }

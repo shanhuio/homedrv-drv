@@ -27,67 +27,24 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
-var errAlreadyUpToDate = errors.New("already up to date")
-
-func queryUpdate(c *httputil.Client, ch, build, tags string, manual bool) (
-	*drvapi.Release, error,
-) {
-	req := &drvapi.UpdateQueryRequest{
-		Channel:      ch,
-		CurrentBuild: build,
-		Manual:       manual,
-		Tags:         tags,
+func pushManualUpdate(d *drive, rel *drvapi.Release) error {
+	if err := d.settings.Set(keyManualBuild, rel); err != nil {
+		return errcode.Annotate(err, "set to local build mode")
 	}
-	resp := new(drvapi.UpdateQueryResponse)
-	if err := c.Call("/pubapi/update/query", req, resp); err != nil {
-		return nil, err
-	}
-	if resp.AlreadyLatest {
-		return nil, errAlreadyUpToDate
-	}
-	return resp.Release, nil
+	go func() {
+		if err := updateDriveToManualBuild(d); err != nil {
+			log.Printf("push update failed: %q", err)
+		}
+	}()
+	return nil
 }
 
-func updateDrive(
-	d *drive, c *homeboot.InstallConfig, manual bool,
-) error {
-	tags := d.tags()
-
-	cur := new(drvapi.Release)
-	if err := d.settings.Get(keyBuild, cur); err != nil {
-		return errcode.Annotate(err, "fetch current build")
+func updateDriveToManualBuild(d *drive) error {
+	r := new(drvapi.Release)
+	if err := d.settings.Get(keyManualBuild, r); err != nil {
+		return errcode.Annotate(err, "read manual release")
 	}
-
-	client, err := d.dialServer()
-	if err != nil {
-		return errcode.Annotate(err, "dial server")
-	}
-	var toInstall *drvapi.Release
-	if c.Release != nil {
-		toInstall = c.Release
-	} else if c.Build != "" {
-		if cur.Name == c.Build {
-			return errAlreadyUpToDate
-		}
-		r, err := homeboot.FetchBuildRelease(client, c.Build)
-		if err != nil {
-			return errcode.Annotate(err, "fetch build release")
-		}
-		toInstall = r
-	} else if c.Channel != "" {
-		r, err := queryUpdate(client, c.Channel, cur.Name, tags, manual)
-		if err != nil {
-			if err == errAlreadyUpToDate {
-				return err
-			}
-			return errcode.Annotate(err, "query channel update")
-		}
-		toInstall = r
-	} else {
-		return errcode.Internalf("not sure how to update")
-	}
-
-	return updateDriveToRelease(d, toInstall) // not returning
+	return updateDriveToRelease(d, r)
 }
 
 func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
@@ -98,7 +55,7 @@ func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
 	if err != nil {
 		return errcode.Annotate(err, "init downloader")
 	}
-	config := &homeboot.InstallConfig{
+	config := &homeboot.DownloadConfig{
 		Release: rel,
 		Naming:  d.config.Naming,
 	}
@@ -124,25 +81,90 @@ func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
 	return errcode.Internalf("core updated but still returned")
 }
 
-func bgUpdate(d *drive, c *homeboot.InstallConfig, requests <-chan string) {
-	var tickerChan <-chan time.Time
-	if c.Channel != "" {
-		const interval = time.Minute * 10
-		ticker := time.NewTicker(interval)
-		defer ticker.Stop()
-		tickerChan = ticker.C
+var errAlreadyUpToDate = errors.New("already up to date")
+
+func queryUpdate(c *httputil.Client, ch, cur, tags string, manual bool) (
+	*drvapi.Release, error,
+) {
+	req := &drvapi.UpdateQueryRequest{
+		Channel:      ch,
+		CurrentBuild: cur,
+		Tags:         tags,
+		Manual:       manual,
+	}
+	resp := new(drvapi.UpdateQueryResponse)
+	if err := c.Call("/pubapi/update/query", req, resp); err != nil {
+		return nil, err
+	}
+	if resp.AlreadyLatest {
+		return nil, errAlreadyUpToDate
+	}
+	return resp.Release, nil
+}
+
+func updateDriveOnChannel(d *drive, ch string, manual bool) error {
+	tags := d.tags()
+
+	cur := new(drvapi.Release)
+	if err := d.settings.Get(keyBuild, cur); err != nil {
+		return errcode.Annotate(err, "fetch current build")
 	}
 
+	client, err := d.dialServer()
+	if err != nil {
+		return errcode.Annotate(err, "dial server")
+	}
+	r, err := queryUpdate(client, ch, cur.Name, tags, manual)
+	if err != nil {
+		if err == errAlreadyUpToDate {
+			return err
+		}
+		return errcode.Annotate(err, "query channel update")
+	}
+	return updateDriveToRelease(d, r)
+}
+
+func sleepOrSignal(d time.Duration, signal <-chan bool) bool {
+	t := time.NewTimer(d)
+	defer t.Stop()
+	select {
+	case <-t.C:
+		return true
+	case <-signal:
+		return false
+	}
+}
+
+func cronUpdateOnChannel(d *drive, signal <-chan bool) {
+	defer log.Println("cron update on channel exited")
+
+	// TODO(h8liu): add a stop signal, so this background update
+	// routine can be stopped gracefully.
+
+	ch := d.downloadConfig().Channel
+	if ch == "" {
+		log.Println("not running on a channel, quiting update cron")
+		return
+	}
+
+	var tickerChan <-chan time.Time
+
+	const interval = time.Minute * 10
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+	tickerChan = ticker.C
+
 	manual := false
-	for {
+	stop := false
+	for !stop {
 		for {
 			const errInterval = time.Minute * 5
-			if err := updateDrive(d, c, manual); err != nil {
+			if err := updateDriveOnChannel(d, ch, manual); err != nil {
 				if err == errAlreadyUpToDate {
 					break
 				}
 				log.Printf("update homedrive: %s", err)
-				time.Sleep(errInterval) // TODO(h8liu): exp-backoff
+				sleepOrSignal(errInterval, signal)
 				continue
 			}
 			break
@@ -151,11 +173,9 @@ func bgUpdate(d *drive, c *homeboot.InstallConfig, requests <-chan string) {
 		manual = false
 		select {
 		case <-tickerChan:
-		case build := <-requests:
-			if c.Channel == "" && build == "" {
-				log.Println("cannot update with no build specified")
-			} else {
-				c.Build = build
+		case b := <-signal:
+			if !b {
+				stop = true
 			}
 			manual = true
 		}
@@ -177,6 +197,9 @@ func maybeFinishUpdate(d *drive) error {
 }
 
 func finishUpdate(d *drive, r *drvapi.Release) error {
+	d.systemMu.Lock()
+	defer d.systemMu.Unlock()
+
 	dl, err := downloader(d)
 	if err != nil {
 		return errcode.Annotate(err, "init downloader")
@@ -192,7 +215,7 @@ func finishUpdate(d *drive, r *drvapi.Release) error {
 	r = refetched
 
 	// And also need to download again.
-	dlConfig := &homeboot.InstallConfig{
+	dlConfig := &homeboot.DownloadConfig{
 		Release: r,
 		Naming:  d.config.Naming,
 	}

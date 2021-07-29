@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drvapi"
-	"shanhu.io/homedrv/homeboot"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/jsonx"
 	"shanhu.io/pisces/settings"
@@ -136,7 +135,7 @@ func install(d *drive, r *drvapi.Release) error {
 	return nil
 }
 
-func maybeInstall(d *drive, c *homeboot.InstallConfig) error {
+func maybeInstall(d *drive) error {
 	installed, err := d.settings.Has(keyBuild)
 	if err != nil {
 		return errcode.Annotate(err, "check install")
@@ -144,8 +143,7 @@ func maybeInstall(d *drive, c *homeboot.InstallConfig) error {
 	if installed {
 		return nil
 	}
-
-	if c.Channel == "" && c.Build == "" {
+	if d.config.Build == "" && d.config.Channel == "" {
 		return errcode.InvalidArgf("install target not specified")
 	}
 
@@ -153,7 +151,7 @@ func maybeInstall(d *drive, c *homeboot.InstallConfig) error {
 	if err != nil {
 		return errcode.Annotate(err, "init downloader")
 	}
-	release, err := dl.DownloadRelease(c)
+	release, err := dl.DownloadRelease(d.downloadConfig())
 	if err != nil {
 		return errcode.Annotate(err, "download release")
 	}
