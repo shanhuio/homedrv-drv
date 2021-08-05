@@ -28,8 +28,8 @@ import (
 	"shanhu.io/homedrv/homeboot"
 	"shanhu.io/misc/errcode"
 
-	_ "github.com/lib/pq"           // for postgres
-	_ "github.com/mattn/go-sqlite3" // sqlite3 db driver
+	_ "github.com/lib/pq"  // for postgres
+	_ "modernc.org/sqlite" // sqlite db driver
 )
 
 // Main is the main entrance of jarvis server or client program.
