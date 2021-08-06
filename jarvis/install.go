@@ -86,12 +86,23 @@ func install(d *drive, r *drvapi.Release) error {
 
 	// TODO(h8liu): fetch owner and owner's ssh keys and merge them?
 
+	// Populate endpoint configs.
 	domain := epConfig.MainDomain
 	if domain == "" {
 		domain = fmt.Sprintf("%s.homedrv.com", d.name)
 	}
 	if err := d.settings.Set(keyMainDomain, domain); err != nil {
 		return errcode.Annotate(err, "save main domain")
+	}
+	if doms := epConfig.NextcloudDomains; len(doms) > 0 {
+		if err := d.settings.Set(keyNextcloudDomains, doms); err != nil {
+			return errcode.Annotate(err, "save nextcloud domains")
+		}
+	}
+	if f := epConfig.FabricsServer; f != "" {
+		if err := d.settings.Set(keyFabricsServerDomain, f); err != nil {
+			return errcode.Annotate(err, "save fabrics server domain")
+		}
 	}
 
 	d.appRegistry.setRelease(r)
@@ -105,13 +116,6 @@ func install(d *drive, r *drvapi.Release) error {
 	}
 
 	log.Println("install doorway")
-	if epConfig.FabricsServer != "" {
-		if err := d.settings.Set(
-			keyFabricsServerDomain, epConfig.FabricsServer,
-		); err != nil {
-			return errcode.Annotate(err, "save fabrics server domain")
-		}
-	}
 
 	doorwayConfig := &doorwayConfig{
 		domain:        domain,
