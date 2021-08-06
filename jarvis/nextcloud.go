@@ -89,6 +89,7 @@ func (n *nextcloud) fixVersion(major int) error {
 	// For version 21, this needs to be executed every time a new
 	// docker is installed.
 	if major == 21 {
+		cont := n.cont()
 		if err := nextcloudAptUpdate(cont, io.Discard); err != nil {
 			return errcode.Annotate(err, "apt update for nc21")
 		}
