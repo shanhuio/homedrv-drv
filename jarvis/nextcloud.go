@@ -86,6 +86,18 @@ func (n *nextcloud) fix() error {
 }
 
 func (n *nextcloud) fixVersion(major int) error {
+	// For version 21, this needs to be executed every time a new
+	// docker is installed.
+	if major == 21 {
+		if err := nextcloudAptUpdate(cont, io.Discard); err != nil {
+			return errcode.Annotate(err, "apt update for nc21")
+		}
+		const pkg = "libmagickcore-6.q16-6-extra"
+		if err := nextcloudAptInstall(cont, pkg, io.Discard); err != nil {
+			return errcode.Annotate(err, "install svg support")
+		}
+	}
+
 	k := nextcloudFixKey(major)
 	if k == "" {
 		return nil
@@ -110,16 +122,6 @@ func (n *nextcloud) fixVersion(major int) error {
 			cont, []string{cmd, "-n"},
 		); err != nil {
 			return errcode.Annotate(err, cmd)
-		}
-	}
-
-	if major == 21 {
-		if err := nextcloudAptUpdate(cont, io.Discard); err != nil {
-			return errcode.Annotate(err, "apt update for nc21")
-		}
-		const pkg = "libmagickcore-6.q16-6-extra"
-		if err := nextcloudAptInstall(cont, pkg, io.Discard); err != nil {
-			return errcode.Annotate(err, "install svg support")
 		}
 	}
 
