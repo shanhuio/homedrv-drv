@@ -48,3 +48,12 @@ func (s *staticIdentity) Load(ctx context.Context) ([]byte, error) {
 	copy(cp, s.pri)
 	return cp, nil
 }
+
+// NewFileIdentity loads a private key from a file.
+func NewFileIdentity(f string) (Identity, error) {
+	id, err := newFileIdentity(f)
+	if err != nil {
+		return nil, err
+	}
+	return id, nil
+}
