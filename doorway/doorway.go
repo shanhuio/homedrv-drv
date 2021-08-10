@@ -99,7 +99,11 @@ func Serve(ctx C, config *Config) error {
 }
 
 func serve(ctx C, config *internalConfig) error {
-	server := newServer(config.server)
+	server, err := newServer(config.server)
+	if err != nil {
+		return errcode.Annotate(err, "make server")
+	}
+
 	lis, err := listen(ctx, config.listen)
 	if err != nil {
 		return errcode.Annotate(err, "listen")

@@ -47,10 +47,22 @@ type server struct {
 	ipWhitelist []*net.IPNet
 }
 
-func newServer(config *ServerConfig) *server {
+func newServer(config *ServerConfig) (*server, error) {
+	var ipWhitelist []*net.IPNet
+	for _, w := range config.IPWhiteList {
+		_, n, err := net.ParseCIDR(w)
+		if err != nil {
+			return nil, errcode.Annotatef(
+				err, "invalid whitelist entry: %q", w,
+			)
+		}
+		ipWhitelist = append(ipWhitelist, n)
+	}
+
 	s := &server{
 		hostMap:       newMemHostMap(config.HostMap),
 		autoCertCache: config.AutoCertCache,
+		ipWhitelist:   ipWhitelist,
 	}
 
 	home := aries.NewRouter()
@@ -62,7 +74,7 @@ func newServer(config *ServerConfig) *server {
 		Director:       s.director,
 		ModifyResponse: setStrictTransportSecurity,
 	}
-	return s
+	return s, nil
 }
 
 func (s *server) checkIP(c *aries.C) error {

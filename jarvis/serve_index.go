@@ -29,7 +29,7 @@ func serveLogin(s *server, c *aries.C) error {
 	}
 	pass := c.Req.PostFormValue("password")
 	const user = rootUser
-	remoteIP := aries.RemoteIP(c).String()
+	remoteIP := aries.RemoteIPString(c)
 	if err := s.users.checkPassword(user, pass); err != nil {
 		if errcode.IsUnauthorized(err) {
 			if err != errTooManyFailures {
@@ -100,7 +100,7 @@ func serveCheckTOTP(s *server, c *aries.C) error {
 	}
 
 	totp := c.Req.PostFormValue("totp")
-	remoteIP := aries.RemoteIP(c).String()
+	remoteIP := aries.RemoteIPString(c)
 
 	ok, err := totpValidate(totp, totpInfo.Secret)
 	if !ok || err != nil {
