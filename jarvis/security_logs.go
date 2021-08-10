@@ -52,7 +52,9 @@ func (b *securityLogs) recordLogin(user, from, twoFactor string) error {
 	return b.add(entry)
 }
 
-func (b *securityLogs) recordFailedLogin(user, from, twoFactor string) error {
+func (b *securityLogs) recordFailedLogin(
+	user, from, twoFactor string,
+) error {
 	msg := fmt.Sprintf("failed login from %q", from)
 	entry := newLogEntry(user, msg)
 	if err := entry.setJSONValue(logTypeLoginAttempt, &loginAttempt{

@@ -29,7 +29,7 @@ func serveLogin(s *server, c *aries.C) error {
 	}
 	pass := c.Req.PostFormValue("password")
 	const user = rootUser
-	remoteIP := aries.RemoteIP(c)
+	remoteIP := aries.RemoteIP(c).String()
 	if err := s.users.checkPassword(user, pass); err != nil {
 		if errcode.IsUnauthorized(err) {
 			if err != errTooManyFailures {
@@ -57,7 +57,9 @@ func serveLogin(s *server, c *aries.C) error {
 	}
 	if totpInfo == nil {
 		// TOTP not enabled. Directly set login cookie and redirect to /.
-		if err := s.securityLogs.recordLogin(user, remoteIP, ""); err != nil {
+		if err := s.securityLogs.recordLogin(
+			user, remoteIP, "",
+		); err != nil {
 			log.Println(err)
 		}
 		s.auth.SetupCookie(c, user)
@@ -98,7 +100,7 @@ func serveCheckTOTP(s *server, c *aries.C) error {
 	}
 
 	totp := c.Req.PostFormValue("totp")
-	remoteIP := aries.RemoteIP(c)
+	remoteIP := aries.RemoteIP(c).String()
 
 	ok, err := totpValidate(totp, totpInfo.Secret)
 	if !ok || err != nil {
@@ -118,7 +120,9 @@ func serveCheckTOTP(s *server, c *aries.C) error {
 		return nil
 	}
 
-	if err := s.securityLogs.recordLogin(user, remoteIP, "totp"); err != nil {
+	if err := s.securityLogs.recordLogin(
+		user, remoteIP, "totp",
+	); err != nil {
 		log.Println(err)
 	}
 

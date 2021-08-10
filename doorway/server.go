@@ -19,6 +19,7 @@ import (
 	"context"
 	"crypto/tls"
 	"log"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"strings"
@@ -33,6 +34,8 @@ import (
 type ServerConfig struct {
 	HostMap       map[string]string
 	AutoCertCache autocert.Cache
+
+	IPWhiteList []string
 }
 
 type server struct {
@@ -40,6 +43,8 @@ type server struct {
 	hostMap       hostMap
 	proxy         *httputil.ReverseProxy
 	autoCertCache autocert.Cache
+
+	ipWhitelist []*net.IPNet
 }
 
 func newServer(config *ServerConfig) *server {
@@ -60,12 +65,32 @@ func newServer(config *ServerConfig) *server {
 	return s
 }
 
+func (s *server) checkIP(c *aries.C) error {
+	if len(s.ipWhitelist) == 0 {
+		return nil
+	}
+	ip := aries.RemoteIP(c)
+	if ip == nil {
+		return errcode.InvalidArgf("cannot determine IP address")
+	}
+	for _, n := range s.ipWhitelist {
+		if n.Contains(ip) {
+			return nil
+		}
+	}
+	return errcode.Unauthorizedf("not authorized")
+}
+
 func (s *server) Serve(c *aries.C) error {
 	host := strings.TrimSuffix(c.Req.Host, ".")
 
 	entry := s.hostMap.mapHost(host)
 	if entry == nil {
 		return aries.NotFound
+	}
+
+	if err := s.checkIP(c); err != nil {
+		return err
 	}
 
 	switch entry.typ {
