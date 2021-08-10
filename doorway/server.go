@@ -35,7 +35,7 @@ type ServerConfig struct {
 	HostMap       map[string]string
 	AutoCertCache autocert.Cache
 
-	IPWhiteList []string
+	IPWhitelist []string
 }
 
 type server struct {
@@ -49,7 +49,7 @@ type server struct {
 
 func newServer(config *ServerConfig) (*server, error) {
 	var ipWhitelist []*net.IPNet
-	for _, w := range config.IPWhiteList {
+	for _, w := range config.IPWhitelist {
 		_, n, err := net.ParseCIDR(w)
 		if err != nil {
 			return nil, errcode.Annotatef(
