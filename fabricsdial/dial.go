@@ -30,9 +30,9 @@ import (
 
 // Dialer dials to a HomeDrive Fabrics service.
 type Dialer struct {
-	Host string
-	User string
+	Host    string
 
+	User    string
 	Key     []byte
 	KeyFile string
 
@@ -44,25 +44,30 @@ type Dialer struct {
 }
 
 func (d *Dialer) dialOption() (*sniproxy.DialOption, error) {
-	cep := &creds.Endpoint{
-		Server: (&url.URL{
-			Scheme: "https",
-			Host:   d.Host,
-		}).String(),
-		User:        d.User,
-		Key:         d.Key,
-		PemFile:     d.KeyFile,
-		Homeless:    true,
-		NoTTY:       true,
-		NoPermCheck: true,
+	tokenSrc := d.TokenSource
+	if tokenSrc == nil {
+		cep := &creds.Endpoint{
+			Server: (&url.URL{
+				Scheme: "https",
+				Host:   d.Host,
+			}).String(),
+			User:        d.User,
+			Key:         d.Key,
+			PemFile:     d.KeyFile,
+			Homeless:    true,
+			NoTTY:       true,
+			NoPermCheck: true,
+		}
+		if d.Transport != nil {
+			cep.Transport = d.Transport
+		}
+		login, err := creds.NewLogin(cep)
+		if err != nil {
+			return nil, errcode.Annotate(err, "create login")
+		}
+		tokenSrc = login.TokenSource()
 	}
-	if d.Transport != nil {
-		cep.Transport = d.Transport
-	}
-	login, err := creds.NewLogin(cep)
-	if err != nil {
-		return nil, errcode.Annotate(err, "create login")
-	}
+
 	tunnOptions := d.TunnelOptions
 	if tunnOptions == nil {
 		tunnOptions = &sniproxy.Options{
@@ -71,7 +76,7 @@ func (d *Dialer) dialOption() (*sniproxy.DialOption, error) {
 		}
 	}
 	return &sniproxy.DialOption{
-		TokenSource:   login.TokenSource(),
+		TokenSource:   tokenSrc,
 		TunnelOptions: tunnOptions,
 	}, nil
 }
