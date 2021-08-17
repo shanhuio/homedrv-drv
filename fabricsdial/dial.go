@@ -34,8 +34,9 @@ type Dialer struct {
 	Host string
 	User string
 
-	Key     []byte
-	KeyFile string
+	Key         []byte
+	KeyFile     string
+	TokenSource httputil.TokenSource
 
 	// Guest is the callback function for receiving the guest domain. When
 	// specified, the dialer dials in as guest, and callbacks with the guest
@@ -94,7 +95,7 @@ func (d *Dialer) dialOption() (*sniproxy.DialOption, error) {
 		}
 	}
 	return &sniproxy.DialOption{
-		Login:         login,
+		TokenSource:   login.TokenSource(),
 		TunnelOptions: tunnOptions,
 	}, nil
 }
