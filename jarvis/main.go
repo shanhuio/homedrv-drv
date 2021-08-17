@@ -19,14 +19,13 @@ import (
 	"flag"
 	"log"
 	"net"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"shanhu.io/aries"
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/homedrv/homeboot"
 	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/osutil"
 
 	_ "github.com/lib/pq"  // for postgres
 	_ "modernc.org/sqlite" // sqlite db driver
@@ -34,11 +33,7 @@ import (
 
 // Main is the main entrance of jarvis server or client program.
 func Main() {
-	if len(os.Args) == 0 {
-		log.Fatal("weird, does not have os args")
-	}
-	cmd := os.Args[0]
-	if filepath.Base(cmd) == "jarvisd" {
+	if osutil.Arg0Base() == "jarvisd" {
 		serverMain()
 		return
 	}
