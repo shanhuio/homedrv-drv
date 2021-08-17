@@ -23,7 +23,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	"shanhu.io/aries/creds"
-	fabguest "shanhu.io/homedrv/fabricsguest"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/virgo/sniproxy"
@@ -34,14 +33,10 @@ type Dialer struct {
 	Host string
 	User string
 
-	Key         []byte
-	KeyFile     string
-	TokenSource httputil.TokenSource
+	Key     []byte
+	KeyFile string
 
-	// Guest is the callback function for receiving the guest domain. When
-	// specified, the dialer dials in as guest, and callbacks with the guest
-	// domain.
-	Guest func(domain string) error
+	TokenSource httputil.TokenSource
 
 	TunnelOptions *sniproxy.Options
 
@@ -49,25 +44,6 @@ type Dialer struct {
 }
 
 func (d *Dialer) dialOption() (*sniproxy.DialOption, error) {
-	if d.Guest != nil {
-		c := &httputil.Client{
-			Server: &url.URL{
-				Scheme: "https",
-				Host:   d.Host,
-			},
-			Transport: d.Transport,
-		}
-		info := &fabguest.Info{User: d.User}
-		tok := new(fabguest.Token)
-		if err := c.Call("/guest-token", info, tok); err != nil {
-			return nil, errcode.Annotate(err, "fetch token")
-		}
-		if err := d.Guest(tok.Domain); err != nil {
-			return nil, err
-		}
-		return &sniproxy.DialOption{GuestToken: tok.Token}, nil
-	}
-
 	cep := &creds.Endpoint{
 		Server: (&url.URL{
 			Scheme: "https",
