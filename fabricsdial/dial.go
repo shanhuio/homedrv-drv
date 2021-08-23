@@ -30,7 +30,7 @@ import (
 
 // Dialer dials to a HomeDrive Fabrics service.
 type Dialer struct {
-	Host    string
+	Host string
 
 	User    string
 	Key     []byte

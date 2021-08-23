@@ -40,9 +40,11 @@ type Config struct {
 	// Local address to listen on.
 	LocalAddr string
 
-	Fabrics         *FabricsConfig  // Config for dialing fabrics.
-	FabricsIdentity Identity        // Identity for dialing fabrics.
-	FabricsDialer   *fabdial.Dialer // Alternative fabrics dialer.
+	Fabrics         *FabricsConfig // Config for dialing fabrics.
+	FabricsIdentity Identity       // Identity for dialing fabrics.
+
+	// Alternative fabrics dialer.
+	FabricsDialer func(ctx context.Context) (*fabdial.Dialer, error)
 
 	// TLSConfig is for the TLS config for serving the service via https.
 	// If not specified, autocert from Letsencrypt will be used.
@@ -69,8 +71,8 @@ func makeInternalConfig(config *Config) *internalConfig {
 	}
 	if config.FabricsDialer != nil {
 		lisConfig.fabrics = &fabricsConfig{
-			dialer: config.FabricsDialer,
-			counters:     counting.NewConnCounters(),
+			dialerFunc: config.FabricsDialer,
+			counters:   counting.NewConnCounters(),
 		}
 	} else if config.Fabrics != nil {
 		lisConfig.fabrics = &fabricsConfig{
