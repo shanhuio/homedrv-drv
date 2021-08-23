@@ -103,7 +103,7 @@ func listenFabrics(ctx C, c *fabricsClient) (net.Listener, error) {
 			}
 			return &fabricsListener{Endpoint: ep}, nil
 		},
-		func(err error) { log.Println("fabrics connection:", err) },
+		func(err error) { log.Println("fabrics connection: ", err) },
 	)
 	if err != nil {
 		return nil, errcode.Annotatef(err, "dial fabrics")

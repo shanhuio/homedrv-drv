@@ -70,6 +70,7 @@ func makeInternalConfig(config *Config) *internalConfig {
 	if config.FabricsDialer != nil {
 		lisConfig.fabrics = &fabricsConfig{
 			dialer: config.FabricsDialer,
+			counters:     counting.NewConnCounters(),
 		}
 	} else if config.Fabrics != nil {
 		lisConfig.fabrics = &fabricsConfig{
