@@ -24,50 +24,56 @@ import (
 	"github.com/gorilla/websocket"
 	"shanhu.io/aries/creds"
 	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/httputil"
 	"shanhu.io/virgo/sniproxy"
 )
 
 // Dialer dials to a HomeDrive Fabrics service.
 type Dialer struct {
-	Host string
+	HostTokenFunc func() (string, string, error)
 
+	Host    string
 	User    string
 	Key     []byte
 	KeyFile string
-
-	TokenSource httputil.TokenSource
 
 	TunnelOptions *sniproxy.Options
 
 	Transport http.RoundTripper
 }
 
-func (d *Dialer) dialOption() (*sniproxy.DialOption, error) {
-	tokenSrc := d.TokenSource
-	if tokenSrc == nil {
-		cep := &creds.Endpoint{
-			Server: (&url.URL{
-				Scheme: "https",
-				Host:   d.Host,
-			}).String(),
-			User:        d.User,
-			Key:         d.Key,
-			PemFile:     d.KeyFile,
-			Homeless:    true,
-			NoTTY:       true,
-			NoPermCheck: true,
-		}
-		if d.Transport != nil {
-			cep.Transport = d.Transport
-		}
-		login, err := creds.NewLogin(cep)
-		if err != nil {
-			return nil, errcode.Annotate(err, "create login")
-		}
-		tokenSrc = login.TokenSource()
+func (d *Dialer) hostToken() (string, string, error) {
+	if d.HostTokenFunc != nil {
+		return d.HostTokenFunc()
 	}
 
+	host := d.Host
+	cep := &creds.Endpoint{
+		Server: (&url.URL{
+			Scheme: "https",
+			Host:   host,
+		}).String(),
+		User:        d.User,
+		Key:         d.Key,
+		PemFile:     d.KeyFile,
+		Homeless:    true,
+		NoTTY:       true,
+		NoPermCheck: true,
+	}
+	if d.Transport != nil {
+		cep.Transport = d.Transport
+	}
+	login, err := creds.NewLogin(cep)
+	if err != nil {
+		return "", "", errcode.Annotate(err, "create login")
+	}
+	token, err := login.Token()
+	if err != nil {
+		return "", "", errcode.Annotate(err, "login")
+	}
+	return host, token, nil
+}
+
+func (d *Dialer) dialOption(tok string) (*sniproxy.DialOption, error) {
 	tunnOptions := d.TunnelOptions
 	if tunnOptions == nil {
 		tunnOptions = &sniproxy.Options{
@@ -76,7 +82,7 @@ func (d *Dialer) dialOption() (*sniproxy.DialOption, error) {
 		}
 	}
 	return &sniproxy.DialOption{
-		TokenSource:   tokenSrc,
+		Token:         tok,
 		TunnelOptions: tunnOptions,
 	}, nil
 }
@@ -84,14 +90,19 @@ func (d *Dialer) dialOption() (*sniproxy.DialOption, error) {
 // Dial connects to a HomeDrive Fabrics service, and returns
 // an SNI-proxy endpoint.
 func (d *Dialer) Dial(ctx context.Context) (*sniproxy.Endpoint, error) {
-	opt, err := d.dialOption()
+	host, tok, err := d.hostToken()
 	if err != nil {
-		return nil, err
+		return nil, errcode.Annotate(err, "pick server")
+	}
+
+	opt, err := d.dialOption(tok)
+	if err != nil {
+		return nil, errcode.Annotate(err, "prepare options")
 	}
 
 	proxyURL := &url.URL{
 		Scheme: "wss",
-		Host:   d.Host,
+		Host:   host,
 		Path:   "/endpoint",
 	}
 

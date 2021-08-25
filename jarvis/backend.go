@@ -109,7 +109,7 @@ func backendInit(b *backend) error {
 	}
 
 	// TODO(h8liu): shorten this, and implement rotation.
-	const tenYears = 3560 * 24 * time.Hour
+	const tenYears = 10 * 356 * 24 * time.Hour
 	if _, err := b.identity.Init(&identity.CoreConfig{
 		Keys: []*identity.KeyConfig{{
 			NotValidAfter: time.Now().Add(tenYears).Unix(),
