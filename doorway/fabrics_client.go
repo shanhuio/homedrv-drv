@@ -16,7 +16,6 @@
 package doorway
 
 import (
-	"context"
 	"log"
 	"net"
 	"net/http"
@@ -46,7 +45,7 @@ func (c *FabricsConfig) host() string {
 type fabricsConfig struct {
 	// Explicit dialer creater. Will use this dialer instead of the User:Host
 	// when this is explicitly specified.
-	dialerFunc func(ctx context.Context) (*fabdial.Dialer, error)
+	dialer *fabdial.Dialer
 
 	*FabricsConfig
 	identity Identity
@@ -68,8 +67,8 @@ func newFabricsClient(config *fabricsConfig) *fabricsClient {
 
 func (f *fabricsClient) dialer(ctx C) (*fabdial.Dialer, error) {
 	config := f.config
-	if f := config.dialerFunc; f != nil {
-		return f(ctx)
+	if config.dialer != nil {
+		return config.dialer, nil
 	}
 
 	key, err := f.config.identity.Load(ctx)

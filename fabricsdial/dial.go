@@ -29,7 +29,7 @@ import (
 
 // Dialer dials to a HomeDrive Fabrics service.
 type Dialer struct {
-	HostTokenFunc func() (string, string, error)
+	HostTokenFunc func(ctx context.Context) (string, string, error)
 
 	Host    string
 	User    string
@@ -41,9 +41,9 @@ type Dialer struct {
 	Transport http.RoundTripper
 }
 
-func (d *Dialer) hostToken() (string, string, error) {
+func (d *Dialer) hostToken(ctx context.Context) (string, string, error) {
 	if d.HostTokenFunc != nil {
-		return d.HostTokenFunc()
+		return d.HostTokenFunc(ctx)
 	}
 
 	host := d.Host
@@ -90,7 +90,7 @@ func (d *Dialer) dialOption(tok string) (*sniproxy.DialOption, error) {
 // Dial connects to a HomeDrive Fabrics service, and returns
 // an SNI-proxy endpoint.
 func (d *Dialer) Dial(ctx context.Context) (*sniproxy.Endpoint, error) {
-	host, tok, err := d.hostToken()
+	host, tok, err := d.hostToken(ctx)
 	if err != nil {
 		return nil, errcode.Annotate(err, "pick server")
 	}
