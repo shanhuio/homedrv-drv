@@ -162,12 +162,6 @@ func (s *server) hostPolicy(_ context.Context, host string) error {
 	return nil
 }
 
-// HostMapRequest is the request for host map editing.
-type HostMapRequest struct {
-	From string
-	To   string
-}
-
 func (s *server) autoTLSConfig() *tls.Config {
 	autoCert := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
