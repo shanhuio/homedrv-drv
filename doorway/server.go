@@ -34,17 +34,25 @@ import (
 type ServerConfig struct {
 	HostMap       map[string]string
 	AutoCertCache autocert.Cache
+	Home          aries.Service
 
 	IPWhitelist []string
 }
 
 type server struct {
-	home          *aries.Router
+	home          aries.Service
 	hostMap       hostMap
 	proxy         *httputil.ReverseProxy
 	autoCertCache autocert.Cache
 
 	ipWhitelist []*net.IPNet
+}
+
+func makeDefaultHome() aries.Service {
+	r := aries.NewRouter()
+	r.Index(aries.StringFunc("hi"))
+	r.File("health", aries.StringFunc("ok"))
+	return r
 }
 
 func newServer(config *ServerConfig) (*server, error) {
@@ -65,10 +73,11 @@ func newServer(config *ServerConfig) (*server, error) {
 		ipWhitelist:   ipWhitelist,
 	}
 
-	home := aries.NewRouter()
-	home.Index(aries.StringFunc("hi"))
-	home.File("health", aries.StringFunc("ok"))
-	s.home = home
+	if config.Home == nil {
+		s.home = makeDefaultHome()
+	} else {
+		s.home = config.Home
+	}
 
 	s.proxy = &httputil.ReverseProxy{
 		Director:       s.director,
