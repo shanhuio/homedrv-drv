@@ -23,9 +23,9 @@ import (
 )
 
 type tunnelListener struct {
-	tcp       net.Listener
-	tunnel    net.Listener
-	ch        chan net.Conn
+	tcp       *tagListener
+	tunnel    *tagListener
+	ch        chan *tagConn
 	errCh     chan error
 	closed    chan struct{}
 	closeOnce sync.Once
@@ -33,6 +33,14 @@ type tunnelListener struct {
 }
 
 func (lis *tunnelListener) Accept() (net.Conn, error) {
+	conn, err := lis.acceptTag()
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
+}
+
+func (lis *tunnelListener) acceptTag() (*tagConn, error) {
 	select {
 	case c := <-lis.ch:
 		return c, nil
@@ -43,10 +51,10 @@ func (lis *tunnelListener) Accept() (net.Conn, error) {
 	}
 }
 
-func (lis *tunnelListener) bg(l net.Listener) {
+func (lis *tunnelListener) bg(l *tagListener) {
 	defer lis.wg.Done()
 	for {
-		conn, err := l.Accept()
+		conn, err := l.acceptTag()
 		if err != nil {
 			select {
 			case <-lis.closed:
@@ -97,11 +105,11 @@ type tunnelAddr struct{ addr string }
 func (a *tunnelAddr) Network() string { return "tcptunn" }
 func (a *tunnelAddr) String() string  { return a.addr }
 
-func newTunnelListener(tcp, tunnel net.Listener) *tunnelListener {
+func newTunnelListener(tcp, tunnel *tagListener) *tunnelListener {
 	lis := &tunnelListener{
 		tcp:    tcp,
 		tunnel: tunnel,
-		ch:     make(chan net.Conn),
+		ch:     make(chan *tagConn),
 		errCh:  make(chan error),
 		closed: make(chan struct{}),
 	}

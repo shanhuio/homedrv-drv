@@ -41,9 +41,9 @@ type listenConfig struct {
 	fabrics *fabricsConfig
 }
 
-func listenLocal(c *localListenConfig) (net.Listener, error) {
+func listenLocal(c *localListenConfig) (*tagListener, error) {
 	if c.listener != nil {
-		return c.listener, nil
+		return newTagListener(c.listener, tagTCP), nil
 	}
 	if c.addr == "" {
 		return nil, errcode.InvalidArgf("listen address missing")
@@ -56,7 +56,7 @@ func listenLocal(c *localListenConfig) (net.Listener, error) {
 	return newTagListener(lis, tagTCP), nil
 }
 
-func listen(ctx C, c *listenConfig) (net.Listener, error) {
+func listen(ctx C, c *listenConfig) (tagConnListener, error) {
 	if c.local == nil && c.fabrics == nil {
 		return nil, errcode.InvalidArgf(
 			"must listen either at local or via fabrics",
@@ -64,12 +64,20 @@ func listen(ctx C, c *listenConfig) (net.Listener, error) {
 	}
 
 	if c.fabrics == nil { // no fabrics, just listen local
-		return listenLocal(c.local)
+		lis, err := listenLocal(c.local)
+		if err != nil {
+			return nil, err
+		}
+		return lis, nil
 	}
 
 	fab := newFabricsClient(c.fabrics)
 	if c.local == nil {
-		return listenFabrics(ctx, fab)
+		lis, err := listenFabrics(ctx, fab)
+		if err != nil {
+			return nil, err
+		}
+		return lis, nil
 	}
 
 	// Dual listener.

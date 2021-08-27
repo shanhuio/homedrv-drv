@@ -89,7 +89,7 @@ func (f *fabricsClient) dialer(ctx C) (*fabdial.Dialer, error) {
 	return dialer, nil
 }
 
-func listenFabrics(ctx C, c *fabricsClient) (net.Listener, error) {
+func listenFabrics(ctx C, c *fabricsClient) (*tagListener, error) {
 	d, err := c.dialer(ctx)
 	if err != nil {
 		return nil, err

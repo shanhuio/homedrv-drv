@@ -24,6 +24,11 @@ const (
 	tagFabrics = "fabrics"
 )
 
+type tagConnListener interface {
+	net.Listener
+	acceptTag() (*tagConn, error)
+}
+
 type tagListener struct {
 	net.Listener
 	tag string
@@ -37,6 +42,14 @@ func newTagListener(lis net.Listener, tag string) *tagListener {
 }
 
 func (l *tagListener) Accept() (net.Conn, error) {
+	conn, err := l.acceptTag()
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
+}
+
+func (l *tagListener) acceptTag() (*tagConn, error) {
 	conn, err := l.Listener.Accept()
 	if err != nil {
 		return nil, err
