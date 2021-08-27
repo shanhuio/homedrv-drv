@@ -138,7 +138,7 @@ func (s *server) director(req *http.Request) {
 	// swap the scheme to http
 	req.Header.Set("X-Forwarded-Proto", "https")
 
-	host := req.Host
+	host := strings.TrimSuffix(req.Host, ".")
 
 	mapped := hostMapToProxy(s.hostMap, host)
 	if mapped == "" {
