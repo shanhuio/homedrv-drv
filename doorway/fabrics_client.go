@@ -107,5 +107,6 @@ func listenFabrics(ctx C, c *fabricsClient) (net.Listener, error) {
 	if err != nil {
 		return nil, errcode.Annotatef(err, "dial fabrics")
 	}
-	return counting.WrapListener(lis, c.config.counters), nil
+	wrap := counting.WrapListener(lis, c.config.counters)
+	return newTagListener(wrap, tagFabrics), nil
 }

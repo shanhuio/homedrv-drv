@@ -48,11 +48,12 @@ func listenLocal(c *localListenConfig) (net.Listener, error) {
 	if c.addr == "" {
 		return nil, errcode.InvalidArgf("listen address missing")
 	}
-	l, err := net.Listen("tcp", c.addr)
+	tcp, err := net.Listen("tcp", c.addr)
 	if err != nil {
 		return nil, errcode.Annotate(err, "listen local")
 	}
-	return counting.WrapListener(l, c.counters), nil
+	lis := counting.WrapListener(tcp, c.counters)
+	return newTagListener(lis, tagTCP), nil
 }
 
 func listen(ctx C, c *listenConfig) (net.Listener, error) {
