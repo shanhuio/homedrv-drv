@@ -19,6 +19,7 @@ import (
 	"context"
 	"crypto/tls"
 	"log"
+	"net"
 	"net/http"
 
 	"shanhu.io/aries"
@@ -31,8 +32,12 @@ import (
 
 // Config is the config of a doorway.
 type Config struct {
-	// Server is the config for the server part.
+	// Server is the config for the http server.
+	// This also includes the reverse proxy.
 	Server *ServerConfig
+
+	// TLSProxy is the configuration for the TLS proxy.
+	TLSProxy *TLSProxyConfig
 
 	// HTTPServer is the config for the http server part.
 	HTTPServer *HTTPServerConfig
@@ -56,6 +61,7 @@ type Config struct {
 
 type internalConfig struct {
 	server     *ServerConfig
+	tlsProxy   *TLSProxyConfig
 	listen     *listenConfig
 	listenDone func()
 	tlsConfig  *tls.Config
@@ -111,7 +117,12 @@ func serve(ctx C, config *internalConfig) error {
 	if err != nil {
 		return errcode.Annotate(err, "listen")
 	}
-	defer lis.Close()
+
+	var httpsLis net.Listener = lis
+	if config.tlsProxy != nil {
+		httpsLis = newTLSProxy(lis, config.tlsProxy)
+	}
+	defer httpsLis.Close()
 
 	if config.listenDone != nil {
 		config.listenDone()
@@ -125,7 +136,7 @@ func serve(ctx C, config *internalConfig) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	log.Printf("starts https on %q", lisAddr(lis))
+	log.Printf("starts https on %q", lisAddr(httpsLis))
 	https := &http.Server{
 		TLSConfig: tlsConfig,
 		Handler:   aries.Serve(server),
@@ -135,7 +146,8 @@ func serve(ctx C, config *internalConfig) error {
 		https.Close()
 	}()
 
-	if err := https.ServeTLS(netutil.WrapKeepAlive(lis), "", ""); err != nil {
+	keepAlive := netutil.WrapKeepAlive(httpsLis)
+	if err := https.ServeTLS(keepAlive, "", ""); err != nil {
 		if sniproxy.IsClosedConnError(err) {
 			return nil
 		}
