@@ -90,6 +90,7 @@ func makeInternalConfig(config *Config) *internalConfig {
 
 	return &internalConfig{
 		server:     config.Server,
+		tlsProxy:   config.TLSProxy,
 		listen:     lisConfig,
 		tlsConfig:  config.TLSConfig,
 		listenDone: config.ListenDone,
