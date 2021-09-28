@@ -17,6 +17,7 @@ package doorway
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"sync"
 	"time"
@@ -45,8 +46,15 @@ func newCertDelayer(f getCertFunc) *certDelayer {
 	}
 }
 
-func (d *certDelayer) delay(k string, expire time.Time) {
+func (d *certDelayer) delay(cert *x509.Certificate) {
 	now := time.Now()
+	if cert.NotBefore.Before(now.Add(-2 * time.Hour)) {
+		// cert valid start time is more than 2 hours ago.
+		// this is not likely a new certificate.
+		return
+	}
+
+	k := fmt.Sprintf("%x", cert.SerialNumber)
 
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -57,7 +65,7 @@ func (d *certDelayer) delay(k string, expire time.Time) {
 		time.Sleep(delay)
 		d.certs[k] = &certTimeEntry{
 			firstSeen: now,
-			expire:    expire,
+			expire:    cert.NotAfter,
 		}
 	} else if now.Before(entry.firstSeen.Add(3 * time.Second)) {
 		time.Sleep(delay)
@@ -85,8 +93,7 @@ func (d *certDelayer) getCertificate(hello *tls.ClientHelloInfo) (
 		return cert, err
 	}
 	if cert.Leaf != nil {
-		k := fmt.Sprintf("%x", cert.Leaf.SerialNumber)
-		d.delay(k, cert.Leaf.NotAfter)
+		d.delay(cert.Leaf)
 	}
 	return cert, nil
 }
