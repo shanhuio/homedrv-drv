@@ -35,12 +35,21 @@ func readHostMap(p string) (map[string]string, error) {
 func serverConfigFromHome(h *osutil.Home) (*ServerConfig, error) {
 	hostMap, err := readHostMap(h.FilePath("etc/host-map.jsonx"))
 	if err != nil {
-		return nil, err
+		return nil, errcode.Annotate(err, "read host map")
 	}
-
+	certCacheDir := h.FilePath("var/autocert")
+	dirExists, err := osutil.IsDir(certCacheDir)
+	if err != nil {
+		return nil, errcode.Annotate(err, "check cert cache dir")
+	}
+	if !dirExists {
+		if err := os.Mkdir(certCacheDir, 0700); err != nil {
+			return nil, errcode.Annotate(err, "make cert cache dir")
+		}
+	}
 	return &ServerConfig{
 		HostMap:       hostMap,
-		AutoCertCache: autocert.DirCache(h.FilePath("var/autocert")),
+		AutoCertCache: autocert.DirCache(certCacheDir),
 	}, nil
 }
 
@@ -56,7 +65,7 @@ func httpServerConfigFromHome(h *osutil.Home) (*HTTPServerConfig, error) {
 	return config, nil
 }
 
-func readFabricsConfig(h *osutil.Home) (*FabricsConfig, error) {
+func fabricsConfigFromHome(h *osutil.Home) (*FabricsConfig, error) {
 	c := new(FabricsConfig)
 	p := h.FilePath("etc/fabrics.jsonx")
 	if err := jsonx.ReadFile(p, c); err != nil {
@@ -89,7 +98,7 @@ func ConfigFromHome(homeDir string) (*Config, error) {
 	}
 	c.HTTPServer = httpConfig
 
-	fabConfig, err := readFabricsConfig(h)
+	fabConfig, err := fabricsConfigFromHome(h)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read fabrics config")
 	}
