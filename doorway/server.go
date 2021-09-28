@@ -177,5 +177,10 @@ func (s *server) autoTLSConfig() *tls.Config {
 		HostPolicy: s.hostPolicy,
 		Cache:      s.autoCertCache,
 	}
-	return autoCert.TLSConfig()
+	tlsConfig := autoCert.TLSConfig()
+
+	delayer := newCertDelayer(tlsConfig.GetCertificate)
+	tlsConfig.GetCertificate = delayer.getCertificate
+
+	return tlsConfig
 }
