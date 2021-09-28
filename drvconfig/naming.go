@@ -66,7 +66,8 @@ func Image(n *Naming, img string) string {
 	if reg == "" {
 		reg = DefaultRegistry
 	}
-	return path.Join(reg, img)
+	const project = "homedrv"
+	return path.Join(reg, project, img)
 }
 
 // Core returns the name of the core.
