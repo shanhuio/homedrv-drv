@@ -24,7 +24,7 @@ import (
 )
 
 // CoreMount is the mount point of jarvis volume.
-const CoreMount = "/opt/jarvis/var"
+const CoreMount = "/opt/app/var"
 
 // CoreConfig specifies how to start a core.
 type CoreConfig struct {

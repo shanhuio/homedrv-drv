@@ -29,8 +29,8 @@ import (
 )
 
 const (
-	doorwayVarDir  = "/var/lib/homedrv/doorway"
-	doorwayEtcDir  = "/etc/homedrv/doorway"
+	doorwayEtcDir  = "/opt/app/etc"
+	doorwayVarDir  = "/opt/app/var"
 	doorwayUser    = 3000
 	doorwayHostMap = "host-map.jsonx"
 )
