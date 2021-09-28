@@ -99,7 +99,7 @@ func TestServe(t *testing.T) {
 	}
 	defer lis.Close()
 
-	config, err := ConfigFromDirs(doorwayEtc, doorwayVar)
+	config, err := ConfigFromHome(doorwayHome)
 	if err != nil {
 		t.Fatal("read config:", err)
 	}

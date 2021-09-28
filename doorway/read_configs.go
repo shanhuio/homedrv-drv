@@ -17,37 +17,36 @@ package doorway
 
 import (
 	"os"
-	"path/filepath"
 
 	"golang.org/x/crypto/acme/autocert"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/jsonx"
+	"shanhu.io/misc/osutil"
 )
 
-func readHostMap(etcDir string) (map[string]string, error) {
+func readHostMap(p string) (map[string]string, error) {
 	m := make(map[string]string)
-	p := filepath.Join(etcDir, "host-map.jsonx")
 	if err := jsonx.ReadFile(p, &m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func serverConfigFromDirs(etcDir, varDir string) (*ServerConfig, error) {
-	hostMap, err := readHostMap(etcDir)
+func serverConfigFromHome(h *osutil.Home) (*ServerConfig, error) {
+	hostMap, err := readHostMap(h.FilePath("etc/host-map.jsonx"))
 	if err != nil {
 		return nil, err
 	}
 
 	return &ServerConfig{
 		HostMap:       hostMap,
-		AutoCertCache: autocert.DirCache(filepath.Join(varDir, "autocert")),
+		AutoCertCache: autocert.DirCache(h.FilePath("var/autocert")),
 	}, nil
 }
 
-func httpServerConfigFromDir(etcDir string) (*HTTPServerConfig, error) {
+func httpServerConfigFromHome(h *osutil.Home) (*HTTPServerConfig, error) {
 	config := new(HTTPServerConfig)
-	p := filepath.Join(etcDir, "http.jsonx")
+	p := h.FilePath("etc/http.jsonx")
 	if err := jsonx.ReadFile(p, config); err != nil {
 		if os.IsNotExist(err) {
 			return config, nil
@@ -57,9 +56,9 @@ func httpServerConfigFromDir(etcDir string) (*HTTPServerConfig, error) {
 	return config, nil
 }
 
-func readFabricsConfig(etcDir string) (*FabricsConfig, error) {
+func readFabricsConfig(h *osutil.Home) (*FabricsConfig, error) {
 	c := new(FabricsConfig)
-	p := filepath.Join(etcDir, "fabrics.jsonx")
+	p := h.FilePath("etc/fabrics.jsonx")
 	if err := jsonx.ReadFile(p, c); err != nil {
 		if os.IsNotExist(err) {
 			return c, nil
@@ -69,23 +68,28 @@ func readFabricsConfig(etcDir string) (*FabricsConfig, error) {
 	return c, nil
 }
 
-// ConfigFromDirs reads Config from the given directories.
-func ConfigFromDirs(etcDir, varDir string) (*Config, error) {
+// ConfigFromHome reads Config from the given directories.
+func ConfigFromHome(homeDir string) (*Config, error) {
+	h, err := osutil.NewHome(homeDir)
+	if err != nil {
+		return nil, errcode.Annotate(err, "make home")
+	}
+
 	c := new(Config)
 
-	serverConfig, err := serverConfigFromDirs(etcDir, varDir)
+	serverConfig, err := serverConfigFromHome(h)
 	if err != nil {
 		return nil, errcode.Annotate(err, "build server config")
 	}
 	c.Server = serverConfig
 
-	httpConfig, err := httpServerConfigFromDir(etcDir)
+	httpConfig, err := httpServerConfigFromHome(h)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read http server config")
 	}
 	c.HTTPServer = httpConfig
 
-	fabConfig, err := readFabricsConfig(etcDir)
+	fabConfig, err := readFabricsConfig(h)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read fabrics config")
 	}
@@ -93,7 +97,7 @@ func ConfigFromDirs(etcDir, varDir string) (*Config, error) {
 	if fabConfig.User != "" {
 		c.Fabrics = fabConfig
 
-		pemPath := filepath.Join(varDir, "fabrics.pem")
+		pemPath := h.FilePath("var/fabrics.pem")
 		id, err := newFileIdentity(pemPath)
 		if err != nil {
 			return nil, errcode.Annotate(err, "read fabrics identity pem")

@@ -27,20 +27,17 @@ func Main() {
 	var (
 		httpsAddr = flag.String("https", ":8443", "HTTPS address to listen on.")
 		httpAddr  = flag.String("http", ":8080", "HTTP address to listen on.")
-		etcDir    = flag.String(
-			"etc", "/etc/homedrv/doorway", "location of etc dir",
-		)
-		varDir = flag.String(
-			"var", "/var/lib/homedrv/doorway", "location of var dir",
-		)
+		home      = flag.String("home", ".", "home directory")
 	)
 	flag.Parse()
 
 	ctx := context.Background()
-	config, err := ConfigFromDirs(*etcDir, *varDir)
+
+	config, err := ConfigFromHome(*home)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	config.LocalAddr = *httpsAddr
 	if *httpAddr != "" {
 		config.HTTPServer.Addr = *httpAddr
