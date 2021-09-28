@@ -24,6 +24,7 @@ import (
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/osutil"
 	"shanhu.io/misc/signer"
 	"shanhu.io/pisces/settings"
 )
@@ -47,7 +48,7 @@ type server struct {
 	updateSignal chan bool
 }
 
-func newServer(c *drvcfg.Config) (*server, error) {
+func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 	back, err := newBackend("")
 	if err != nil {
 		return nil, errcode.Annotate(err, "create backend")
@@ -78,7 +79,7 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		return nil, errcode.Annotate(err, "build apps control")
 	}
 
-	objs, err := newObjects("var/objs")
+	objs, err := newObjects(h.FilePath("var/objs"))
 	if err != nil {
 		return nil, errcode.Annotate(err, "create objects store")
 	}
@@ -149,8 +150,8 @@ func newServer(c *drvcfg.Config) (*server, error) {
 		sshKeys:       newSSHKeys(drive),
 		keyRegistry:   keyRegistry,
 
-		tmpls:  aries.NewTemplates("_/tmpl", nil),
-		static: aries.NewStaticFiles("_/static"),
+		tmpls:  aries.NewTemplates(h.FilePath("lib/tmpl"), nil),
+		static: aries.NewStaticFiles(h.FilePath("lib/static")),
 
 		updateSignal: make(chan bool),
 	}, nil

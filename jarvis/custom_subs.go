@@ -41,7 +41,7 @@ func loadCustomSubs(s settings.Settings) (map[string]string, error) {
 func cmdCustomSubs(args []string) error {
 	flags := cmdFlags.New()
 	sock := flags.String(
-		"sock", "jarvis.sock", "jarvis unix domain socket",
+		"sock", "var/jarvis.sock", "jarvis unix domain socket",
 	)
 	add := flags.Bool("add", false, "adds a sub domain")
 	remove := flags.Bool("remove", false, "removes a sub domain")

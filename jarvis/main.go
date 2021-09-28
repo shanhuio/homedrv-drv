@@ -65,13 +65,18 @@ func makeService(s *server) aries.Service {
 	})
 }
 
-func runServer(addr, configFile string) error {
-	config, err := readConfig(configFile)
+func runServer(homeDir, addr string) error {
+	h, err := osutil.NewHome(homeDir)
+	if err != nil {
+		return errcode.Annotate(err, "open home dir")
+	}
+
+	config, err := readConfig(h.FilePath("etc/config.jsonx"))
 	if err != nil {
 		return errcode.Annotate(err, "read config")
 	}
 
-	s, err := newServer(config)
+	s, err := newServer(h, config)
 	if err != nil {
 		return errcode.Annotate(err, "create server")
 	}
@@ -113,7 +118,7 @@ func runServer(addr, configFile string) error {
 		}
 	}(d, s.updateSignal)
 
-	const sock = "jarvis.sock"
+	const sock = "var/jarvis.sock"
 	log.Printf("serve on %s and %s", sock, addr)
 
 	adminService := adminRouter(s)
@@ -132,10 +137,10 @@ func runServer(addr, configFile string) error {
 
 func serverMain() {
 	addr := flag.String("addr", "localhost:3377", "address to listen on")
-	configFile := flag.String("config", "var/config.jsonx", "config file")
+	home := flag.String("home", ".", "home dir")
 	flag.Parse()
 
-	if err := runServer(*addr, *configFile); err != nil {
+	if err := runServer(*home, *addr); err != nil {
 		log.Fatal(err)
 	}
 }

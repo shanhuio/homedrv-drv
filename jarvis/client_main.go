@@ -55,7 +55,7 @@ func clientMain() { clientCommands().Main() }
 func cmdUpdate(args []string) error {
 	flags := cmdFlags.New()
 	sock := flags.String(
-		"sock", "jarvis.sock", "UDS where jarvis is listening",
+		"sock", "var/jarvis.sock", "UDS where jarvis is listening",
 	)
 	stop := flags.Bool(
 		"stop", false, "stop the channel update cron job",
@@ -130,7 +130,7 @@ func cmdSettings(args []string) error {
 func cmdSetPassword(args []string) error {
 	flags := cmdFlags.New()
 	sock := flags.String(
-		"sock", "jarvis.sock", "jarvis unix domain socket",
+		"sock", "var/jarvis.sock", "jarvis unix domain socket",
 	)
 	pass := flags.String("pass", "", "password to set")
 	args = flags.ParseArgs(args)
@@ -146,7 +146,7 @@ func cmdSetPassword(args []string) error {
 func cmdSetAPIKey(args []string) error {
 	flags := cmdFlags.New()
 	sock := flags.String(
-		"sock", "jarvis.sock", "jarvis unix domain socket",
+		"sock", "var/jarvis.sock", "jarvis unix domain socket",
 	)
 	keyFile := flags.String("key", "", "key file")
 	args = flags.ParseArgs(args)
