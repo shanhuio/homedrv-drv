@@ -35,6 +35,7 @@ type ServerConfig struct {
 	HostMap       map[string]string
 	AutoCertCache autocert.Cache
 	Home          aries.Service
+	ManualCerts   map[string]*tls.Certificate
 
 	IPWhitelist []string
 }
@@ -44,6 +45,7 @@ type server struct {
 	hostMap       hostMap
 	proxy         *httputil.ReverseProxy
 	autoCertCache autocert.Cache
+	manualCerts   map[string]*tls.Certificate
 
 	ipWhitelist []*net.IPNet
 }
@@ -71,6 +73,7 @@ func newServer(config *ServerConfig) (*server, error) {
 		hostMap:       newMemHostMap(config.HostMap),
 		autoCertCache: config.AutoCertCache,
 		ipWhitelist:   ipWhitelist,
+		manualCerts:   config.ManualCerts,
 	}
 
 	if config.Home == nil {
@@ -179,8 +182,8 @@ func (s *server) autoTLSConfig() *tls.Config {
 	}
 	tlsConfig := autoCert.TLSConfig()
 
-	delayer := newCertDelayer(tlsConfig.GetCertificate)
-	tlsConfig.GetCertificate = delayer.getCertificate
+	g := newCertGetter(tlsConfig.GetCertificate, s.manualCerts)
+	tlsConfig.GetCertificate = g.get
 
 	return tlsConfig
 }

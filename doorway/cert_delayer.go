@@ -19,6 +19,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 )
@@ -30,23 +31,26 @@ type certTimeEntry struct {
 
 type getCertFunc func(hello *tls.ClientHelloInfo) (*tls.Certificate, error)
 
-type certDelayer struct {
-	get getCertFunc
+type certGetter struct {
+	getFunc getCertFunc
 
 	mu          sync.Mutex
 	certs       map[string]*certTimeEntry
+	manual      map[string]*tls.Certificate
 	nextCleanUp time.Time
 }
 
-func newCertDelayer(f getCertFunc) *certDelayer {
-	return &certDelayer{
-		get:         f,
+func newCertGetter(
+	f getCertFunc, manual map[string]*tls.Certificate,
+) *certGetter {
+	return &certGetter{
+		getFunc:     f,
 		certs:       make(map[string]*certTimeEntry),
 		nextCleanUp: time.Now().Add(time.Hour),
 	}
 }
 
-func (d *certDelayer) delay(cert *x509.Certificate) {
+func (g *certGetter) delay(cert *x509.Certificate) {
 	now := time.Now()
 	if cert.NotBefore.Before(now.Add(-2 * time.Hour)) {
 		// cert valid start time is more than 2 hours ago.
@@ -56,14 +60,14 @@ func (d *certDelayer) delay(cert *x509.Certificate) {
 
 	k := fmt.Sprintf("%x", cert.SerialNumber)
 
-	d.mu.Lock()
-	defer d.mu.Unlock()
+	g.mu.Lock()
+	defer g.mu.Unlock()
 
 	const delay = 2 * time.Second
-	entry, ok := d.certs[k]
+	entry, ok := g.certs[k]
 	if !ok {
 		time.Sleep(delay)
-		d.certs[k] = &certTimeEntry{
+		g.certs[k] = &certTimeEntry{
 			firstSeen: now,
 			expire:    cert.NotAfter,
 		}
@@ -71,29 +75,36 @@ func (d *certDelayer) delay(cert *x509.Certificate) {
 		time.Sleep(delay)
 	}
 
-	if now.After(d.nextCleanUp) {
+	if now.After(g.nextCleanUp) {
 		var toDelete []string
-		for k, v := range d.certs {
+		for k, v := range g.certs {
 			if now.After(v.expire) {
 				toDelete = append(toDelete, k)
 			}
 		}
 		for _, k := range toDelete {
-			delete(d.certs, k)
+			delete(g.certs, k)
 		}
-		d.nextCleanUp = now.Add(time.Hour)
+		g.nextCleanUp = now.Add(time.Hour)
 	}
 }
 
-func (d *certDelayer) getCertificate(hello *tls.ClientHelloInfo) (
+func (g *certGetter) get(hello *tls.ClientHelloInfo) (
 	*tls.Certificate, error,
 ) {
-	cert, err := d.get(hello)
+	if g.manual != nil {
+		name := strings.TrimSuffix(hello.ServerName, ".")
+		if cert, ok := g.manual[name]; ok {
+			return cert, nil
+		}
+	}
+
+	cert, err := g.getFunc(hello)
 	if err != nil {
 		return cert, err
 	}
 	if cert.Leaf != nil {
-		d.delay(cert.Leaf)
+		g.delay(cert.Leaf)
 	}
 	return cert, nil
 }
