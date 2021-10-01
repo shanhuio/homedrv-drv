@@ -79,7 +79,7 @@ func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 		return nil, errcode.Annotate(err, "build apps control")
 	}
 
-	objs, err := newObjects(h.FilePath("var/objs"))
+	objs, err := newObjects(h.Var("objs"))
 	if err != nil {
 		return nil, errcode.Annotate(err, "create objects store")
 	}
@@ -150,8 +150,8 @@ func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 		sshKeys:       newSSHKeys(drive),
 		keyRegistry:   keyRegistry,
 
-		tmpls:  aries.NewTemplates(h.FilePath("lib/tmpl"), nil),
-		static: aries.NewStaticFiles(h.FilePath("lib/static")),
+		tmpls:  aries.NewTemplates(h.Lib("tmpl"), nil),
+		static: aries.NewStaticFiles(h.Lib("static")),
 
 		updateSignal: make(chan bool),
 	}, nil
