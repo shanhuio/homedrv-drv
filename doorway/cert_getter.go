@@ -47,6 +47,7 @@ func newCertGetter(
 		getFunc:     f,
 		certs:       make(map[string]*certTimeEntry),
 		nextCleanUp: time.Now().Add(time.Hour),
+		manual:      manual,
 	}
 }
 
