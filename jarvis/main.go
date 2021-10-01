@@ -71,7 +71,7 @@ func runServer(homeDir, addr string) error {
 		return errcode.Annotate(err, "open home dir")
 	}
 
-	config, err := readConfig(h.FilePath("etc/config.jsonx"))
+	config, err := readConfig(h.Etc("config.jsonx"))
 	if err != nil {
 		return errcode.Annotate(err, "read config")
 	}

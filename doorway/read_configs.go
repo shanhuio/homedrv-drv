@@ -106,7 +106,7 @@ func ConfigFromHome(homeDir string) (*Config, error) {
 	if fabConfig.User != "" {
 		c.Fabrics = fabConfig
 
-		pemPath := h.FilePath("var/fabrics.pem")
+		pemPath := h.Var("fabrics.pem")
 		id, err := newFileIdentity(pemPath)
 		if err != nil {
 			return nil, errcode.Annotate(err, "read fabrics identity pem")
