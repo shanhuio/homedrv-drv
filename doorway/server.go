@@ -26,6 +26,7 @@ import (
 
 	"golang.org/x/crypto/acme/autocert"
 	"shanhu.io/aries"
+	"shanhu.io/misc/certutil"
 	"shanhu.io/misc/errcode"
 )
 
@@ -181,9 +182,9 @@ func (s *server) autoTLSConfig() *tls.Config {
 		Cache:      s.autoCertCache,
 	}
 	tlsConfig := autoCert.TLSConfig()
-
-	g := newCertGetter(tlsConfig.GetCertificate, s.manualCerts)
-	tlsConfig.GetCertificate = g.get
+	tlsConfig.GetCertificate = certutil.WrapAutoCert(
+		tlsConfig.GetCertificate, s.manualCerts,
+	)
 
 	return tlsConfig
 }
