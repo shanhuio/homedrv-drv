@@ -71,7 +71,8 @@ func runServer(homeDir, addr string) error {
 		return errcode.Annotate(err, "open home dir")
 	}
 
-	config, err := readConfig(h.Etc("config.jsonx"))
+	// jarvis reads config from var.
+	config, err := readConfig(h.Var("config.jsonx"))
 	if err != nil {
 		return errcode.Annotate(err, "read config")
 	}
