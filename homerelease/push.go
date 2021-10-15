@@ -27,10 +27,10 @@ import (
 func cmdPush(server string, args []string) error {
 	flags := cmdFlags.New()
 	objs := flags.String(
-		"objs", "out/homedrv/objs.tar", "path to objects tarball",
+		"objs", "out/docker/homedrv/objs.tar", "path to objects tarball",
 	)
 	rel := flags.String(
-		"release", "out/homedrv/release.json", "path to release info",
+		"release", "out/docker/homedrv/release.json", "path to release info",
 	)
 	user := flags.String(
 		"user", "root", "user to call the push API",

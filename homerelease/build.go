@@ -45,7 +45,7 @@ func (b *builder) buildRelease(name, typ string) error {
 	arts := new(drvapi.Artifacts)
 
 	log.Println("reading os info")
-	osInfoFile := filePath(b.src, "homedrv/os.jsonx")
+	osInfoFile := filePath(b.src, "docker/homedrv/os.jsonx")
 	var osInfo struct{ Version string }
 	if err := jsonx.ReadFile(osInfoFile, &osInfo); err != nil {
 		return errcode.Annotate(err, "read os info")
@@ -54,7 +54,7 @@ func (b *builder) buildRelease(name, typ string) error {
 
 	log.Println("reading docker pulls")
 	pull := make(map[string]string)
-	pullFile := filePath(b.src, "homedrv/pull.jsonx")
+	pullFile := filePath(b.src, "docker/homedrv/pull.jsonx")
 	if err := jsonx.ReadFile(pullFile, &pull); err != nil {
 		return errcode.Annotate(err, "pull tag info")
 	}
@@ -157,7 +157,7 @@ func (b *builder) buildRelease(name, typ string) error {
 	arts.ImageSums = imageSums
 
 	log.Printf("writing out artifacts.json")
-	artsOut := filePath(b.out, "homedrv/artifacts.json")
+	artsOut := filePath(b.out, "docker/homedrv/artifacts.json")
 	if err := jsonutil.WriteFileReadable(artsOut, arts); err != nil {
 		return errcode.Annotate(err, "write out artifacts")
 	}
@@ -170,13 +170,13 @@ func (b *builder) buildRelease(name, typ string) error {
 		Arch:      runtime.GOARCH,
 		Artifacts: arts,
 	}
-	relOut := filePath(b.out, "homedrv/release.json")
+	relOut := filePath(b.out, "docker/homedrv/release.json")
 	if err := jsonutil.WriteFileReadable(relOut, rel); err != nil {
 		return errcode.Annotate(err, "write out release")
 	}
 
 	log.Printf("writing out objects")
-	objOut := filePath(b.out, "homedrv/objs.tar")
+	objOut := filePath(b.out, "docker/homedrv/objs.tar")
 	if err := writeObjects(objOut, imageObjs); err != nil {
 		return errcode.Annotate(err, "writing out object archive")
 	}
