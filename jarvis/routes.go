@@ -106,6 +106,9 @@ func adminAPIRouter(s *server) *aries.Router {
 	r.Call("set-password", func(c *aries.C, req *changePasswordRequest) error {
 		return s.users.setPassword(rootUser, req.NewPassword)
 	})
+	r.Call("disable-totp", func(c *aries.C, user string) error {
+		return s.users.disableTOTP(user)
+	})
 	r.Call("set-api-key", s.keyRegistry.apiSet)
 
 	return r

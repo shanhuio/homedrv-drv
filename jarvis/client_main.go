@@ -35,6 +35,7 @@ func clientCommands() *subcmd.List {
 	c.Add("settings", "prints settings", cmdSettings)
 	c.Add("set-password", "sets password of a user", cmdSetPassword)
 	c.Add("set-api-key", "sets API key", cmdSetAPIKey)
+	c.Add("disable-totp", "disables TOTP 2FA", cmdDisableTOTP)
 	c.Add("version", "prints release info", cmdVersion)
 	c.Add(
 		"nextcloud-domains", "view or modify nextcloud domains",
@@ -141,6 +142,16 @@ func cmdSetPassword(args []string) error {
 	c := httputil.NewUnixClient(*sock)
 	req := &changePasswordRequest{NewPassword: *pass}
 	return c.Call("/api/set-password", req, nil)
+}
+
+func cmdDisableTOTP(args []string) error {
+	flags := cmdFlags.New()
+	sock := flags.String(
+		"sock", "var/jarvis.sock", "jarvis unix domain socket",
+	)
+	args = flags.ParseArgs(args)
+	c := httputil.NewUnixClient(*sock)
+	return c.Call("/api/disable-totp", rootUser, nil)
 }
 
 func cmdSetAPIKey(args []string) error {

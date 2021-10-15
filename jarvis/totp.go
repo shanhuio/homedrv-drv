@@ -117,8 +117,7 @@ func (t *totp) apiDisable(c *aries.C, req *DisableTOTPRequest) (
 	if err := t.sudo.Check(c); err != nil {
 		return nil, errcode.Annotate(err, "check sudo session")
 	}
-
-	if err := t.users.disableTOTP(c); err != nil {
+	if err := t.users.disableTOTP(c.User); err != nil {
 		return nil, errcode.Annotate(err, "disable totp")
 	}
 	t.log(c, "disable")

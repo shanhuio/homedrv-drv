@@ -138,8 +138,8 @@ func (b *users) apiChangePassword(c *aries.C, req *changePasswordRequest) (
 	return resp, nil
 }
 
-func (b *users) disableTOTP(c *aries.C) error {
-	return b.mutate(c.User, func(info *userInfo) error {
+func (b *users) disableTOTP(user string) error {
+	return b.mutate(user, func(info *userInfo) error {
 		info.TwoFactor = nil
 		return nil
 	})
