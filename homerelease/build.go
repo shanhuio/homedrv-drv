@@ -43,9 +43,10 @@ func (b *builder) buildRelease(name, typ string) error {
 	}
 
 	arts := new(drvapi.Artifacts)
+	const repo = "docker/homedrv"
 
 	log.Println("reading os info")
-	osInfoFile := filePath(b.src, "docker/homedrv/os.jsonx")
+	osInfoFile := filePath(b.src, repo, "os.jsonx")
 	var osInfo struct{ Version string }
 	if err := jsonx.ReadFile(osInfoFile, &osInfo); err != nil {
 		return errcode.Annotate(err, "read os info")
@@ -74,7 +75,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		"homeboot",
 	} {
 		log.Printf("checksuming %s", d)
-		tgz := filePath(b.out, "homedrv", d+".tgz")
+		tgz := filePath(b.out, repo, d+".tgz")
 		img, err := sumDockerTgz(tgz)
 		if err != nil {
 			return errcode.Annotatef(err, "checksum for %q", d)
@@ -157,7 +158,7 @@ func (b *builder) buildRelease(name, typ string) error {
 	arts.ImageSums = imageSums
 
 	log.Printf("writing out artifacts.json")
-	artsOut := filePath(b.out, "docker/homedrv/artifacts.json")
+	artsOut := filePath(b.out, repo, "artifacts.json")
 	if err := jsonutil.WriteFileReadable(artsOut, arts); err != nil {
 		return errcode.Annotate(err, "write out artifacts")
 	}
@@ -170,13 +171,13 @@ func (b *builder) buildRelease(name, typ string) error {
 		Arch:      runtime.GOARCH,
 		Artifacts: arts,
 	}
-	relOut := filePath(b.out, "docker/homedrv/release.json")
+	relOut := filePath(b.out, repo, "/release.json")
 	if err := jsonutil.WriteFileReadable(relOut, rel); err != nil {
 		return errcode.Annotate(err, "write out release")
 	}
 
 	log.Printf("writing out objects")
-	objOut := filePath(b.out, "docker/homedrv/objs.tar")
+	objOut := filePath(b.out, repo, "objs.tar")
 	if err := writeObjects(objOut, imageObjs); err != nil {
 		return errcode.Annotate(err, "writing out object archive")
 	}
