@@ -37,7 +37,7 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
-// BootConfig is a json marshallable file that is saved on
+// BootConfig is a JSON marshallable file that is saved on
 // the file system, often as /opt/homedrv/boot.jsonx
 // It specifies the flags used by homeinstall.
 type BootConfig struct {
