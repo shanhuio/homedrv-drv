@@ -40,7 +40,7 @@ func StartCore(client *dock.Client, config *CoreConfig) (string, error) {
 	naming := config.Drive.Naming
 	image := config.Image
 	if image == "" {
-		image = drvcfg.Image(naming, "core")
+		return "", errcode.InvalidArgf("image missing")
 	}
 	name := drvcfg.Core(naming)
 	labels := drvcfg.NewNameLabel("core")

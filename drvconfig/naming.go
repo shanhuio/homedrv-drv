@@ -52,22 +52,16 @@ func Name(n *Naming, cont string) string {
 
 // Image returns the image name of an image type.
 func Image(n *Naming, img string) string {
-	if n == nil {
-		switch img {
-		case "jarvis", "doorway":
-			// TODO(h8liu): deprecate this tagging
-			return path.Join("registry.digitalocean.com/shanhu", img)
-		default:
-			return img
-		}
-	}
-
 	reg := n.Registry
 	if reg == "" {
 		reg = DefaultRegistry
 	}
+	name := img
+	if name == "jarvis" {
+		name = "core"
+	}
 	const project = "homedrv"
-	return path.Join(reg, project, img)
+	return path.Join(reg, project, name)
 }
 
 // Core returns the name of the core.

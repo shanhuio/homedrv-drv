@@ -121,10 +121,7 @@ func (d *Downloader) downloadImages(
 			}
 		}
 
-		repo := img.repo
-		if repo == "" {
-			repo = drvcfg.Image(naming, img.name)
-		}
+		repo := drvcfg.Image(naming, img.name)
 		tag := img.tag
 		if tag == "" {
 			tag = "main"
@@ -148,7 +145,6 @@ func (d *Downloader) DownloadRelease(c *DownloadConfig) (
 	images := []*downloadImage{{
 		name: "jarvis",
 		hash: r.Jarvis,
-		repo: drvcfg.Image(c.Naming, "core"),
 	}}
 	if !c.CoreOnly {
 		images = append(images, &downloadImage{

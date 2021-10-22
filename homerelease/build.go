@@ -65,6 +65,7 @@ func (b *builder) buildRelease(name, typ string) error {
 	for _, d := range []string{
 		"nextcloud20",
 		"nextcloud21",
+		"nextcloud22",
 		"postgres12",
 		"redis",
 		"influxdb",
@@ -92,10 +93,12 @@ func (b *builder) buildRelease(name, typ string) error {
 		steps  *[]*drvapi.StepVersion
 		final  *string
 	}{{
-		name:   "nextcloud",
-		images: []string{"nextcloud20", "nextcloud21"},
-		steps:  &arts.Nextclouds,
-		final:  &arts.Nextcloud,
+		name: "nextcloud",
+		images: []string{
+			"nextcloud20", "nextcloud21", "nextcloud22",
+		},
+		steps: &arts.Nextclouds,
+		final: &arts.Nextcloud,
 	}, {
 		name:   "postgres",
 		images: []string{"postgres12"},
