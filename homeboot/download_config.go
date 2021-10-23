@@ -16,8 +16,11 @@
 package homeboot
 
 import (
+	"log"
+
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/misc/semver"
 )
 
 // DownloadConfig is the install config. This is the configuration
@@ -34,16 +37,24 @@ type DownloadConfig struct {
 	LatestOnly bool
 
 	// If set, ignore major versions that are lower than this.
-	CurrentMajorVersions map[string]int
+	CurrentSemVersions map[string]string
 }
 
 func (c *DownloadConfig) currentMajor(app string) int {
-	if c.CurrentMajorVersions == nil {
+	if c.CurrentSemVersions == nil {
 		return 0
 	}
-	v, ok := c.CurrentMajorVersions[app]
+	v, ok := c.CurrentSemVersions[app]
 	if !ok {
 		return 0
 	}
-	return v
+	if v == "" {
+		return 0
+	}
+	major, err := semver.Major(v)
+	if err != nil {
+		log.Printf("invalid sem version of %q: %q: %s", app, v, err)
+		return 0
+	}
+	return major
 }

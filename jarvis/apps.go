@@ -232,3 +232,7 @@ func (a *apps) anchored() []string {
 }
 
 func (a *apps) list() []string { return a.state.list() }
+
+func (a *apps) semVersions() map[string]string {
+	return a.state.semVersions()
+}

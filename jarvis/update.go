@@ -56,8 +56,9 @@ func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
 		return errcode.Annotate(err, "init downloader")
 	}
 	config := &homeboot.DownloadConfig{
-		Release: rel,
-		Naming:  d.config.Naming,
+		Release:            rel,
+		Naming:             d.config.Naming,
+		CurrentSemVersions: d.apps.semVersions(),
 	}
 	if _, err := dl.DownloadRelease(config); err != nil {
 		return errcode.Annotate(err, "download release")
@@ -221,8 +222,9 @@ func finishUpdate(d *drive, r *drvapi.Release) error {
 
 	// And also need to download again.
 	dlConfig := &homeboot.DownloadConfig{
-		Release: r,
-		Naming:  d.config.Naming,
+		Release:            r,
+		Naming:             d.config.Naming,
+		CurrentSemVersions: d.apps.semVersions(),
 	}
 	if _, err := dl.DownloadRelease(dlConfig); err != nil {
 		return errcode.Annotate(err, "download release")

@@ -66,6 +66,14 @@ func (s *appsState) list() []string {
 	return list
 }
 
+func (s *appsState) semVersions() map[string]string {
+	m := make(map[string]string)
+	for name, meta := range s.Metas {
+		m[name] = meta.SemVersion
+	}
+	return m
+}
+
 type appsStateStore interface {
 	save(s *appsState) error
 	load() (*appsState, error)

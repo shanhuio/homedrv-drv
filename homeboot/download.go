@@ -160,8 +160,12 @@ func (d *Downloader) DownloadRelease(c *DownloadConfig) (
 			name: "ncfront", hash: r.NCFront,
 		})
 
+		nextcloudMajor := c.currentMajor("nextcloud")
 		for i, nc := range r.Nextclouds {
 			if c.LatestOnly && i != len(r.Nextclouds)-1 {
+				continue
+			}
+			if nextcloudMajor > 0 && nc.Major < nextcloudMajor {
 				continue
 			}
 			images = append(images, &downloadImage{
