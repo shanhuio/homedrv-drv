@@ -62,6 +62,7 @@ func looksLikeHomeDriveImage(repoTag string) bool {
 		"nextcloud:",
 		"postgres:",
 		"redis:",
+		"ncfront:",
 		"core:",
 	} {
 		if strings.HasPrefix(repoTag, prefix) {
