@@ -52,9 +52,9 @@ func Name(n *Naming, cont string) string {
 
 // Image returns the image name of an image type.
 func Image(n *Naming, img string) string {
-	reg := n.Registry
-	if reg == "" {
-		reg = DefaultRegistry
+	reg := DefaultRegistry
+	if n != nil && n.Registry != "" {
+		reg = n.Registry
 	}
 	name := img
 	if name == "jarvis" {
