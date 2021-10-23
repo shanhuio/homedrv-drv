@@ -254,8 +254,14 @@ func finishUpdate(d *drive, r *drvapi.Release) error {
 }
 
 func updateCleanUp(d *drive, r *drvapi.Release) error {
+	images, err := dock.ListImages(d.dock)
+	if err != nil {
+		return errcode.Annotate(err, "list images")
+	}
 	// TODO(h8liu): should check image tags, rather than pruning all
 	// untagged images.
+	_ = images
+
 	opt := &dock.PruneImagesOption{}
 	if err := dock.PruneImages(d.dock, opt); err != nil {
 		return errcode.Annotate(err, "prune docker images")

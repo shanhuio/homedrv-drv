@@ -179,6 +179,5 @@ func (d *Downloader) DownloadRelease(c *DownloadConfig) (
 	if err := d.downloadImages(images, c.Naming, r.ImageSums); err != nil {
 		return nil, err
 	}
-
 	return r, nil
 }

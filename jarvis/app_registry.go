@@ -24,6 +24,14 @@ type appRegistry struct {
 	manifest map[string]*drvapi.AppMeta
 }
 
+func lastStepVersion(steps []*drvapi.StepVersion) string {
+	if len(steps) == 0 {
+		return ""
+	}
+	last := steps[len(steps)-1]
+	return last.Version
+}
+
 func manifestFromRelease(rel *drvapi.Release) map[string]*drvapi.AppMeta {
 	if rel == nil {
 		return make(map[string]*drvapi.AppMeta)
@@ -50,8 +58,9 @@ func manifestFromRelease(rel *drvapi.Release) map[string]*drvapi.AppMeta {
 				namePostgres,
 				nameRedis,
 			},
-			Image: rel.Nextcloud,
-			Steps: rel.Nextclouds,
+			Image:      rel.Nextcloud,
+			SemVersion: lastStepVersion(rel.Nextclouds),
+			Steps:      rel.Nextclouds,
 		}} {
 			if m.Image != "" {
 				metas = append(metas, m)
@@ -63,7 +72,6 @@ func manifestFromRelease(rel *drvapi.Release) map[string]*drvapi.AppMeta {
 
 func newAppRegistry(rel *drvapi.Release) *appRegistry {
 	manifest := manifestFromRelease(rel)
-
 	return &appRegistry{
 		manifest: manifest,
 	}
