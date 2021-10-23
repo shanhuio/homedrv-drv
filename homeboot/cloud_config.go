@@ -42,7 +42,7 @@ if [[ ! -f "${HOMEDRV}/.init-done" ]]; then
     --name "homeboot" \
     --mount "type=bind,source={{$docker}},target={{$docker}}" \
     --mount "type=bind,source={{$sysDocker}},target={{$sysDocker}}" \
-	--mount "type=bind,source=${HOMEDRV},target=${HOMEDRV}" \
+    --mount "type=bind,source=${HOMEDRV},target=${HOMEDRV}" \
     {{.HomeBoot}} /bin/homeboot install --config_file="${HOMEDRV}/boot.jsonx"
   date > "${HOMEDRV}/.init-done"
 fi
