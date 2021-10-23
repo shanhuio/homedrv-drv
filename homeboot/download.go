@@ -159,8 +159,11 @@ func (d *Downloader) DownloadRelease(c *DownloadConfig) (
 		images = append(images, &downloadImage{
 			name: "ncfront", hash: r.NCFront,
 		})
-		// TODO(h8liu): do not download the full ladder every time.
-		for _, nc := range r.Nextclouds {
+
+		for i, nc := range r.Nextclouds {
+			if c.LatestOnly && i != len(r.Nextclouds)-1 {
+				continue
+			}
 			images = append(images, &downloadImage{
 				name: "nextcloud",
 				tag:  strconv.Itoa(nc.Major),

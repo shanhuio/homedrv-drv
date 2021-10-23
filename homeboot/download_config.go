@@ -30,5 +30,20 @@ type DownloadConfig struct {
 	Naming *drvcfg.Naming // Naming conventions.
 
 	// Download the core only; only used in homeboot for bootstraping.
-	CoreOnly bool
+	CoreOnly   bool
+	LatestOnly bool
+
+	// If set, ignore major versions that are lower than this.
+	CurrentMajorVersions map[string]int
+}
+
+func (c *DownloadConfig) currentMajor(app string) int {
+	if c.CurrentMajorVersions == nil {
+		return 0
+	}
+	v, ok := c.CurrentMajorVersions[app]
+	if !ok {
+		return 0
+	}
+	return v
 }

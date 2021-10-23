@@ -155,7 +155,9 @@ func maybeInstall(d *drive) error {
 	if err != nil {
 		return errcode.Annotate(err, "init downloader")
 	}
-	release, err := dl.DownloadRelease(d.downloadConfig())
+	dlConfig := d.downloadConfig()
+	dlConfig.LatestOnly = true
+	release, err := dl.DownloadRelease(dlConfig)
 	if err != nil {
 		return errcode.Annotate(err, "download release")
 	}
