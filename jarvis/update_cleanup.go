@@ -59,7 +59,6 @@ func looksLikeHomeDriveImage(repoTag string) bool {
 		"cr.shanhu.io/",
 		"registry.digitalocean.com/shanhu/",
 		"cr.homedrive.io/",
-		"homedrv/",
 		"nextcloud:",
 		"postgres:",
 		"redis:",
