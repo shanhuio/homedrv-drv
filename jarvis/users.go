@@ -63,12 +63,17 @@ func (b *users) mutate(user string, f func(info *userInfo) error) error {
 	})
 }
 
-func (b *users) setPassword(user, password string) error {
+func (b *users) setPassword(user, password string, old *string) error {
 	crypt, err := bcryptPassword(password)
 	if err != nil {
 		return err
 	}
 	return b.mutate(user, func(info *userInfo) error {
+		if old != nil {
+			if err := checkUserPassword(info, *old); err != nil {
+				return err
+			}
+		}
 		info.BcryptPassword = crypt
 		return nil
 	})
@@ -117,25 +122,16 @@ type changePasswordResponse struct {
 func (b *users) apiChangePassword(c *aries.C, req *changePasswordRequest) (
 	*changePasswordResponse, error,
 ) {
-	crypt, err := bcryptPassword(req.NewPassword)
-	if err != nil {
-		return nil, err
-	}
-	resp := new(changePasswordResponse)
-	if err := b.mutate(c.User, func(info *userInfo) error {
-		if err := checkUserPassword(info, req.OldPassword); err != nil {
-			if err == errWrongPassword {
-				resp.Error = "Incorrect old password."
-				return nil
-			}
-			return err
+	old := req.OldPassword
+	if err := b.setPassword(c.User, req.NewPassword, &old); err != nil {
+		if err == errWrongPassword {
+			return &changePasswordResponse{
+				Error: "Incorrect old password.",
+			}, nil
 		}
-		info.BcryptPassword = crypt
-		return nil
-	}); err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &changePasswordResponse{}, nil
 }
 
 func (b *users) disableTOTP(user string) error {

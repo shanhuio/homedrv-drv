@@ -104,7 +104,7 @@ func adminAPIRouter(s *server) *aries.Router {
 		return nil
 	})
 	r.Call("set-password", func(c *aries.C, req *changePasswordRequest) error {
-		return s.users.setPassword(rootUser, req.NewPassword)
+		return s.users.setPassword(rootUser, req.NewPassword, nil)
 	})
 	r.Call("disable-totp", func(c *aries.C, user string) error {
 		return s.users.disableTOTP(user)
