@@ -16,6 +16,8 @@
 package jarvis
 
 import (
+	"strings"
+
 	"shanhu.io/aries"
 	"shanhu.io/misc/errcode"
 )
@@ -26,7 +28,7 @@ func signInRedirect(c *aries.C) error {
 	return nil
 }
 
-func serveDashboard(s *server, c *aries.C, tab string) error {
+func serveDashboard(s *server, c *aries.C) error {
 	if c.Req.Method != "GET" {
 		return errcode.InvalidArgf("request must be get")
 	}
@@ -38,8 +40,7 @@ func serveDashboard(s *server, c *aries.C, tab string) error {
 	}
 
 	d, err := newDashboardData(s, c, &DashboardDataRequest{
-		Tab: tab,
-		Sub: c.Rel(),
+		Path: strings.TrimPrefix(c.Path, "/"),
 	})
 	if err != nil {
 		return err

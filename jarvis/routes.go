@@ -24,35 +24,33 @@ import (
 )
 
 func guestRouter(s *server) *aries.Router {
-	serveStatic := s.static.Serve
 
 	r := aries.NewRouter()
 
 	r.Index(func(c *aries.C) error { return serveIndex(s, c) })
 
-	for _, tab := range dashboardTabs {
-		capture := tab.name
-		r.Dir(tab.name, func(c *aries.C) error {
-			return serveDashboard(s, c, capture)
-		})
-	}
+	dash := s.f(serveDashboard)
+	r.Get("overview", dash)
+	r.Get("ssh-keys", dash)
+	r.Get("security-logs", dash)
+	r.Get("change-password", dash)
+	r.Get("2fa", dash)
+	r.Get("2fa/enable-totp", dash)
+	r.Get("2fa/disable-totp", dash)
 
-	r.File("login", func(c *aries.C) error { return serveLogin(s, c) })
-	r.File("confirm-password", func(c *aries.C) error {
-		return serveConfirmPassword(s, c)
-	})
-	r.File("sudo", func(c *aries.C) error { return serveSudo(s, c) })
-	r.File("input-totp", func(c *aries.C) error {
-		return serveInputTOTP(s, c)
-	})
-	r.File("totp", func(c *aries.C) error { return serveCheckTOTP(s, c) })
+	r.File("login", s.f(serveLogin))
+	r.File("confirm-password", s.f(serveConfirmPassword))
+	r.File("sudo", s.f(serveSudo))
+	r.File("input-totp", s.f(serveInputTOTP))
+	r.File("totp", s.f(serveCheckTOTP))
 
-	r.Get("style.css", serveStatic)
-	r.Get("favicon.ico", serveStatic)
-	r.Dir("js", serveStatic)
-	r.Dir("jslib", serveStatic)
-	r.Dir("img", serveStatic)
-	r.Dir("fonts", serveStatic)
+	static := s.static.Serve
+	r.Get("style.css", static)
+	r.Get("favicon.ico", static)
+	r.Dir("js", static)
+	r.Dir("jslib", static)
+	r.Dir("img", static)
+	r.Dir("fonts", static)
 
 	return r
 }

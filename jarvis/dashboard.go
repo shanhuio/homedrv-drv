@@ -16,78 +16,24 @@
 package jarvis
 
 import (
-	"time"
+	"strings"
 
 	"shanhu.io/aries"
 	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/timeutil"
 )
-
-const (
-	tabOverview       = "overview"
-	tabChangePassword = "change-password"
-	tabTwoFactorAuth  = "2fa"
-	tabSecurityLogs   = "security-logs"
-	tabSSHKeys        = "ssh-keys"
-)
-
-type dashboardTab struct {
-	name string
-	subs []string
-}
-
-var dashboardTabs = []dashboardTab{
-	{name: tabOverview},
-	{name: tabChangePassword},
-	{name: tabTwoFactorAuth, subs: []string{
-		"enable-totp",
-		"disable-totp",
-	}},
-	{name: tabSecurityLogs},
-	{name: tabSSHKeys},
-}
-
-func checkDashboardSub(sub string, allowedSubs []string) error {
-	// Root subs are always allowed. E.g., /overview, /2fa, etc.
-	if sub == "" {
-		return nil
-	}
-	// Otherwise, we need to check if this sub is allowed for the tab.
-	for _, s := range allowedSubs {
-		if s == sub {
-			return nil
-		}
-	}
-	return errcode.InvalidArgf("invalid path: %q", sub)
-}
-
-func checkDashboardTab(tab, sub string) error {
-	for _, t := range dashboardTabs {
-		if t.name != tab {
-			continue
-		}
-		if err := checkDashboardSub(sub, t.subs); err == nil {
-			return nil
-		}
-	}
-	return errcode.InvalidArgf("invalid state: %q or path: %q", tab, sub)
-}
 
 // DashboardDataRequest is the AJAX request to load dashboard data.
 type DashboardDataRequest struct {
-	Tab       string
-	Sub       string
-	RequestID int
+	Path string
 }
 
 // DashboardData contains the page data for a particular dashboard
 // state.
 type DashboardData struct {
-	Tab       string
-	Sub       string
-	RequestID int
-
-	Now      int64 // Unix seconds.
-	NeedSudo bool  // Needs to get sudo cookie first.
+	Path     string
+	Now      *timeutil.Timestamp // Unix seconds.
+	NeedSudo bool                // Needs to get sudo cookie first.
 
 	Overview      *DashboardOverviewData     `json:",omitempty"`
 	TwoFactorAuth *Dashboard2FAData          `json:",omitempty"`
@@ -98,18 +44,13 @@ type DashboardData struct {
 func newDashboardData(s *server, c *aries.C, req *DashboardDataRequest) (
 	*DashboardData, error,
 ) {
-	if err := checkDashboardTab(req.Tab, req.Sub); err != nil {
-		return nil, err
-	}
 	d := &DashboardData{
-		Tab:       req.Tab,
-		Sub:       req.Sub,
-		RequestID: req.RequestID,
-		Now:       time.Now().Unix(),
+		Path: req.Path,
+		Now:  timeutil.TimestampNow(),
 	}
 
-	if d.Tab == tabTwoFactorAuth &&
-		(req.Sub == "enable-totp" || req.Sub == "disable-totp") {
+	switch req.Path {
+	case "2fa/enable-totp", "2fa/disable-totp":
 		if err := s.sudoSessions.Check(c); err != nil {
 			if !errcode.IsUnauthorized(err) {
 				return nil, errcode.Annotate(err, "check sudo")
@@ -119,33 +60,37 @@ func newDashboardData(s *server, c *aries.C, req *DashboardDataRequest) (
 		}
 	}
 
-	switch d.Tab {
-	case tabOverview:
+	switch req.Path {
+	default:
+		return nil, errcode.InvalidArgf("invalid path: %q", req.Path)
+	case "overview":
 		overview, err := newDashboardOverviewData(s)
 		if err != nil {
 			return nil, err
 		}
 		d.Overview = overview
-	case tabTwoFactorAuth:
-		twoFA, err := newDashboard2FAData(s, c, req.Sub)
+	case "2fa", "2fa/enable-totp", "2fa/disable-totp":
+		sub := strings.TrimPrefix(req.Path, "2fa/")
+		twoFA, err := newDashboard2FAData(s, c, sub)
 		if err != nil {
 			return nil, err
 		}
 		d.TwoFactorAuth = twoFA
-	case tabSecurityLogs:
+	case "change-password":
+		// do nothing
+	case "security-logs":
 		dat, err := newDashboardSecurityLogsData(s, c)
 		if err != nil {
 			return nil, err
 		}
 		d.SecurityLogs = dat
-	case tabSSHKeys:
+	case "ssh-keys":
 		dat, err := newDashboardSSHKeysData(s, c)
 		if err != nil {
 			return nil, err
 		}
 		d.SSHKeys = dat
 	}
-
 	return d, nil
 }
 

@@ -158,3 +158,7 @@ func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 }
 
 func (s *server) Drive() *drive { return s.drive }
+
+func (s *server) f(f func(s *server, c *aries.C) error) aries.Func {
+	return func(c *aries.C) error { return f(s, c) }
+}
