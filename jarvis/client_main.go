@@ -140,8 +140,7 @@ func cmdSetPassword(args []string) error {
 		return errcode.InvalidArgf("new password is empty")
 	}
 	c := httputil.NewUnixClient(*sock)
-	req := &changePasswordRequest{NewPassword: *pass}
-	return c.Call("/api/set-password", req, nil)
+	return c.Call("/api/set-password", *pass, nil)
 }
 
 func cmdDisableTOTP(args []string) error {

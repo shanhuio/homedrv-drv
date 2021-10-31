@@ -16,11 +16,8 @@
 package jarvis
 
 import (
-	"log"
-
 	"shanhu.io/aries"
 	"shanhu.io/aries/identity"
-	"shanhu.io/misc/errcode"
 )
 
 func guestRouter(s *server) *aries.Router {
@@ -83,32 +80,7 @@ func apiRouter(s *server) *aries.Router {
 
 func adminRouter(s *server) *aries.Router {
 	r := aries.NewRouter()
-	r.DirService("api", adminAPIRouter(s))
-	return r
-}
-
-func adminAPIRouter(s *server) *aries.Router {
-	r := aries.NewRouter()
-	r.Call("update", func(c *aries.C, sig bool) error {
-		s.updateSignal <- sig
-		return nil
-	})
-	r.Call("recreate-doorway", func(c *aries.C) error {
-		go func() {
-			if err := recreateDoorway(s.drive); err != nil {
-				log.Println(errcode.Annotate(err, "recreate doorway"))
-			}
-		}()
-		return nil
-	})
-	r.Call("set-password", func(c *aries.C, req *changePasswordRequest) error {
-		return s.users.setPassword(rootUser, req.NewPassword, nil)
-	})
-	r.Call("disable-totp", func(c *aries.C, user string) error {
-		return s.users.disableTOTP(user)
-	})
-	r.Call("set-api-key", s.keyRegistry.apiSet)
-
+	r.DirService("api", adminTasksAPI(s))
 	return r
 }
 
