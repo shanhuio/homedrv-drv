@@ -47,6 +47,8 @@ func updateDriveToManualBuild(d *drive) error {
 }
 
 func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
+	// TODO(h8liu): Needs to regulate where systemMu is being grabbed, to
+	// avoid double grabbing the mutex.
 	d.systemMu.Lock()
 	defer d.systemMu.Unlock()
 
@@ -74,7 +76,7 @@ func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
 			return errcode.Annotate(err, "update core")
 		}
 		// Core did not update, finish the rest of the system.
-		return finishUpdate(d, rel)
+		return updateAppsAndDoorway(d, rel)
 	}
 
 	// This point should be unreachable.
@@ -204,7 +206,10 @@ func maybeFinishUpdate(d *drive) error {
 func finishUpdate(d *drive, r *drvapi.Release) error {
 	d.systemMu.Lock()
 	defer d.systemMu.Unlock()
+	return updateAppsAndDoorway(d, r)
+}
 
+func updateAppsAndDoorway(d *drive, r *drvapi.Release) error {
 	dl, err := downloader(d)
 	if err != nil {
 		return errcode.Annotate(err, "init downloader")

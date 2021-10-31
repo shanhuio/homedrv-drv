@@ -22,6 +22,7 @@ import (
 	"shanhu.io/homedrv/burmilla"
 	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/flagutil"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/jsonutil"
 	"shanhu.io/misc/subcmd"
@@ -35,6 +36,10 @@ func clientCommands() *subcmd.List {
 	c.Add("settings", "prints settings", cmdSettings)
 	c.Add("set-password", "sets password of a user", cmdSetPassword)
 	c.Add("set-api-key", "sets API key", cmdSetAPIKey)
+	c.Add(
+		"set-nextcloud-datamnt", "sets nextcloud data mount point",
+		cmdSetNextcloudDataMount,
+	)
 	c.Add("disable-totp", "disables TOTP 2FA", cmdDisableTOTP)
 	c.Add("version", "prints release info", cmdVersion)
 	c.Add(
@@ -53,11 +58,15 @@ func clientCommands() *subcmd.List {
 
 func clientMain() { clientCommands().Main() }
 
+func declareJarvisSockFlag(flags *flagutil.FlagSet) *string {
+	return flags.String(
+		"sock", "var/jarvis.sock", "jarvis unix domain socket",
+	)
+}
+
 func cmdUpdate(args []string) error {
 	flags := cmdFlags.New()
-	sock := flags.String(
-		"sock", "var/jarvis.sock", "UDS where jarvis is listening",
-	)
+	sock := declareJarvisSockFlag(flags)
 	stop := flags.Bool(
 		"stop", false, "stop the channel update cron job",
 	)
@@ -130,9 +139,7 @@ func cmdSettings(args []string) error {
 
 func cmdSetPassword(args []string) error {
 	flags := cmdFlags.New()
-	sock := flags.String(
-		"sock", "var/jarvis.sock", "jarvis unix domain socket",
-	)
+	sock := declareJarvisSockFlag(flags)
 	pass := flags.String("pass", "", "password to set")
 	args = flags.ParseArgs(args)
 
@@ -145,9 +152,7 @@ func cmdSetPassword(args []string) error {
 
 func cmdDisableTOTP(args []string) error {
 	flags := cmdFlags.New()
-	sock := flags.String(
-		"sock", "var/jarvis.sock", "jarvis unix domain socket",
-	)
+	sock := declareJarvisSockFlag(flags)
 	args = flags.ParseArgs(args)
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/disable-totp", rootUser, nil)
@@ -155,9 +160,7 @@ func cmdDisableTOTP(args []string) error {
 
 func cmdSetAPIKey(args []string) error {
 	flags := cmdFlags.New()
-	sock := flags.String(
-		"sock", "var/jarvis.sock", "jarvis unix domain socket",
-	)
+	sock := declareJarvisSockFlag(flags)
 	keyFile := flags.String("key", "", "key file")
 	args = flags.ParseArgs(args)
 
@@ -170,4 +173,15 @@ func cmdSetAPIKey(args []string) error {
 	}
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/set-api-key", key, nil)
+}
+
+func cmdSetNextcloudDataMount(args []string) error {
+	flags := cmdFlags.New()
+	sock := declareJarvisSockFlag(flags)
+	args = flags.ParseArgs(args)
+	if len(args) != 1 {
+		return errcode.InvalidArgf("expect one arg")
+	}
+	c := httputil.NewUnixClient(*sock)
+	return c.Call("/api/set-nextcloud-datamnt", args[0], nil)
 }

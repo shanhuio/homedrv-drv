@@ -97,6 +97,19 @@ func (a *apps) stubOrMake(name string) (*appStub, error) {
 
 func (a *apps) removeStub(name string) { delete(a.m, name) }
 
+func (a *apps) reinstall(name string) error {
+	m := a.state.meta(name)
+	if m == nil {
+		return errcode.NotFoundf("app %q not installed yet", name)
+	}
+
+	app, err := a.stub(name)
+	if err != nil {
+		return errcode.Annotatef(err, "get stub of %q", name)
+	}
+	return app.change(m, m)
+}
+
 func (a *apps) apply(anchored []string) error {
 	closure := newAppClosure()
 	for _, name := range anchored {
