@@ -28,6 +28,7 @@ const (
 	keyMainDomain          = "main.domain"
 	keyNextcloudDomain     = "nextcloud.domain"
 	keyNextcloudDomains    = "nextcloud.domains"
+	keyNextcloudDataMount  = "nextcloud.data-mount"
 	keyFabricsServerDomain = "fabrics-server.domain"
 	keyCustomSubs          = "custom.subs"
 

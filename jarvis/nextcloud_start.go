@@ -28,6 +28,7 @@ type nextcloudConfig struct {
 	dbPassword    string
 	adminPassword string
 	redisPassword string
+	dataMount     string
 }
 
 func nextcloudCreateCont(
@@ -57,6 +58,13 @@ func nextcloudCreateCont(
 		Host: volName,
 		Cont: "/var/www/html",
 	})
+	if config.dataMount != "" {
+		contConfig.Mounts = append(contConfig.Mounts, &dock.ContMount{
+			Type: dock.MountBind,
+			Host: config.dataMount,
+			Cont: "/var/www/html/data",
+		})
+	}
 	contConfig.Env = map[string]string{
 		"POSTGRES_HOST":       drive.cont(namePostgres),
 		"POSTGRES_DB":         "nextcloud",

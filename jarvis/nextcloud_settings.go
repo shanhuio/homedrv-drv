@@ -86,10 +86,21 @@ func loadNextcloudConfig(d *drive) (*nextcloudConfig, error) {
 	if err != nil {
 		return nil, errcode.Annotate(err, "load domains")
 	}
+
+	dataMount, err := settings.String(d.settings, keyNextcloudDataMount)
+	if err != nil {
+		if errcode.IsNotFound(err) {
+			dataMount = ""
+		} else {
+			return nil, errcode.Annotate(err, "read nextcloud data mount")
+		}
+	}
+
 	return &nextcloudConfig{
 		domains:       domains,
 		dbPassword:    dbPass,
 		adminPassword: adminPass,
 		redisPassword: redisPass,
+		dataMount:     dataMount,
 	}, nil
 }
