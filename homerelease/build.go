@@ -74,6 +74,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		"doorway",
 		"ncfront",
 		"homeboot",
+		"toolbox",
 	} {
 		log.Printf("checksuming %s", d)
 		tgz := filePath(b.out, repo, d+".tgz")
@@ -152,6 +153,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		{name: "doorway", id: &arts.Doorway},
 		{name: "ncfront", id: &arts.NCFront},
 		{name: "homeboot", id: &arts.HomeBoot},
+		{name: "toolbox", id: &arts.Toolbox},
 	} {
 		id := images[entry.name]
 		*entry.id = id.id

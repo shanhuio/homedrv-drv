@@ -147,9 +147,10 @@ func (d *Downloader) DownloadRelease(c *DownloadConfig) (
 		hash: r.Jarvis,
 	}}
 	if !c.CoreOnly {
-		images = append(images, &downloadImage{
-			name: "doorway", hash: r.Doorway,
-		})
+		images = append(images, []*downloadImage{
+			{name: "doorway", hash: r.Doorway},
+			{name: "toolbox", hash: r.Toolbox},
+		}...)
 
 		images = append(images, []*downloadImage{
 			{name: "redis", hash: r.Redis},

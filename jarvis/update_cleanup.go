@@ -31,12 +31,16 @@ func releaseImagesToKeep(r *drvapi.Release) map[string]bool {
 		for _, img := range []string{
 			arts.Jarvis,
 			arts.Doorway,
+			arts.Toolbox,
 			arts.NCFront,
 			arts.Nextcloud,
 			arts.Redis,
 			arts.Postgres,
 			arts.InfluxDB,
 		} {
+			if img == "" {
+				continue
+			}
 			if strings.Index(img, ":") < 0 {
 				img = "sha256:" + img
 			}

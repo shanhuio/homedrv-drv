@@ -47,6 +47,7 @@ type Artifacts struct {
 	// Docker images
 	Jarvis  string
 	Doorway string
+	Toolbox string
 
 	// HomeBoot is saved for provisioning only.
 	HomeBoot string
