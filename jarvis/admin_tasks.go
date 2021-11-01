@@ -54,6 +54,7 @@ func (s *adminTasks) apiSetAPIKey(c *aries.C, keyBytes []byte) error {
 
 func (s *adminTasks) apiSetNextcloudDataMount(c *aries.C, m string) error {
 	d := s.server.drive
+
 	if err := d.settings.Set(keyNextcloudDataMount, m); err != nil {
 		return errcode.Annotate(err, "set nextcloud data mount")
 	}
