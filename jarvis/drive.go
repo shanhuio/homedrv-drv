@@ -89,7 +89,7 @@ func loadIdentity(f string) ([]byte, error) {
 	if f == "" {
 		f = "var/jarvis.pem"
 	}
-	return creds.ReadPrivateFile(f)
+	return osutil.ReadPrivateFile(f)
 }
 
 func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {

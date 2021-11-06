@@ -52,12 +52,11 @@ func (d *Dialer) hostToken(ctx context.Context) (string, string, error) {
 			Scheme: "https",
 			Host:   host,
 		}).String(),
-		User:        d.User,
-		Key:         d.Key,
-		PemFile:     d.KeyFile,
-		Homeless:    true,
-		NoTTY:       true,
-		NoPermCheck: true,
+		User:     d.User,
+		Key:      d.Key,
+		PemFile:  d.KeyFile,
+		Homeless: true,
+		NoTTY:    true,
 	}
 	if d.Transport != nil {
 		cep.Transport = d.Transport
