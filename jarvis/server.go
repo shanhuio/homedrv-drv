@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"shanhu.io/aries"
-	"shanhu.io/aries/oauth"
+	"shanhu.io/aries/oauth2"
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/misc/errcode"
@@ -35,7 +35,7 @@ type server struct {
 	appRegistry *appRegistry
 	apps        *apps
 
-	auth          *oauth.Module
+	auth          *oauth2.Module
 	sudoSessions  *sudoSessions
 	loginSessions *loginSessions
 	totp          *totp
@@ -107,7 +107,7 @@ func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 	sudoSessions := newSudoSessions(sessionKey)
 	loginSessions := newLoginSessions(sessionKey)
 	keyRegistry := newKeyRegistry(back.users)
-	auth := oauth.NewModule(&oauth.Config{
+	auth := oauth2.NewModule(&oauth2.Config{
 		SessionKey: []byte(sessionKey),
 		PreSignOut: func(c *aries.C) error {
 			sudoSessions.ClearCookie(c)
