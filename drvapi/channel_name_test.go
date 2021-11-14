@@ -29,6 +29,7 @@ func TestChannelName(t *testing.T) {
 		{"alpha", "alpha", "amd64"},
 		{"stable-amd64", "stable", "amd64"},
 		{"stable-arm64", "stable", "arm64"},
+		{"alpha-arm64", "alpha", "arm64"},
 	} {
 		parsed := ParseChannelName(test.name)
 		if parsed.Base != test.base {
