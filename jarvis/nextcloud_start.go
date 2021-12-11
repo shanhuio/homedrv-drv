@@ -23,12 +23,18 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
+type nextcloudExtraMount struct {
+	host      string
+	container string
+}
+
 type nextcloudConfig struct {
 	domains       []string
 	dbPassword    string
 	adminPassword string
 	redisPassword string
 	dataMount     string
+	extraMounts   []*nextcloudExtraMount
 }
 
 func nextcloudCreateCont(
@@ -63,6 +69,13 @@ func nextcloudCreateCont(
 			Type: dock.MountBind,
 			Host: config.dataMount,
 			Cont: "/var/www/html/data",
+		})
+	}
+	for _, extra := range config.extraMounts {
+		contConfig.Mounts = append(contConfig.Mounts, &dock.ContMount{
+			Type: dock.MountBind,
+			Host: extra.host,
+			Cont: extra.container,
 		})
 	}
 	contConfig.Env = map[string]string{
