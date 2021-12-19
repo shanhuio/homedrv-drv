@@ -64,6 +64,20 @@ func (s *adminTasks) apiSetNextcloudDataMount(c *aries.C, m string) error {
 	return d.apps.reinstall(nameNextcloud)
 }
 
+func (s *adminTasks) apiSetNextcloudExtraMounts(
+	c *aries.C, m map[string]string,
+) error {
+	d := s.server.drive
+
+	if err := d.settings.Set(keyNextcloudExtraMounts, m); err != nil {
+		return errcode.Annotate(err, "set nextcloud extra mounts")
+	}
+
+	d.systemMu.Lock()
+	defer d.systemMu.Unlock()
+	return d.apps.reinstall(nameNextcloud)
+}
+
 func adminTasksAPI(s *server) *aries.Router {
 	tasks := &adminTasks{server: s}
 
@@ -74,5 +88,6 @@ func adminTasksAPI(s *server) *aries.Router {
 	r.Call("disable-totp", tasks.apiDisableTOTP)
 	r.Call("set-api-key", tasks.apiSetAPIKey)
 	r.Call("set-nextcloud-datamnt", tasks.apiSetNextcloudDataMount)
+	r.Call("set-nextcloud-extramnt", tasks.apiSetNextcloudExtraMounts)
 	return r
 }

@@ -18,6 +18,7 @@ package jarvis
 import (
 	"fmt"
 	"io/ioutil"
+	"strings"
 
 	"shanhu.io/homedrv/burmilla"
 	"shanhu.io/homedrv/drvapi"
@@ -184,4 +185,25 @@ func cmdSetNextcloudDataMount(args []string) error {
 	}
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/set-nextcloud-datamnt", args[0], nil)
+}
+
+func cmdSetNextcloudExtraMount(args []string) error {
+	flags := cmdFlags.New()
+	sock := declareJarvisSockFlag(flags)
+	args = flags.ParseArgs(args)
+
+	m := make(map[string]string)
+	for _, mnt := range args {
+		colon := strings.Index(mnt, ":")
+		if colon < 0 {
+			m[mnt] = mnt
+		} else {
+			host := mnt[:colon]
+			cont := mnt[colon+1:]
+			m[host] = cont
+		}
+	}
+
+	c := httputil.NewUnixClient(*sock)
+	return c.Call("/api/set-nextcloud-extramnt", m, nil)
 }

@@ -17,6 +17,7 @@ package jarvis
 
 import (
 	"fmt"
+	"sort"
 
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces/settings"
@@ -96,11 +97,36 @@ func loadNextcloudConfig(d *drive) (*nextcloudConfig, error) {
 		}
 	}
 
+	var extraMountMap map[string]string
+	if err := d.settings.Get(
+		keyNextcloudExtraMounts, &extraMountMap,
+	); err != nil {
+		if errcode.IsNotFound(err) {
+			extraMountMap = nil
+		} else {
+			return nil, errcode.Annotate(err, "read nextcloud extra mounts")
+		}
+	}
+
+	var extraMounts []*nextcloudExtraMount
+	if len(extraMountMap) > 0 {
+		for k, v := range extraMountMap {
+			extraMounts = append(extraMounts, &nextcloudExtraMount{
+				host:      k,
+				container: v,
+			})
+		}
+		sort.Slice(extraMounts, func(i, j int) bool {
+			return extraMounts[i].host < extraMounts[j].host
+		})
+	}
+
 	return &nextcloudConfig{
 		domains:       domains,
 		dbPassword:    dbPass,
 		adminPassword: adminPass,
 		redisPassword: redisPass,
 		dataMount:     dataMount,
+		extraMounts:   extraMounts,
 	}, nil
 }
