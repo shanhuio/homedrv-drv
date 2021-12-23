@@ -41,6 +41,10 @@ func clientCommands() *subcmd.List {
 		"set-nextcloud-datamnt", "sets nextcloud data mount point",
 		cmdSetNextcloudDataMount,
 	)
+	c.Add(
+		"set-nextcloud-extramnt", "sets nextcloud extra mount points",
+		cmdSetNextcloudExtraMount,
+	)
 	c.Add("disable-totp", "disables TOTP 2FA", cmdDisableTOTP)
 	c.Add("version", "prints release info", cmdVersion)
 	c.Add(
