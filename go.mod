@@ -9,7 +9,7 @@ require (
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	modernc.org/sqlite v1.14.3
-	shanhu.io/aries v0.0.0-20211219232307-e1e12d665210
+	shanhu.io/aries v0.0.0-20211227015423-58a74ac39d20
 	shanhu.io/misc v0.0.0-20211219232220-7c32d2d7e486
 	shanhu.io/pisces v0.0.0-20211219232356-0b2ae157beaf
 	shanhu.io/virgo v0.0.0-20211212010407-b9ad883b43d2
@@ -24,7 +24,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/miekg/dns v1.1.44 // indirect
+	github.com/miekg/dns v1.1.45 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f // indirect
@@ -39,8 +39,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.35.19 // indirect
-	modernc.org/ccgo/v3 v3.12.95 // indirect
-	modernc.org/libc v1.11.105 // indirect
+	modernc.org/ccgo/v3 v3.13.0 // indirect
+	modernc.org/libc v1.12.0 // indirect
 	modernc.org/mathutil v1.4.1 // indirect
 	modernc.org/memory v1.0.5 // indirect
 	modernc.org/opt v0.1.1 // indirect
