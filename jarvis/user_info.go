@@ -20,8 +20,6 @@ import (
 	"shanhu.io/misc/errcode"
 )
 
-const rootUser = "root"
-
 type userInfo struct {
 	Name string
 
