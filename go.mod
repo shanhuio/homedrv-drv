@@ -4,15 +4,15 @@ go 1.17
 
 require (
 	github.com/gorilla/websocket v1.4.2
-	github.com/hashicorp/mdns v1.0.4
+	github.com/hashicorp/mdns v1.0.5
 	github.com/lib/pq v1.10.4
 	github.com/pquerna/otp v1.3.0
-	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
-	modernc.org/sqlite v1.14.3
+	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
+	modernc.org/sqlite v1.14.4
 	shanhu.io/aries v0.0.0-20211227015423-58a74ac39d20
-	shanhu.io/misc v0.0.0-20211219232220-7c32d2d7e486
+	shanhu.io/misc v0.0.0-20220103042840-3c06419a71a9
 	shanhu.io/pisces v0.0.0-20211219232356-0b2ae157beaf
-	shanhu.io/virgo v0.0.0-20211212010407-b9ad883b43d2
+	shanhu.io/virgo v0.0.0-20220105190620-df9cc2f00a17
 )
 
 require (
@@ -27,9 +27,9 @@ require (
 	github.com/miekg/dns v1.1.45 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f // indirect
+	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/sys v0.0.0-20220111092808-5a964db01320 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.8 // indirect
@@ -38,9 +38,9 @@ require (
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
-	modernc.org/cc/v3 v3.35.19 // indirect
-	modernc.org/ccgo/v3 v3.13.0 // indirect
-	modernc.org/libc v1.12.0 // indirect
+	modernc.org/cc/v3 v3.35.22 // indirect
+	modernc.org/ccgo/v3 v3.14.0 // indirect
+	modernc.org/libc v1.13.2 // indirect
 	modernc.org/mathutil v1.4.1 // indirect
 	modernc.org/memory v1.0.5 // indirect
 	modernc.org/opt v0.1.1 // indirect
