@@ -86,6 +86,9 @@ func (a *apps) stubOrMake(name string) (*appStub, error) {
 	if ok {
 		return stub, nil
 	}
+	if a.maker == nil {
+		return nil, errcode.Internalf("app maker not set yet")
+	}
 
 	stub, err := a.maker.makeStub(name)
 	if err != nil {
