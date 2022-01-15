@@ -139,14 +139,7 @@ func install(d *drive, r *drvapi.Release) error {
 	return nil
 }
 
-func maybeInstall(d *drive) error {
-	installed, err := d.settings.Has(keyBuild)
-	if err != nil {
-		return errcode.Annotate(err, "check install")
-	}
-	if installed {
-		return nil
-	}
+func downloadAndInstall(d *drive) error {
 	if d.config.Build == "" && d.config.Channel == "" {
 		return errcode.InvalidArgf("install target not specified")
 	}
@@ -161,9 +154,11 @@ func maybeInstall(d *drive) error {
 	if err != nil {
 		return errcode.Annotate(err, "download release")
 	}
+
 	if err := install(d, release); err != nil {
 		return errcode.Annotate(err, "install failed")
 	}
+
 	if err := d.settings.Set(keyBuild, release); err != nil {
 		return errcode.Annotate(err, "commit build")
 	}

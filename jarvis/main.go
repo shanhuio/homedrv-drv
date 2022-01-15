@@ -100,18 +100,23 @@ func runServer(homeDir, addr string) error {
 	}
 
 	go func(d *drive, updateSignal <-chan bool) {
-		if err := maybeFinishUpdate(d); err != nil {
-			log.Println("update failed: ", err)
-			// It is important to proceed here, as the next update might be
-			// able to fix the issue. At this point, the apps are in undefiend
-			// state, but jarvis is already on the latest.
+		installed, err := d.settings.Has(keyBuild)
+		if err != nil {
+			// Basic install check failed.
+			log.Println("check installed: ", err)
+		} else if !installed { // This is first time.
+			if err := downloadAndInstall(d); err != nil {
+				log.Println("install failed: ", err)
+			}
+		} else { // Not first time.
+			if err := maybeFinishUpdate(d); err != nil {
+				log.Println("update failed: ", err)
+				// It is important to proceed here, as the next update might be
+				// able to fix the issue. At this point, the apps are in
+				// undefiend state, but jarvis is already on the latest.
+			}
+			fixThings(d)
 		}
-
-		if err := maybeInstall(d); err != nil {
-			log.Println("install failed: ", err)
-		}
-
-		fixThings(d)
 
 		if d.config.Bare {
 			log.Println("running in bare mode, no update in background")
