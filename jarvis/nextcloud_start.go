@@ -37,6 +37,21 @@ type nextcloudConfig struct {
 	extraMounts   []*nextcloudExtraMount
 }
 
+func networkCIDRs(d *drive) ([]string, error) {
+	info, err := dock.InspectNetwork(d.dock, d.network())
+	if err != nil {
+		return nil, err
+	}
+	if info.IPAM == nil {
+		return nil, nil
+	}
+	var cidrs []string
+	for _, c := range info.IPAM.Config {
+		cidrs = append(cidrs, c.Subnet)
+	}
+	return cidrs, nil
+}
+
 func nextcloudCreateCont(
 	drive *drive, d *dock.Client, image string, config *nextcloudConfig,
 ) (*dock.Cont, error) {
