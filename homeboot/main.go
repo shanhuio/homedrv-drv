@@ -31,7 +31,6 @@ func Main() {
 		cmdCloudConfig,
 	)
 	c.Add("enroll", "manually enroll an endpoint using passcode", cmdEnroll)
-	c.Add("serve", "serves a local http service for installation", cmdServe)
 
 	c.Main()
 }
