@@ -49,10 +49,11 @@ func isFromLocal(c *aries.C) bool {
 	return net.ParseIP(host) != nil || strings.HasSuffix(host, ".local")
 }
 
-func makeService(s *server) aries.Service {
+func makeService(s *server, admin aries.Service) aries.Service {
 	set := &aries.ServiceSet{
 		Auth:  s.auth.Auth(),
 		User:  userRouter(s),
+		Admin: admin,
 		Guest: guestRouter(s),
 	}
 	local := localRouter(s)
@@ -129,7 +130,7 @@ func runServer(homeDir, addr string) error {
 		}
 	}()
 
-	service := makeService(s)
+	service := makeService(s, adminService)
 	if err := aries.ListenAndServe(addr, service); err != nil {
 		return errcode.Annotate(err, "listen and serve")
 	}
