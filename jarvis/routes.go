@@ -79,9 +79,3 @@ func adminRouter(s *server) *aries.Router {
 	r.DirService("api", adminTasksAPI(s))
 	return r
 }
-
-func localRouter(s *server) *aries.Router {
-	r := aries.NewRouter()
-	r.Index(aries.StringFunc("welcome"))
-	return r
-}

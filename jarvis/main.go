@@ -18,8 +18,6 @@ package jarvis
 import (
 	"flag"
 	"log"
-	"net"
-	"strings"
 
 	"shanhu.io/aries"
 	drvcfg "shanhu.io/homedrv/drvconfig"
@@ -40,30 +38,13 @@ func Main() {
 	clientMain()
 }
 
-func isFromLocal(c *aries.C) bool {
-	host := c.Req.Host
-	if h := c.Req.Header.Get("X-Forwarded-Host"); h != "" {
-		host = h
-	}
-	host = strings.TrimSuffix(host, ".")
-	return net.ParseIP(host) != nil || strings.HasSuffix(host, ".local")
-}
-
 func makeService(s *server, admin aries.Service) aries.Service {
-	set := &aries.ServiceSet{
+	return &aries.ServiceSet{
 		Auth:  s.auth.Auth(),
 		User:  userRouter(s),
 		Admin: admin,
 		Guest: guestRouter(s),
 	}
-	local := localRouter(s)
-
-	return aries.Func(func(c *aries.C) error {
-		if isFromLocal(c) {
-			return local.Serve(c)
-		}
-		return set.Serve(c)
-	})
 }
 
 func runServer(homeDir, addr string) error {
