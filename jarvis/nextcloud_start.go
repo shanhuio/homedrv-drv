@@ -39,7 +39,7 @@ type nextcloudConfig struct {
 }
 
 func networkCIDRs(c homeapp.Core) ([]string, error) {
-	network := appNetwork(c)
+	network := homeapp.Network(c)
 	info, err := dock.InspectNetwork(c.Docker(), network)
 	if err != nil {
 		return nil, err
@@ -61,11 +61,11 @@ func nextcloudCreateCont(
 		return nil, errcode.InvalidArgf("no image specified")
 	}
 	labels := drvcfg.NewNameLabel(nameNextcloud)
-	volName := appVol(c, nameNextcloud)
+	volName := homeapp.Vol(c, nameNextcloud)
 
 	contConfig := &dock.ContConfig{
-		Name:          appCont(c, nameNextcloud),
-		Network:       appNetwork(c),
+		Name:          homeapp.Cont(c, nameNextcloud),
+		Network:       homeapp.Network(c),
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
 		Labels:        labels,
@@ -96,11 +96,11 @@ func nextcloudCreateCont(
 		})
 	}
 	contConfig.Env = map[string]string{
-		"POSTGRES_HOST":       appCont(c, namePostgres),
+		"POSTGRES_HOST":       homeapp.Cont(c, namePostgres),
 		"POSTGRES_DB":         "nextcloud",
 		"POSTGRES_USER":       "nextcloud",
 		"POSTGRES_PASSWORD":   config.dbPassword,
-		"REDIS_HOST":          appCont(c, nameRedis),
+		"REDIS_HOST":          homeapp.Cont(c, nameRedis),
 		"REDIS_HOST_PASSWORD": config.redisPassword,
 
 		"NEXTCLOUD_ADMIN_USER":     "admin",

@@ -20,6 +20,7 @@ import (
 	"sort"
 
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/apputil"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces/settings"
 )
@@ -65,11 +66,11 @@ func loadNextcloudConfig(c homeapp.Core) (*nextcloudConfig, error) {
 		return nil, errcode.Annotate(err, "read redis password")
 	}
 
-	adminPass, err := readPasswordOrSetRandom(s, keyNextcloudAdminPass)
+	adminPass, err := apputil.ReadPasswordOrSetRandom(s, keyNextcloudAdminPass)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read init password")
 	}
-	dbPass, err := readPasswordOrSetRandom(s, keyNextcloudDBPass)
+	dbPass, err := apputil.ReadPasswordOrSetRandom(s, keyNextcloudDBPass)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read db password")
 	}

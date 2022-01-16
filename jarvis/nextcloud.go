@@ -36,7 +36,7 @@ func newNextcloud(c homeapp.Core) *nextcloud {
 }
 
 func (n *nextcloud) cont() *dock.Cont {
-	cont := appCont(n.core, nameNextcloud)
+	cont := homeapp.Cont(n.core, nameNextcloud)
 	return dock.NewCont(n.core.Docker(), cont)
 }
 
@@ -230,7 +230,7 @@ func (n *nextcloud) Change(from, to *drvapi.AppMeta) error {
 		if err := psql.dropDB(nameNextcloud); err != nil {
 			return errcode.Annotate(err, "drop nextcloud db")
 		}
-		vol := appVol(n.core, nameNextcloud)
+		vol := homeapp.Vol(n.core, nameNextcloud)
 		if err := dock.RemoveVolume(n.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
@@ -269,7 +269,7 @@ func (n *nextcloud) registerDomains(domains []string) error {
 		App: nameNextcloud,
 		Map: make(map[string]*homeapp.DomainEntry),
 	}
-	ncFrontAddr := appCont(n.core, nameNCFront) + ":8080"
+	ncFrontAddr := homeapp.Cont(n.core, nameNCFront) + ":8080"
 	for _, d := range domains {
 		m.Map[d] = &homeapp.DomainEntry{Dest: ncFrontAddr}
 	}

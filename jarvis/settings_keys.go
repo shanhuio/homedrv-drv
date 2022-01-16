@@ -19,28 +19,30 @@ const (
 	keySessionHMAC = "session.hmac"
 
 	// Init passwords.
-	keyJarvisPass         = "jarvis.pass"
-	keyPostgresPass       = "postgress.pass"
-	keyNextcloudDBPass    = "nextcloud-db.pass"
-	keyNextcloudAdminPass = "nextcloud-admin.pass"
-	keyRedisPass          = "redis.pass"
+	keyJarvisPass   = "jarvis.pass"
+	keyPostgresPass = "postgress.pass"
+	keyRedisPass    = "redis.pass"
 
-	keyMainDomain           = "main.domain"
+	keyMainDomain = "main.domain"
+
+	// moved to nextcloud package
+	keyNextcloudDBPass      = "nextcloud-db.pass"
+	keyNextcloudAdminPass   = "nextcloud-admin.pass"
 	keyNextcloudDomain      = "nextcloud.domain"
 	keyNextcloudDomains     = "nextcloud.domains"
 	keyNextcloudDataMount   = "nextcloud.data-mount"
 	keyNextcloudExtraMounts = "nextcloud.extra-mounts"
-	keyFabricsServerDomain  = "fabrics-server.domain"
-	keyCustomSubs           = "custom.subs"
+	keyNextcloud18Fixed     = "nextcloud-18-fixed"
+	keyNextcloud19Fixed     = "nextcloud-19-fixed"
+	keyNextcloud20Fixed     = "nextcloud-20-fixed"
+	keyNextcloud21Fixed     = "nextcloud-21-fixed"
+
+	keyFabricsServerDomain = "fabrics-server.domain"
+	keyCustomSubs          = "custom.subs"
 
 	keyBuild         = "build"
 	keyBuildUpdating = "build-updating"
 	keyManualBuild   = "manual-build"
-
-	keyNextcloud18Fixed = "nextcloud-18-fixed"
-	keyNextcloud19Fixed = "nextcloud-19-fixed"
-	keyNextcloud20Fixed = "nextcloud-20-fixed"
-	keyNextcloud21Fixed = "nextcloud-21-fixed"
 
 	keyIdentity = "identity"
 

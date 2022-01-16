@@ -26,15 +26,10 @@ import (
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/jsonx"
-	"shanhu.io/misc/rand"
 	"shanhu.io/misc/strutil"
 	"shanhu.io/misc/tarutil"
 	"shanhu.io/virgo/dock"
 )
-
-func randPassword() string {
-	return rand.Letters(16)
-}
 
 var errSameImage = errors.New("same image")
 

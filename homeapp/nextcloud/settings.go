@@ -13,26 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
-import (
-	"shanhu.io/misc/errcode"
-	"shanhu.io/pisces/settings"
+// Settings keys.
+const (
+	KeyDBPass      = "nextcloud-db.pass"
+	KeyAdminPass   = "nextcloud-admin.pass"
+	KeyDomain      = "nextcloud.domain"
+	KeyDomains     = "nextcloud.domains"
+	KeyDataMount   = "nextcloud.data-mount"
+	KeyExtraMounts = "nextcloud.extra-mounts"
+
+	Key18Fixed = "nextcloud-18-fixed"
+	Key19Fixed = "nextcloud-19-fixed"
+	Key20Fixed = "nextcloud-20-fixed"
+	Key21Fixed = "nextcloud-21-fixed"
 )
-
-func readPasswordOrSetRandom(
-	s settings.Settings, k string,
-) (string, error) {
-	pwd, err := settings.String(s, k)
-	if err != nil {
-		if errcode.IsNotFound(err) {
-			pwd := randPassword()
-			if err := s.Set(k, pwd); err != nil {
-				return "", errcode.Annotate(err, "set password")
-			}
-			return pwd, nil
-		}
-		return "", errcode.Annotate(err, "read password")
-	}
-	return pwd, nil
-}

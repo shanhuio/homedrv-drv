@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package apputil
 
 import (
 	"testing"
@@ -27,12 +27,12 @@ func TestReadPassword(t *testing.T) {
 	s := settings.NewTable(tables)
 
 	const key = "password"
-	pwd, err := readPasswordOrSetRandom(s, key)
+	pwd, err := ReadPasswordOrSetRandom(s, key)
 	if err != nil {
 		t.Fatal("set password: ", err)
 	}
 
-	again, err := readPasswordOrSetRandom(s, key)
+	again, err := ReadPasswordOrSetRandom(s, key)
 	if err != nil {
 		t.Fatal("read password: ", err)
 	}

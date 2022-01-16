@@ -144,14 +144,14 @@ func (d *drive) dialServer() (*httputil.Client, error) {
 	return creds.DialEndpoint(d.creds)
 }
 
-func (d *drive) cont(s string) string { return appVol(d, s) }
-func (d *drive) vol(s string) string  { return appVol(d, s) }
+func (d *drive) cont(s string) string { return homeapp.Vol(d, s) }
+func (d *drive) vol(s string) string  { return homeapp.Vol(d, s) }
 
 func (d *drive) image(s string) string {
 	return drvcfg.Image(d.config.Naming, s)
 }
 
-func (d *drive) network() string { return appNetwork(d) }
+func (d *drive) network() string { return homeapp.Network(d) }
 func (d *drive) core() string    { return drvcfg.Core(d.config.Naming) }
 func (d *drive) oldCore() string { return drvcfg.OldCore(d.config.Naming) }
 

@@ -13,21 +13,32 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package apputil
 
 import (
-	drvcfg "shanhu.io/homedrv/drvconfig"
-	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/rand"
+	"shanhu.io/pisces/settings"
 )
 
-func appCont(c homeapp.Core, s string) string {
-	return drvcfg.Name(c.Naming(), s)
+func randPassword() string {
+	return rand.Letters(16)
 }
 
-func appNetwork(c homeapp.Core) string {
-	return drvcfg.Network(c.Naming())
-}
-
-func appVol(c homeapp.Core, s string) string {
-	return drvcfg.Name(c.Naming(), s)
+// ReadPasswordOrSetRandom reads a string password or set a random one.
+func ReadPasswordOrSetRandom(
+	s settings.Settings, k string,
+) (string, error) {
+	pwd, err := settings.String(s, k)
+	if err != nil {
+		if errcode.IsNotFound(err) {
+			pwd := randPassword()
+			if err := s.Set(k, pwd); err != nil {
+				return "", errcode.Annotate(err, "set password")
+			}
+			return pwd, nil
+		}
+		return "", errcode.Annotate(err, "read password")
+	}
+	return pwd, nil
 }

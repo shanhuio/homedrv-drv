@@ -22,6 +22,7 @@ import (
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/apputil"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/tarutil"
 	"shanhu.io/virgo/dock"
@@ -45,7 +46,7 @@ func (r *redis) writeConfig(cont *dock.Cont, pwd string) error {
 }
 
 func (r *redis) cont() *dock.Cont {
-	return dock.NewCont(r.core.Docker(), appCont(r.core, nameRedis))
+	return dock.NewCont(r.core.Docker(), homeapp.Cont(r.core, nameRedis))
 }
 
 func (r *redis) createCont(image, pwd string) (*dock.Cont, error) {
@@ -57,8 +58,8 @@ func (r *redis) createCont(image, pwd string) (*dock.Cont, error) {
 	}
 
 	config := &dock.ContConfig{
-		Name:          appCont(r.core, nameRedis),
-		Network:       appNetwork(r.core),
+		Name:          homeapp.Cont(r.core, nameRedis),
+		Network:       homeapp.Network(r.core),
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
 		Cmd:           []string{"redis-server", "/etc/redis.conf"},
@@ -96,7 +97,7 @@ func (r *redis) update(image string, force bool) error {
 	if image == "" {
 		return errcode.InvalidArgf("redis image empty")
 	}
-	contName := appCont(r.core, nameRedis)
+	contName := homeapp.Cont(r.core, nameRedis)
 	d := r.core.Docker()
 	if !force {
 		if err := dropContIfDifferent(d, contName, image); err != nil {
@@ -117,7 +118,7 @@ func (r *redis) update(image string, force bool) error {
 }
 
 func (r *redis) password() (string, error) {
-	return readPasswordOrSetRandom(r.core.Settings(), keyRedisPass)
+	return apputil.ReadPasswordOrSetRandom(r.core.Settings(), keyRedisPass)
 }
 
 func (r *redis) Change(from, to *drvapi.AppMeta) error {
@@ -128,7 +129,7 @@ func (r *redis) Change(from, to *drvapi.AppMeta) error {
 	}
 
 	if to == nil {
-		vol := appVol(r.core, nameRedis)
+		vol := homeapp.Vol(r.core, nameRedis)
 		if err := dock.RemoveVolume(r.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}

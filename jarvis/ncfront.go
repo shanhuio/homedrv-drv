@@ -30,7 +30,7 @@ type ncfront struct {
 func newNCFront(c homeapp.Core) *ncfront { return &ncfront{core: c} }
 
 func (n *ncfront) cont() *dock.Cont {
-	return dock.NewCont(n.core.Docker(), appCont(n.core, nameNCFront))
+	return dock.NewCont(n.core.Docker(), homeapp.Cont(n.core, nameNCFront))
 }
 
 func (n *ncfront) createCont(image string) (*dock.Cont, error) {
@@ -38,10 +38,10 @@ func (n *ncfront) createCont(image string) (*dock.Cont, error) {
 		return nil, errcode.InvalidArgf("no image specified")
 	}
 
-	nextcloudAddr := appCont(n.core, nameNextcloud) + ":80"
+	nextcloudAddr := homeapp.Cont(n.core, nameNextcloud) + ":80"
 	config := &dock.ContConfig{
-		Name:          appCont(n.core, nameNCFront),
-		Network:       appNetwork(n.core),
+		Name:          homeapp.Cont(n.core, nameNCFront),
+		Network:       homeapp.Network(n.core),
 		Env:           map[string]string{"NEXTCLOUD": nextcloudAddr},
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
@@ -63,7 +63,7 @@ func (n *ncfront) install(image string) error {
 }
 
 func (n *ncfront) update(image string) error {
-	cont := appCont(n.core, nameNCFront)
+	cont := homeapp.Cont(n.core, nameNCFront)
 	if err := dropContIfDifferent(n.core.Docker(), cont, image); err != nil {
 		if err == errSameImage {
 			return nil

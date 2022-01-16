@@ -24,6 +24,7 @@ import (
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/apputil"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/sqlx"
 	"shanhu.io/virgo/dock"
@@ -39,7 +40,7 @@ func newPostgres(c homeapp.Core) *postgres {
 
 func (p *postgres) cont() *dock.Cont {
 	d := p.core.Docker()
-	return dock.NewCont(d, appCont(p.core, namePostgres))
+	return dock.NewCont(d, homeapp.Cont(p.core, namePostgres))
 }
 
 func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
@@ -52,18 +53,18 @@ func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
 
 	d := p.core.Docker()
 	labels := drvcfg.NewNameLabel(namePostgres)
-	volName := appVol(p.core, namePostgres)
+	volName := homeapp.Vol(p.core, namePostgres)
 	if _, err := dock.CreateVolumeIfNotExist(
 		d, volName, &dock.VolumeConfig{Labels: labels},
 	); err != nil {
 		return nil, errcode.Annotate(err, "create postgres volume")
 	}
 
-	name := appCont(p.core, namePostgres)
+	name := homeapp.Cont(p.core, namePostgres)
 
 	config := &dock.ContConfig{
 		Name:    name,
-		Network: appNetwork(p.core),
+		Network: homeapp.Network(p.core),
 		Env:     map[string]string{"POSTGRES_PASSWORD": pwd},
 		Mounts: []*dock.ContMount{{
 			Type: dock.MountVolume,
@@ -99,7 +100,7 @@ func (p *postgres) update(image string) error {
 	if image == "" {
 		return errcode.InvalidArgf("postgres image empty")
 	}
-	contName := appCont(p.core, namePostgres)
+	contName := homeapp.Cont(p.core, namePostgres)
 	d := p.core.Docker()
 	if err := dropContIfDifferent(d, contName, image); err != nil {
 		if err == errSameImage {
@@ -115,7 +116,7 @@ func (p *postgres) open(user, pwd, db string) (*sqlx.DB, error) {
 	u := &url.URL{
 		Scheme: "postgres",
 		User:   url.UserPassword(user, pwd),
-		Host:   appCont(p.core, namePostgres),
+		Host:   homeapp.Cont(p.core, namePostgres),
 		Path:   path.Join("/", db),
 	}
 	q := make(url.Values)
@@ -126,7 +127,7 @@ func (p *postgres) open(user, pwd, db string) (*sqlx.DB, error) {
 }
 
 func (p *postgres) password() (string, error) {
-	return readPasswordOrSetRandom(p.core.Settings(), keyPostgresPass)
+	return apputil.ReadPasswordOrSetRandom(p.core.Settings(), keyPostgresPass)
 }
 
 func (p *postgres) openAdmin() (*sqlx.DB, error) {
@@ -171,7 +172,7 @@ func (p *postgres) Change(from, to *drvapi.AppMeta) error {
 		}
 	}
 	if to == nil {
-		vol := appVol(p.core, namePostgres)
+		vol := homeapp.Vol(p.core, namePostgres)
 		if err := dock.RemoveVolume(p.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
