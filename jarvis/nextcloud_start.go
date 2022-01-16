@@ -19,6 +19,7 @@ import (
 	"strings"
 
 	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )
@@ -37,7 +38,7 @@ type nextcloudConfig struct {
 	extraMounts   []*nextcloudExtraMount
 }
 
-func networkCIDRs(c appCore) ([]string, error) {
+func networkCIDRs(c homeapp.Core) ([]string, error) {
 	network := appNetwork(c)
 	info, err := dock.InspectNetwork(c.Docker(), network)
 	if err != nil {
@@ -54,7 +55,7 @@ func networkCIDRs(c appCore) ([]string, error) {
 }
 
 func nextcloudCreateCont(
-	c appCore, image string, config *nextcloudConfig,
+	c homeapp.Core, image string, config *nextcloudConfig,
 ) (*dock.Cont, error) {
 	if image == "" {
 		return nil, errcode.InvalidArgf("no image specified")
@@ -124,7 +125,7 @@ func nextcloudCreateCont(
 }
 
 func nextcloudStart(
-	c appCore, image string, config *nextcloudConfig,
+	c homeapp.Core, image string, config *nextcloudConfig,
 ) error {
 	cont, err := nextcloudCreateCont(c, image, config)
 	if err != nil {

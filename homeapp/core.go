@@ -13,38 +13,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package homeapp
 
 import (
-	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/misc/errcode"
+	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/pisces/settings"
+	"shanhu.io/virgo/dock"
 )
 
-type builtInApps struct {
-	stubs map[string]*appStub
-}
+// Core provides the core interface to run an application.
+type Core interface {
+	// App gets an application by name.
+	App(name string) (App, error)
 
-func newBuiltInApps(d *drive) *builtInApps {
-	m := make(map[string]*appStub)
-	for _, a := range []struct {
-		name string
-		app  homeapp.App
-	}{
-		{name: "redis", app: newRedis(d)},
-		{name: "postgres", app: newPostgres(d)},
-		{name: "ncfront", app: newNCFront(d)},
-		{name: "nextcloud", app: newNextcloud(d)},
-	} {
-		m[a.name] = &appStub{App: a.app}
-	}
+	// Docker gets the client to the application docker.
+	Docker() *dock.Client
 
-	return &builtInApps{stubs: m}
-}
+	// Settings gets the settings table.
+	Settings() settings.Settings
 
-func (b *builtInApps) makeStub(name string) (*appStub, error) {
-	a, ok := b.stubs[name]
-	if ok {
-		return a, nil
-	}
-	return nil, errcode.NotFoundf("app %q not found", name)
+	// Naming gets the naming convention of the drive. We might want to
+	// migrate the legacy stuff and deprecate this some day.
+	Naming() *drvcfg.Naming
+
+	// Domains gets the stub that manages application domain routings.
+	Domains() Domains
 }

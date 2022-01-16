@@ -18,18 +18,10 @@ package jarvis
 import (
 	"sort"
 
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces"
 )
-
-type appDomainMap struct {
-	App string                     `json:",omitempty"`
-	Map map[string]*appDomainEntry `json:",omitempty"`
-}
-
-type appDomainEntry struct {
-	Dest string
-}
 
 type appDomains struct {
 	t *pisces.KV
@@ -39,14 +31,14 @@ func newAppDomains(b *pisces.Tables) *appDomains {
 	return &appDomains{t: b.NewKV("app_domains")}
 }
 
-func (b *appDomains) set(m *appDomainMap) error {
+func (b *appDomains) Set(m *homeapp.DomainMap) error {
 	if len(m.Map) == 0 {
-		return b.clear(m.App)
+		return b.Clear(m.App)
 	}
 	return b.t.Replace(m.App, m)
 }
 
-func (b *appDomains) clear(app string) error {
+func (b *appDomains) Clear(app string) error {
 	if err := b.t.Remove(app); err != nil {
 		if errcode.IsNotFound(err) {
 			return nil
@@ -56,12 +48,12 @@ func (b *appDomains) clear(app string) error {
 	return nil
 }
 
-func (b *appDomains) list() ([]*appDomainMap, error) {
-	var maps []*appDomainMap
+func (b *appDomains) list() ([]*homeapp.DomainMap, error) {
+	var maps []*homeapp.DomainMap
 	it := &pisces.Iter{
-		Make: func() interface{} { return new(appDomainMap) },
+		Make: func() interface{} { return new(homeapp.DomainMap) },
 		Do: func(_ string, v interface{}) error {
-			maps = append(maps, v.(*appDomainMap))
+			maps = append(maps, v.(*homeapp.DomainMap))
 			return nil
 		},
 	}

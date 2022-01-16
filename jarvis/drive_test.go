@@ -17,34 +17,6 @@ package jarvis
 
 import (
 	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/misc/errcode"
 )
 
-type builtInApps struct {
-	stubs map[string]*appStub
-}
-
-func newBuiltInApps(d *drive) *builtInApps {
-	m := make(map[string]*appStub)
-	for _, a := range []struct {
-		name string
-		app  homeapp.App
-	}{
-		{name: "redis", app: newRedis(d)},
-		{name: "postgres", app: newPostgres(d)},
-		{name: "ncfront", app: newNCFront(d)},
-		{name: "nextcloud", app: newNextcloud(d)},
-	} {
-		m[a.name] = &appStub{App: a.app}
-	}
-
-	return &builtInApps{stubs: m}
-}
-
-func (b *builtInApps) makeStub(name string) (*appStub, error) {
-	a, ok := b.stubs[name]
-	if ok {
-		return a, nil
-	}
-	return nil, errcode.NotFoundf("app %q not found", name)
-}
+var _ homeapp.Core = new(drive)

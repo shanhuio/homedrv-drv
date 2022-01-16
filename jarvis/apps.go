@@ -110,7 +110,7 @@ func (a *apps) reinstall(name string) error {
 	if err != nil {
 		return errcode.Annotatef(err, "get stub of %q", name)
 	}
-	return app.change(m, m)
+	return app.Change(m, m)
 }
 
 func (a *apps) apply(anchored []string) error {
@@ -161,7 +161,7 @@ func (a *apps) apply(anchored []string) error {
 			}
 
 			log.Printf("%s %s", action, name)
-			if err := app.change(old, m); err != nil {
+			if err := app.Change(old, m); err != nil {
 				return errcode.Annotatef(err, "%s %q", action, name)
 			}
 
@@ -190,7 +190,7 @@ func (a *apps) apply(anchored []string) error {
 			}
 
 			log.Printf("uninstall %s", name)
-			if err := app.change(old, nil); err != nil {
+			if err := app.Change(old, nil); err != nil {
 				return errcode.Annotatef(err, "uninstall %q", name)
 			}
 

@@ -23,16 +23,17 @@ import (
 
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/sqlx"
 	"shanhu.io/virgo/dock"
 )
 
 type postgres struct {
-	core appCore
+	core homeapp.Core
 }
 
-func newPostgres(c appCore) *postgres {
+func newPostgres(c homeapp.Core) *postgres {
 	return &postgres{core: c}
 }
 
@@ -163,7 +164,7 @@ func (p *postgres) dropDB(name string) error {
 	return dropDB(db, name)
 }
 
-func (p *postgres) change(from, to *drvapi.AppMeta) error {
+func (p *postgres) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
 		if err := p.cont().Drop(); err != nil {
 			return errcode.Annotate(err, "drop old postgres container")
@@ -195,5 +196,5 @@ func (p *postgres) change(from, to *drvapi.AppMeta) error {
 	return nil
 }
 
-func (p *postgres) start() error { return p.cont().Start() }
-func (p *postgres) stop() error  { return p.cont().Stop() }
+func (p *postgres) Start() error { return p.cont().Start() }
+func (p *postgres) Stop() error  { return p.cont().Stop() }

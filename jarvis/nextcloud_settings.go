@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"sort"
 
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces/settings"
 )
@@ -66,7 +67,7 @@ func nextcloudDomains(s settings.Settings) ([]string, error) {
 	return set([]string{fmt.Sprintf("nextcloud.%s", main)})
 }
 
-func loadNextcloudConfig(c appCore) (*nextcloudConfig, error) {
+func loadNextcloudConfig(c homeapp.Core) (*nextcloudConfig, error) {
 	s := c.Settings()
 
 	// TODO(h8liu): reading redis password should to go redis?

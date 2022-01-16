@@ -13,38 +13,24 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package homeapp
 
-import (
-	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/misc/errcode"
-)
-
-type builtInApps struct {
-	stubs map[string]*appStub
+// DomainMap is the domain mapping for one app.
+type DomainMap struct {
+	App string                  `json:",omitempty"`
+	Map map[string]*DomainEntry `json:",omitempty"`
 }
 
-func newBuiltInApps(d *drive) *builtInApps {
-	m := make(map[string]*appStub)
-	for _, a := range []struct {
-		name string
-		app  homeapp.App
-	}{
-		{name: "redis", app: newRedis(d)},
-		{name: "postgres", app: newPostgres(d)},
-		{name: "ncfront", app: newNCFront(d)},
-		{name: "nextcloud", app: newNextcloud(d)},
-	} {
-		m[a.name] = &appStub{App: a.app}
-	}
-
-	return &builtInApps{stubs: m}
+// DomainEntry is an entry for an application domain map.
+type DomainEntry struct {
+	Dest string
 }
 
-func (b *builtInApps) makeStub(name string) (*appStub, error) {
-	a, ok := b.stubs[name]
-	if ok {
-		return a, nil
-	}
-	return nil, errcode.NotFoundf("app %q not found", name)
+// Domains is a table that saves the application domain mapping.
+type Domains interface {
+	// Set sets the domain mapping of an application.
+	Set(m *DomainMap) error
+
+	// Clear clears the domain mapping of an application.
+	Clear(app string) error
 }

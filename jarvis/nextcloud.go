@@ -21,16 +21,17 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/semver"
 	"shanhu.io/virgo/dock"
 )
 
 type nextcloud struct {
-	core appCore
+	core homeapp.Core
 }
 
-func newNextcloud(c appCore) *nextcloud {
+func newNextcloud(c homeapp.Core) *nextcloud {
 	return &nextcloud{core: c}
 }
 
@@ -207,14 +208,14 @@ func (n *nextcloud) upgrade1(img, ver string, c *nextcloudConfig) error {
 	return nil
 }
 
-func (n *nextcloud) start() error { return n.cont().Start() }
-func (n *nextcloud) stop() error  { return n.cont().Stop() }
+func (n *nextcloud) Start() error { return n.cont().Start() }
+func (n *nextcloud) Stop() error  { return n.cont().Stop() }
 
 func (n *nextcloud) config() (*nextcloudConfig, error) {
 	return loadNextcloudConfig(n.core)
 }
 
-func (n *nextcloud) change(from, to *drvapi.AppMeta) error {
+func (n *nextcloud) Change(from, to *drvapi.AppMeta) error {
 	if to == nil {
 		if err := n.registerDomains(nil); err != nil {
 			return errcode.Annotate(err, "unregister domains")
@@ -262,17 +263,17 @@ func (n *nextcloud) registerDomains(domains []string) error {
 	appDomains := n.core.Domains()
 
 	if len(domains) == 0 {
-		return appDomains.clear(nameNextcloud)
+		return appDomains.Clear(nameNextcloud)
 	}
-	m := &appDomainMap{
+	m := &homeapp.DomainMap{
 		App: nameNextcloud,
-		Map: make(map[string]*appDomainEntry),
+		Map: make(map[string]*homeapp.DomainEntry),
 	}
 	ncFrontAddr := appCont(n.core, nameNCFront) + ":8080"
 	for _, d := range domains {
-		m.Map[d] = &appDomainEntry{Dest: ncFrontAddr}
+		m.Map[d] = &homeapp.DomainEntry{Dest: ncFrontAddr}
 	}
-	return appDomains.set(m)
+	return appDomains.Set(m)
 }
 
 func (n *nextcloud) install(image string, config *nextcloudConfig) error {

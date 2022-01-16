@@ -13,38 +13,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package homeapp
 
 import (
-	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/homedrv/drvapi"
 )
 
-type builtInApps struct {
-	stubs map[string]*appStub
-}
+// App is a generic application object that manages the lifecycle
+// if an application running on a HomeDrive.
+type App interface {
+	// Called when the version is changed from a non-empty string to ver.
+	// Normally the previous version would be a different version, but
+	// in forced upgrades, it can also be the save version string.
+	// change from a non-nil meta needs to stop() the service first.
+	// change to a non-nil meta must auto start() the service.
+	Change(from, to *drvapi.AppMeta) error
 
-func newBuiltInApps(d *drive) *builtInApps {
-	m := make(map[string]*appStub)
-	for _, a := range []struct {
-		name string
-		app  homeapp.App
-	}{
-		{name: "redis", app: newRedis(d)},
-		{name: "postgres", app: newPostgres(d)},
-		{name: "ncfront", app: newNCFront(d)},
-		{name: "nextcloud", app: newNextcloud(d)},
-	} {
-		m[a.name] = &appStub{App: a.app}
-	}
+	// Send a soft signal to an app to start.
+	Start() error
 
-	return &builtInApps{stubs: m}
-}
-
-func (b *builtInApps) makeStub(name string) (*appStub, error) {
-	a, ok := b.stubs[name]
-	if ok {
-		return a, nil
-	}
-	return nil, errcode.NotFoundf("app %q not found", name)
+	// Send a soft signal to an app to stop.
+	Stop() error
 }

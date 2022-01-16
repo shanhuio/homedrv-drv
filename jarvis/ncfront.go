@@ -18,15 +18,16 @@ package jarvis
 import (
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )
 
 type ncfront struct {
-	core appCore
+	core homeapp.Core
 }
 
-func newNCFront(c appCore) *ncfront { return &ncfront{core: c} }
+func newNCFront(c homeapp.Core) *ncfront { return &ncfront{core: c} }
 
 func (n *ncfront) cont() *dock.Cont {
 	return dock.NewCont(n.core.Docker(), appCont(n.core, nameNCFront))
@@ -72,10 +73,10 @@ func (n *ncfront) update(image string) error {
 	return n.startWithImage(image)
 }
 
-func (n *ncfront) start() error { return n.cont().Start() }
-func (n *ncfront) stop() error  { return n.cont().Stop() }
+func (n *ncfront) Start() error { return n.cont().Start() }
+func (n *ncfront) Stop() error  { return n.cont().Stop() }
 
-func (n *ncfront) change(from, to *drvapi.AppMeta) error {
+func (n *ncfront) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
 		if err := n.cont().Drop(); err != nil {
 			return errcode.Annotate(err, "drop old ncfront container")

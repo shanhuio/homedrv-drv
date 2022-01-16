@@ -16,28 +16,18 @@
 package jarvis
 
 import (
-	"shanhu.io/homedrv/drvapi"
+	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/homeapp"
 )
 
-type app interface {
-	// Called when the version is changed from a non-empty string to ver.
-	// Normally the previous version would be a different version, but
-	// in forced upgrades, it can also be the save version string.
-	// change from a non-nil meta needs to stop() the service first.
-	// change to a non-nil meta must auto start() the service.
-	change(from, to *drvapi.AppMeta) error
-
-	// Send a soft signal to an app to start.
-	start() error
-
-	// Send a soft signal to an app to stop.
-	stop() error
+func appCont(c homeapp.Core, s string) string {
+	return drvcfg.Name(c.Naming(), s)
 }
 
-type appMaker interface {
-	makeStub(name string) (*appStub, error)
+func appNetwork(c homeapp.Core) string {
+	return drvcfg.Network(c.Naming())
 }
 
-type appStub struct {
-	app
+func appVol(c homeapp.Core, s string) string {
+	return drvcfg.Name(c.Naming(), s)
 }

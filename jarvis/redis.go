@@ -21,16 +21,17 @@ import (
 
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/tarutil"
 	"shanhu.io/virgo/dock"
 )
 
 type redis struct {
-	core appCore
+	core homeapp.Core
 }
 
-func newRedis(c appCore) *redis { return &redis{core: c} }
+func newRedis(c homeapp.Core) *redis { return &redis{core: c} }
 
 func (r *redis) writeConfig(cont *dock.Cont, pwd string) error {
 	confFile := tarutil.NewStream()
@@ -119,7 +120,7 @@ func (r *redis) password() (string, error) {
 	return readPasswordOrSetRandom(r.core.Settings(), keyRedisPass)
 }
 
-func (r *redis) change(from, to *drvapi.AppMeta) error {
+func (r *redis) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
 		if err := r.cont().Drop(); err != nil {
 			return errcode.Annotate(err, "drop old redis container")
@@ -137,5 +138,5 @@ func (r *redis) change(from, to *drvapi.AppMeta) error {
 	return r.install(appImage(to))
 }
 
-func (r *redis) start() error { return r.cont().Start() }
-func (r *redis) stop() error  { return r.cont().Stop() }
+func (r *redis) Start() error { return r.cont().Start() }
+func (r *redis) Stop() error  { return r.cont().Stop() }

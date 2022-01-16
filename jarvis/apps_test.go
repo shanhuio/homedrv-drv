@@ -77,7 +77,7 @@ func (s *fakeSystem) makeStub(name string) (*appStub, error) {
 	if _, ok := s.manifest[name]; !ok {
 		return nil, errcode.NotFoundf("app %q not found", name)
 	}
-	return &appStub{app: &fakeApp{sys: s, name: name}}, nil
+	return &appStub{App: &fakeApp{sys: s, name: name}}, nil
 }
 
 func (s *fakeSystem) meta(name string) (*drvapi.AppMeta, error) {
@@ -93,8 +93,8 @@ type fakeApp struct {
 	name string
 }
 
-func (a *fakeApp) change(from, to *drvapi.AppMeta) error {
-	a.stop()
+func (a *fakeApp) Change(from, to *drvapi.AppMeta) error {
+	a.Stop()
 	if to == nil {
 		delete(a.sys.states, a.name)
 		return nil
@@ -111,15 +111,15 @@ func (a *fakeApp) change(from, to *drvapi.AppMeta) error {
 		version: to.Version,
 		image:   to.Image,
 	}
-	return a.start()
+	return a.Start()
 }
 
-func (a *fakeApp) start() error {
+func (a *fakeApp) Start() error {
 	a.sys.running[a.name] = true
 	return nil
 }
 
-func (a *fakeApp) stop() error {
+func (a *fakeApp) Stop() error {
 	delete(a.sys.running, a.name)
 	return nil
 }
