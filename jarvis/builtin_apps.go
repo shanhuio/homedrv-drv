@@ -24,16 +24,16 @@ type builtInApps struct {
 	stubs map[string]*appStub
 }
 
-func newBuiltInApps(d *drive) *builtInApps {
+func newBuiltInApps(c homeapp.Core) *builtInApps {
 	m := make(map[string]*appStub)
 	for _, a := range []struct {
 		name string
 		app  homeapp.App
 	}{
-		{name: "redis", app: newRedis(d)},
-		{name: "postgres", app: newPostgres(d)},
-		{name: "ncfront", app: newNCFront(d)},
-		{name: "nextcloud", app: newNextcloud(d)},
+		{name: "redis", app: newRedis(c)},
+		{name: "postgres", app: newPostgres(c)},
+		{name: "ncfront", app: newNCFront(c)},
+		{name: "nextcloud", app: newNextcloud(c)},
 	} {
 		m[a.name] = &appStub{App: a.app}
 	}

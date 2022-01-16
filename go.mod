@@ -9,10 +9,10 @@ require (
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 	modernc.org/sqlite v1.14.4
-	shanhu.io/aries v0.0.0-20220115003748-34f842e9eda0
-	shanhu.io/misc v0.0.0-20220115003718-efc8d12040b2
+	shanhu.io/aries v0.0.0-20220115064656-837169cee407
+	shanhu.io/misc v0.0.0-20220115064517-385b1007b63d
 	shanhu.io/pisces v0.0.0-20220115003837-f19405a8b4c6
-	shanhu.io/virgo v0.0.0-20220115004023-c2c7d0520fe0
+	shanhu.io/virgo v0.0.0-20220115064720-974e89432764
 )
 
 require (
