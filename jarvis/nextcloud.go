@@ -27,13 +27,16 @@ import (
 )
 
 type nextcloud struct {
-	*drive
+	core appCore
 }
 
-func newNextcloud(d *drive) *nextcloud { return &nextcloud{drive: d} }
+func newNextcloud(c appCore) *nextcloud {
+	return &nextcloud{core: c}
+}
 
 func (n *nextcloud) cont() *dock.Cont {
-	return dock.NewCont(n.dock, n.drive.cont(nameNextcloud))
+	cont := appCont(n.core, nameNextcloud)
+	return dock.NewCont(n.core.Docker(), cont)
 }
 
 func (n *nextcloud) occRet(args []string, out io.Writer) (int, error) {
@@ -55,7 +58,7 @@ func (n *nextcloud) status() (*nextcloudStatus, int, error) {
 func (n *nextcloud) startWithImage(
 	image string, config *nextcloudConfig,
 ) error {
-	return nextcloudStart(n.drive, n.dock, image, config)
+	return nextcloudStart(n.core, image, config)
 }
 
 func (n *nextcloud) waitReady(timeout time.Duration, v string) error {
@@ -103,7 +106,8 @@ func (n *nextcloud) fixVersion(major int) error {
 	if k == "" {
 		return nil
 	}
-	ok, err := n.settings.Has(k)
+	settings := n.core.Settings()
+	ok, err := settings.Has(k)
 	if err != nil {
 		return errcode.Annotatef(err, "check fixed flag v%d", major)
 	}
@@ -126,7 +130,7 @@ func (n *nextcloud) fixVersion(major int) error {
 		}
 	}
 
-	if err := n.settings.Set(k, true); err != nil {
+	if err := settings.Set(k, true); err != nil {
 		return errcode.Annotatef(err, "set fixed flag v%d", major)
 	}
 	return nil
@@ -207,7 +211,7 @@ func (n *nextcloud) start() error { return n.cont().Start() }
 func (n *nextcloud) stop() error  { return n.cont().Stop() }
 
 func (n *nextcloud) config() (*nextcloudConfig, error) {
-	return loadNextcloudConfig(n.drive)
+	return loadNextcloudConfig(n.core)
 }
 
 func (n *nextcloud) change(from, to *drvapi.AppMeta) error {
@@ -225,8 +229,8 @@ func (n *nextcloud) change(from, to *drvapi.AppMeta) error {
 		if err := psql.dropDB(nameNextcloud); err != nil {
 			return errcode.Annotate(err, "drop nextcloud db")
 		}
-		vol := n.drive.vol(nameNextcloud)
-		if err := dock.RemoveVolume(n.dock, vol); err != nil {
+		vol := appVol(n.core, nameNextcloud)
+		if err := dock.RemoveVolume(n.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
 		return nil
@@ -243,7 +247,7 @@ func (n *nextcloud) change(from, to *drvapi.AppMeta) error {
 }
 
 func (n *nextcloud) db() (*postgres, error) {
-	db, err := n.appReflect(namePostgres)
+	db, err := n.core.App(namePostgres)
 	if err != nil {
 		return nil, errcode.Annotate(err, "reflect postgres db")
 	}
@@ -255,18 +259,20 @@ func (n *nextcloud) db() (*postgres, error) {
 }
 
 func (n *nextcloud) registerDomains(domains []string) error {
+	appDomains := n.core.Domains()
+
 	if len(domains) == 0 {
-		return n.appDomains.clear(nameNextcloud)
+		return appDomains.clear(nameNextcloud)
 	}
 	m := &appDomainMap{
 		App: nameNextcloud,
 		Map: make(map[string]*appDomainEntry),
 	}
-	ncFrontAddr := n.drive.cont(nameNCFront) + ":8080"
+	ncFrontAddr := appCont(n.core, nameNCFront) + ":8080"
 	for _, d := range domains {
 		m.Map[d] = &appDomainEntry{Dest: ncFrontAddr}
 	}
-	return n.appDomains.set(m)
+	return appDomains.set(m)
 }
 
 func (n *nextcloud) install(image string, config *nextcloudConfig) error {

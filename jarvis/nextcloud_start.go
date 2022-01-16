@@ -37,8 +37,9 @@ type nextcloudConfig struct {
 	extraMounts   []*nextcloudExtraMount
 }
 
-func networkCIDRs(d *drive) ([]string, error) {
-	info, err := dock.InspectNetwork(d.dock, d.network())
+func networkCIDRs(c appCore) ([]string, error) {
+	network := appNetwork(c)
+	info, err := dock.InspectNetwork(c.Docker(), network)
 	if err != nil {
 		return nil, err
 	}
@@ -53,23 +54,23 @@ func networkCIDRs(d *drive) ([]string, error) {
 }
 
 func nextcloudCreateCont(
-	drive *drive, d *dock.Client, image string, config *nextcloudConfig,
+	c appCore, image string, config *nextcloudConfig,
 ) (*dock.Cont, error) {
 	if image == "" {
 		return nil, errcode.InvalidArgf("no image specified")
 	}
 	labels := drvcfg.NewNameLabel(nameNextcloud)
-	volName := drive.vol(nameNextcloud)
+	volName := appVol(c, nameNextcloud)
 
 	contConfig := &dock.ContConfig{
-		Name:          drive.cont(nameNextcloud),
-		Network:       drive.network(),
+		Name:          appCont(c, nameNextcloud),
+		Network:       appNetwork(c),
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
 		Labels:        labels,
 	}
 
-	cidrs, err := networkCIDRs(drive)
+	cidrs, err := networkCIDRs(c)
 	if err != nil {
 		return nil, errcode.Annotate(err, "list network CIDRs")
 	}
@@ -94,11 +95,11 @@ func nextcloudCreateCont(
 		})
 	}
 	contConfig.Env = map[string]string{
-		"POSTGRES_HOST":       drive.cont(namePostgres),
+		"POSTGRES_HOST":       appCont(c, namePostgres),
 		"POSTGRES_DB":         "nextcloud",
 		"POSTGRES_USER":       "nextcloud",
 		"POSTGRES_PASSWORD":   config.dbPassword,
-		"REDIS_HOST":          drive.cont(nameRedis),
+		"REDIS_HOST":          appCont(c, nameRedis),
 		"REDIS_HOST_PASSWORD": config.redisPassword,
 
 		"NEXTCLOUD_ADMIN_USER":     "admin",
@@ -113,6 +114,7 @@ func nextcloudCreateCont(
 		contConfig.Env["TRUSTED_PROXIES"] = proxies
 	}
 
+	d := c.Docker()
 	if _, err := dock.CreateVolumeIfNotExist(
 		d, volName, &dock.VolumeConfig{Labels: labels},
 	); err != nil {
@@ -122,10 +124,9 @@ func nextcloudCreateCont(
 }
 
 func nextcloudStart(
-	drive *drive, d *dock.Client, image string,
-	config *nextcloudConfig,
+	c appCore, image string, config *nextcloudConfig,
 ) error {
-	cont, err := nextcloudCreateCont(drive, d, image, config)
+	cont, err := nextcloudCreateCont(c, image, config)
 	if err != nil {
 		return errcode.Annotate(err, "create nextcloud")
 	}

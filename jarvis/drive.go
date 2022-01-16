@@ -48,6 +48,31 @@ type kernel struct {
 	objects *objects
 }
 
+type appCore interface {
+	// App gets an application by name.
+	App(name string) (app, error)
+
+	// Docker gets the client to the application docker.
+	Docker() *dock.Client
+
+	// Settings gets the settings table.
+	Settings() settings.Settings
+
+	// Naming gets the naming convention of the drive. We might want to
+	// migrate the legacy stuff and deprecate this some day.
+	Naming() *drvcfg.Naming
+
+	// Domains gets the stub that manages application domain routings.
+	Domains() *appDomains
+}
+
+func appCont(c appCore, s string) string {
+	return drvcfg.Name(c.Naming(), s)
+}
+
+func appNetwork(c appCore) string       { return drvcfg.Network(c.Naming()) }
+func appVol(c appCore, s string) string { return drvcfg.Name(c.Naming(), s) }
+
 type drive struct {
 	// Config file content.
 	config *drvcfg.Config
@@ -143,19 +168,14 @@ func (d *drive) dialServer() (*httputil.Client, error) {
 	return creds.DialEndpoint(d.creds)
 }
 
-func (d *drive) cont(s string) string {
-	return drvcfg.Name(d.config.Naming, s)
-}
-
-func (d *drive) vol(s string) string {
-	return drvcfg.Name(d.config.Naming, s)
-}
+func (d *drive) cont(s string) string { return appVol(d, s) }
+func (d *drive) vol(s string) string  { return appVol(d, s) }
 
 func (d *drive) image(s string) string {
 	return drvcfg.Image(d.config.Naming, s)
 }
 
-func (d *drive) network() string { return drvcfg.Network(d.config.Naming) }
+func (d *drive) network() string { return appNetwork(d) }
 func (d *drive) core() string    { return drvcfg.Core(d.config.Naming) }
 func (d *drive) oldCore() string { return drvcfg.OldCore(d.config.Naming) }
 
@@ -168,7 +188,7 @@ func (d *drive) burmilla() (*burmilla.Burmilla, error) {
 	return burmilla.New(d.sysDock), nil
 }
 
-func (d *drive) appReflect(name string) (app, error) {
+func (d *drive) App(name string) (app, error) {
 	stub, err := d.apps.stub(name)
 	if err != nil {
 		return nil, err
@@ -197,4 +217,15 @@ func (d *drive) downloadConfig() *homeboot.DownloadConfig {
 		Build:   d.config.Build,
 		Naming:  d.config.Naming,
 	}
+}
+
+func (d *drive) Docker() *dock.Client   { return d.dock }
+func (d *drive) Naming() *drvcfg.Naming { return d.config.Naming }
+func (d *drive) Domains() *appDomains   { return d.appDomains }
+
+func (d *drive) Settings() settings.Settings {
+	if d.settings == nil {
+		return nil
+	}
+	return d.settings
 }

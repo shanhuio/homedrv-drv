@@ -29,15 +29,16 @@ import (
 )
 
 type postgres struct {
-	*drive
+	core appCore
 }
 
-func newPostgres(d *drive) *postgres {
-	return &postgres{drive: d}
+func newPostgres(c appCore) *postgres {
+	return &postgres{core: c}
 }
 
 func (p *postgres) cont() *dock.Cont {
-	return dock.NewCont(p.dock, p.drive.cont(namePostgres))
+	d := p.core.Docker()
+	return dock.NewCont(d, appCont(p.core, namePostgres))
 }
 
 func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
@@ -48,17 +49,20 @@ func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
 		return nil, errcode.InvalidArgf("database root password empty")
 	}
 
+	d := p.core.Docker()
 	labels := drvcfg.NewNameLabel(namePostgres)
-	volName := p.vol(namePostgres)
+	volName := appVol(p.core, namePostgres)
 	if _, err := dock.CreateVolumeIfNotExist(
-		p.dock, volName, &dock.VolumeConfig{Labels: labels},
+		d, volName, &dock.VolumeConfig{Labels: labels},
 	); err != nil {
 		return nil, errcode.Annotate(err, "create postgres volume")
 	}
 
+	name := appCont(p.core, namePostgres)
+
 	config := &dock.ContConfig{
-		Name:    p.drive.cont(namePostgres),
-		Network: p.network(),
+		Name:    name,
+		Network: appNetwork(p.core),
 		Env:     map[string]string{"POSTGRES_PASSWORD": pwd},
 		Mounts: []*dock.ContMount{{
 			Type: dock.MountVolume,
@@ -69,7 +73,7 @@ func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
 		JSONLogConfig: dock.LimitedJSONLog(),
 		Labels:        labels,
 	}
-	return dock.CreateCont(p.dock, image, config)
+	return dock.CreateCont(d, image, config)
 }
 
 func (p *postgres) install(image string) error {
@@ -94,8 +98,9 @@ func (p *postgres) update(image string) error {
 	if image == "" {
 		return errcode.InvalidArgf("postgres image empty")
 	}
-	contName := p.drive.cont(namePostgres)
-	if err := dropContIfDifferent(p.dock, contName, image); err != nil {
+	contName := appCont(p.core, namePostgres)
+	d := p.core.Docker()
+	if err := dropContIfDifferent(d, contName, image); err != nil {
 		if err == errSameImage {
 			return nil
 		}
@@ -109,7 +114,7 @@ func (p *postgres) open(user, pwd, db string) (*sqlx.DB, error) {
 	u := &url.URL{
 		Scheme: "postgres",
 		User:   url.UserPassword(user, pwd),
-		Host:   p.drive.cont(namePostgres),
+		Host:   appCont(p.core, namePostgres),
 		Path:   path.Join("/", db),
 	}
 	q := make(url.Values)
@@ -120,7 +125,7 @@ func (p *postgres) open(user, pwd, db string) (*sqlx.DB, error) {
 }
 
 func (p *postgres) password() (string, error) {
-	return readPasswordOrSetRandom(p.settings, keyPostgresPass)
+	return readPasswordOrSetRandom(p.core.Settings(), keyPostgresPass)
 }
 
 func (p *postgres) openAdmin() (*sqlx.DB, error) {
@@ -165,8 +170,8 @@ func (p *postgres) change(from, to *drvapi.AppMeta) error {
 		}
 	}
 	if to == nil {
-		vol := p.vol(namePostgres)
-		if err := dock.RemoveVolume(p.dock, vol); err != nil {
+		vol := appVol(p.core, namePostgres)
+		if err := dock.RemoveVolume(p.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
 		return nil

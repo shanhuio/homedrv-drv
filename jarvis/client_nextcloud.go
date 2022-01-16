@@ -47,7 +47,7 @@ func cmdNextcloudDomains(args []string) error {
 		return err
 	}
 
-	domains, err := nextcloudDomains(d)
+	domains, err := nextcloudDomains(d.Settings())
 	if err != nil {
 		return errcode.Annotate(err, "load domains")
 	}

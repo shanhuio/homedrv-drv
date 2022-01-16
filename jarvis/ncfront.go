@@ -23,13 +23,13 @@ import (
 )
 
 type ncfront struct {
-	*drive
+	core appCore
 }
 
-func newNCFront(d *drive) *ncfront { return &ncfront{drive: d} }
+func newNCFront(c appCore) *ncfront { return &ncfront{core: c} }
 
 func (n *ncfront) cont() *dock.Cont {
-	return dock.NewCont(n.drive.dock, n.drive.cont(nameNCFront))
+	return dock.NewCont(n.core.Docker(), appCont(n.core, nameNCFront))
 }
 
 func (n *ncfront) createCont(image string) (*dock.Cont, error) {
@@ -37,16 +37,16 @@ func (n *ncfront) createCont(image string) (*dock.Cont, error) {
 		return nil, errcode.InvalidArgf("no image specified")
 	}
 
-	nextcloudAddr := n.drive.cont(nameNextcloud) + ":80"
+	nextcloudAddr := appCont(n.core, nameNextcloud) + ":80"
 	config := &dock.ContConfig{
-		Name:          n.drive.cont(nameNCFront),
-		Network:       n.network(),
+		Name:          appCont(n.core, nameNCFront),
+		Network:       appNetwork(n.core),
 		Env:           map[string]string{"NEXTCLOUD": nextcloudAddr},
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
 		Labels:        drvcfg.NewNameLabel(nameNCFront),
 	}
-	return dock.CreateCont(n.dock, image, config)
+	return dock.CreateCont(n.core.Docker(), image, config)
 }
 
 func (n *ncfront) startWithImage(image string) error {
@@ -62,8 +62,8 @@ func (n *ncfront) install(image string) error {
 }
 
 func (n *ncfront) update(image string) error {
-	cont := n.drive.cont(nameNCFront)
-	if err := dropContIfDifferent(n.dock, cont, image); err != nil {
+	cont := appCont(n.core, nameNCFront)
+	if err := dropContIfDifferent(n.core.Docker(), cont, image); err != nil {
 		if err == errSameImage {
 			return nil
 		}

@@ -27,14 +27,10 @@ import (
 )
 
 type redis struct {
-	*drive
+	core appCore
 }
 
-func newRedis(d *drive) *redis {
-	return &redis{
-		drive: d,
-	}
-}
+func newRedis(c appCore) *redis { return &redis{core: c} }
 
 func (r *redis) writeConfig(cont *dock.Cont, pwd string) error {
 	confFile := tarutil.NewStream()
@@ -48,7 +44,7 @@ func (r *redis) writeConfig(cont *dock.Cont, pwd string) error {
 }
 
 func (r *redis) cont() *dock.Cont {
-	return dock.NewCont(r.dock, r.drive.cont(nameRedis))
+	return dock.NewCont(r.core.Docker(), appCont(r.core, nameRedis))
 }
 
 func (r *redis) createCont(image, pwd string) (*dock.Cont, error) {
@@ -60,15 +56,15 @@ func (r *redis) createCont(image, pwd string) (*dock.Cont, error) {
 	}
 
 	config := &dock.ContConfig{
-		Name:          r.drive.cont(nameRedis),
-		Network:       r.network(),
+		Name:          appCont(r.core, nameRedis),
+		Network:       appNetwork(r.core),
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
 		Cmd:           []string{"redis-server", "/etc/redis.conf"},
 		Labels:        drvcfg.NewNameLabel(nameRedis),
 	}
 
-	cont, err := dock.CreateCont(r.dock, image, config)
+	cont, err := dock.CreateCont(r.core.Docker(), image, config)
 	if err != nil {
 		return nil, errcode.Annotate(err, "create docker")
 	}
@@ -99,16 +95,17 @@ func (r *redis) update(image string, force bool) error {
 	if image == "" {
 		return errcode.InvalidArgf("redis image empty")
 	}
-	contName := r.drive.cont(nameRedis)
+	contName := appCont(r.core, nameRedis)
+	d := r.core.Docker()
 	if !force {
-		if err := dropContIfDifferent(r.dock, contName, image); err != nil {
+		if err := dropContIfDifferent(d, contName, image); err != nil {
 			if err == errSameImage {
 				return nil
 			}
 			return err
 		}
 	} else {
-		c := dock.NewCont(r.dock, contName)
+		c := dock.NewCont(d, contName)
 		if err := c.Drop(); err != nil {
 			return errcode.Annotatef(err, "drop redis container")
 		}
@@ -119,7 +116,7 @@ func (r *redis) update(image string, force bool) error {
 }
 
 func (r *redis) password() (string, error) {
-	return readPasswordOrSetRandom(r.settings, keyRedisPass)
+	return readPasswordOrSetRandom(r.core.Settings(), keyRedisPass)
 }
 
 func (r *redis) change(from, to *drvapi.AppMeta) error {
@@ -130,8 +127,8 @@ func (r *redis) change(from, to *drvapi.AppMeta) error {
 	}
 
 	if to == nil {
-		vol := r.vol(nameRedis)
-		if err := dock.RemoveVolume(r.dock, vol); err != nil {
+		vol := appVol(r.core, nameRedis)
+		if err := dock.RemoveVolume(r.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
 		return nil

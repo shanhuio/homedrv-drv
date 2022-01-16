@@ -34,9 +34,9 @@ func setNextcloudDomainsIfNotExist(d *drive, domains []string) error {
 	return d.settings.Set(keyNextcloudDomains, domains)
 }
 
-func nextcloudDomains(d *drive) ([]string, error) {
+func nextcloudDomains(s settings.Settings) ([]string, error) {
 	var domains []string
-	if err := d.settings.Get(keyNextcloudDomains, &domains); err == nil {
+	if err := s.Get(keyNextcloudDomains, &domains); err == nil {
 		return domains, nil
 	} else if !errcode.IsNotFound(err) {
 		return nil, err
@@ -44,13 +44,13 @@ func nextcloudDomains(d *drive) ([]string, error) {
 	// Domain list not found.
 
 	set := func(domains []string) ([]string, error) {
-		if err := d.settings.Set(keyNextcloudDomains, domains); err != nil {
+		if err := s.Set(keyNextcloudDomains, domains); err != nil {
 			return nil, errcode.Annotate(err, "set nextcloud domains")
 		}
 		return domains, nil
 	}
 
-	domain, err := settings.String(d.settings, keyNextcloudDomain)
+	domain, err := settings.String(s, keyNextcloudDomain)
 	if err == nil {
 		return set([]string{domain})
 	}
@@ -59,36 +59,36 @@ func nextcloudDomains(d *drive) ([]string, error) {
 	}
 	// Single domain not found.
 
-	main, err := settings.String(d.settings, keyMainDomain)
+	main, err := settings.String(s, keyMainDomain)
 	if err != nil {
 		return nil, errcode.Annotate(err, "cannot determine domain")
 	}
 	return set([]string{fmt.Sprintf("nextcloud.%s", main)})
 }
 
-func loadNextcloudConfig(d *drive) (*nextcloudConfig, error) {
+func loadNextcloudConfig(c appCore) (*nextcloudConfig, error) {
+	s := c.Settings()
+
 	// TODO(h8liu): reading redis password should to go redis?
-	redisPass, err := settings.String(d.settings, keyRedisPass)
+	redisPass, err := settings.String(s, keyRedisPass)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read redis password")
 	}
 
-	adminPass, err := readPasswordOrSetRandom(
-		d.settings, keyNextcloudAdminPass,
-	)
+	adminPass, err := readPasswordOrSetRandom(s, keyNextcloudAdminPass)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read init password")
 	}
-	dbPass, err := readPasswordOrSetRandom(d.settings, keyNextcloudDBPass)
+	dbPass, err := readPasswordOrSetRandom(s, keyNextcloudDBPass)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read db password")
 	}
-	domains, err := nextcloudDomains(d)
+	domains, err := nextcloudDomains(s)
 	if err != nil {
 		return nil, errcode.Annotate(err, "load domains")
 	}
 
-	dataMount, err := settings.String(d.settings, keyNextcloudDataMount)
+	dataMount, err := settings.String(s, keyNextcloudDataMount)
 	if err != nil {
 		if errcode.IsNotFound(err) {
 			dataMount = ""
@@ -98,7 +98,7 @@ func loadNextcloudConfig(d *drive) (*nextcloudConfig, error) {
 	}
 
 	var extraMountMap map[string]string
-	if err := d.settings.Get(
+	if err := s.Get(
 		keyNextcloudExtraMounts, &extraMountMap,
 	); err != nil {
 		if errcode.IsNotFound(err) {
