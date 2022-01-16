@@ -110,7 +110,7 @@ func install(d *drive, r *drvapi.Release) error {
 
 	apps := epConfig.Apps
 	if apps == nil {
-		apps = []string{nameNextcloud}
+		apps = []string{nextcloud.Name}
 	}
 	if err := d.apps.install(apps); err != nil {
 		return errcode.Annotate(err, "install nextcloud suite")

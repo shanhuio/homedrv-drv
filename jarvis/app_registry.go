@@ -17,6 +17,9 @@ package jarvis
 
 import (
 	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/homeapp/postgres"
+	"shanhu.io/homedrv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 )
 
@@ -42,21 +45,21 @@ func manifestFromRelease(rel *drvapi.Release) map[string]*drvapi.AppMeta {
 			return make(map[string]*drvapi.AppMeta)
 		}
 		for _, m := range []*drvapi.AppMeta{{
-			Name:  nameRedis,
+			Name:  redis.Name,
 			Image: rel.Redis,
 		}, {
-			Name:  namePostgres,
+			Name:  postgres.Name,
 			Image: rel.Postgres,
 			Steps: rel.Postgreses,
 		}, {
-			Name:  nameNCFront,
+			Name:  nextcloud.NameFront,
 			Image: rel.NCFront,
 		}, {
-			Name: nameNextcloud,
+			Name: nextcloud.Name,
 			Deps: []string{
-				nameNCFront,
-				namePostgres,
-				nameRedis,
+				nextcloud.NameFront,
+				postgres.Name,
+				redis.Name,
 			},
 			Image:      rel.Nextcloud,
 			SemVersion: lastStepVersion(rel.Nextclouds),

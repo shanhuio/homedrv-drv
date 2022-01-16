@@ -17,6 +17,9 @@ package jarvis
 
 import (
 	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/homeapp/postgres"
+	"shanhu.io/homedrv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 )
 
@@ -25,13 +28,13 @@ func appsStateForLegacyUpgrade(reg *appRegistry) (
 ) {
 	state := &appsState{
 		Metas:    make(map[string]*drvapi.AppMeta),
-		Anchored: map[string]bool{nameNextcloud: true},
+		Anchored: map[string]bool{nextcloud.Name: true},
 	}
 	for _, name := range []string{
-		nameNextcloud,
-		namePostgres,
-		nameNCFront,
-		nameRedis,
+		redis.Name,
+		postgres.Name,
+		nextcloud.Name,
+		nextcloud.NameFront,
 	} {
 		meta, err := reg.meta(name)
 		if err != nil {

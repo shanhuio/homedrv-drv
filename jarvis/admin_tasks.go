@@ -62,7 +62,7 @@ func (s *adminTasks) apiSetNextcloudDataMount(c *aries.C, m string) error {
 
 	d.systemMu.Lock()
 	defer d.systemMu.Unlock()
-	return d.apps.reinstall(nameNextcloud)
+	return d.apps.reinstall(nextcloud.Name)
 }
 
 func (s *adminTasks) apiSetNextcloudExtraMounts(
@@ -76,7 +76,7 @@ func (s *adminTasks) apiSetNextcloudExtraMounts(
 
 	d.systemMu.Lock()
 	defer d.systemMu.Unlock()
-	return d.apps.reinstall(nameNextcloud)
+	return d.apps.reinstall(nextcloud.Name)
 }
 
 func adminTasksAPI(s *server) *aries.Router {

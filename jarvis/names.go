@@ -16,11 +16,6 @@
 package jarvis
 
 const (
-	nameDoorway   = "doorway"
-	nameNextcloud = "nextcloud"
-	nameNCFront   = "ncfront"
-	nameRedis     = "redis"
-	namePostgres  = "postgres"
-
-	nameTemp = "temp"
+	nameDoorway = "doorway"
+	nameTemp    = "temp"
 )
