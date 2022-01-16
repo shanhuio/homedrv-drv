@@ -19,6 +19,7 @@ import (
 	"log"
 
 	"shanhu.io/aries"
+	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 )
 
@@ -55,7 +56,7 @@ func (s *adminTasks) apiSetAPIKey(c *aries.C, keyBytes []byte) error {
 func (s *adminTasks) apiSetNextcloudDataMount(c *aries.C, m string) error {
 	d := s.server.drive
 
-	if err := d.settings.Set(keyNextcloudDataMount, m); err != nil {
+	if err := d.settings.Set(nextcloud.KeyDataMount, m); err != nil {
 		return errcode.Annotate(err, "set nextcloud data mount")
 	}
 
@@ -69,7 +70,7 @@ func (s *adminTasks) apiSetNextcloudExtraMounts(
 ) error {
 	d := s.server.drive
 
-	if err := d.settings.Set(keyNextcloudExtraMounts, m); err != nil {
+	if err := d.settings.Set(nextcloud.KeyExtraMounts, m); err != nil {
 		return errcode.Annotate(err, "set nextcloud extra mounts")
 	}
 

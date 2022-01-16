@@ -13,24 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
-const (
-	keySessionHMAC = "session.hmac"
-
-	// Init passwords.
-	keyJarvisPass = "jarvis.pass"
-
-	keyMainDomain = "main.domain"
-
-	keyFabricsServerDomain = "fabrics-server.domain"
-	keyCustomSubs          = "custom.subs"
-
-	keyBuild         = "build"
-	keyBuildUpdating = "build-updating"
-	keyManualBuild   = "manual-build"
-
-	keyIdentity = "identity"
-
-	keyAppsState = "apps.state"
+import (
+	"shanhu.io/homedrv/homeapp"
 )
+
+// Fix fixes the nextcloud app.
+func Fix(c homeapp.Core) error {
+	nc := New(c)
+	return nc.fix()
+}

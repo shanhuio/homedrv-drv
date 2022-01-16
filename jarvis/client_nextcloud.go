@@ -18,22 +18,10 @@ package jarvis
 import (
 	"fmt"
 
+	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/strutil"
 )
-
-func cmdOCC(args []string) error {
-	flags := cmdFlags.New()
-	cflags := newClientFlags(flags)
-	args = flags.ParseArgs(args)
-	d, err := newClientDrive(cflags)
-	if err != nil {
-		return err
-	}
-
-	nc := newNextcloud(d)
-	return nc.occ(args, nil)
-}
 
 func cmdNextcloudDomains(args []string) error {
 	flags := cmdFlags.New()
@@ -47,7 +35,7 @@ func cmdNextcloudDomains(args []string) error {
 		return err
 	}
 
-	domains, err := nextcloudDomains(d.Settings())
+	domains, err := nextcloud.Domains(d.Settings())
 	if err != nil {
 		return errcode.Annotate(err, "load domains")
 	}
@@ -80,5 +68,5 @@ func cmdNextcloudDomains(args []string) error {
 	}
 
 	domains = strutil.SortedList(domainSet)
-	return d.settings.Set(keyNextcloudDomains, domains)
+	return d.settings.Set(nextcloud.KeyDomains, domains)
 }

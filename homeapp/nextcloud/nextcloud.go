@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
 import (
 	"io"
@@ -22,51 +22,52 @@ import (
 
 	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/postgres"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/semver"
 	"shanhu.io/virgo/dock"
 )
 
-type nextcloud struct {
+// Nextcloud is the Nextcloud app.
+type Nextcloud struct {
 	core homeapp.Core
 }
 
-func newNextcloud(c homeapp.Core) *nextcloud {
-	return &nextcloud{core: c}
+// New creates a new Nextcloud app.
+func New(c homeapp.Core) *Nextcloud {
+	return &Nextcloud{core: c}
 }
 
-func (n *nextcloud) cont() *dock.Cont {
-	cont := homeapp.Cont(n.core, nameNextcloud)
+func (n *Nextcloud) cont() *dock.Cont {
+	cont := homeapp.Cont(n.core, Name)
 	return dock.NewCont(n.core.Docker(), cont)
 }
 
-func (n *nextcloud) occRet(args []string, out io.Writer) (int, error) {
-	return nextcloudOCCRet(n.cont(), args, out)
+func (n *Nextcloud) occRet(args []string, out io.Writer) (int, error) {
+	return occRet(n.cont(), args, out)
 }
 
-func (n *nextcloud) occ(args []string, out io.Writer) error {
-	return nextcloudOCC(n.cont(), args, out)
+func (n *Nextcloud) occ(args []string, out io.Writer) error {
+	return occ(n.cont(), args, out)
 }
 
-func (n *nextcloud) occOutput(args []string) ([]byte, error) {
-	return nextcloudOCCOutput(n.cont(), args)
+func (n *Nextcloud) occOutput(args []string) ([]byte, error) {
+	return occOutput(n.cont(), args)
 }
 
-func (n *nextcloud) status() (*nextcloudStatus, int, error) {
-	return nextcloudReadStatus(n.cont())
+func (n *Nextcloud) status() (*status, int, error) {
+	return readStatus(n.cont())
 }
 
-func (n *nextcloud) startWithImage(
-	image string, config *nextcloudConfig,
-) error {
-	return nextcloudStart(n.core, image, config)
+func (n *Nextcloud) startWithImage(image string, config *config) error {
+	return start(n.core, image, config)
 }
 
-func (n *nextcloud) waitReady(timeout time.Duration, v string) error {
-	return nextcloudWaitReady(n.cont(), timeout, v)
+func (n *Nextcloud) waitReady(timeout time.Duration, v string) error {
+	return waitReady(n.cont(), timeout, v)
 }
 
-func (n *nextcloud) version() (string, error) {
+func (n *Nextcloud) version() (string, error) {
 	status, ret, err := n.status()
 	if err != nil {
 		return "", errcode.Annotate(err, "read status")
@@ -77,7 +78,7 @@ func (n *nextcloud) version() (string, error) {
 	return status.VersionString, nil
 }
 
-func (n *nextcloud) fix() error {
+func (n *Nextcloud) fix() error {
 	version, err := n.version()
 	if err != nil {
 		return errcode.Annotate(err, "get version")
@@ -89,21 +90,21 @@ func (n *nextcloud) fix() error {
 	return n.fixVersion(major)
 }
 
-func (n *nextcloud) fixVersion(major int) error {
+func (n *Nextcloud) fixVersion(major int) error {
 	// For version 21+, this needs to be executed every time a new
 	// docker is installed.
 	if major >= 21 {
 		cont := n.cont()
-		if err := nextcloudAptUpdate(cont, io.Discard); err != nil {
+		if err := aptUpdate(cont, io.Discard); err != nil {
 			return errcode.Annotate(err, "apt update for nc21")
 		}
 		const pkg = "libmagickcore-6.q16-6-extra"
-		if err := nextcloudAptInstall(cont, pkg, io.Discard); err != nil {
+		if err := aptInstall(cont, pkg, io.Discard); err != nil {
 			return errcode.Annotate(err, "install svg support")
 		}
 	}
 
-	k := nextcloudFixKey(major)
+	k := fixKey(major)
 	if k == "" {
 		return nil
 	}
@@ -124,7 +125,7 @@ func (n *nextcloud) fixVersion(major int) error {
 		"db:add-missing-columns",
 		"db:add-missing-primary-keys",
 	} {
-		if _, err := nextcloudOCCOutput(
+		if _, err := occOutput(
 			cont, []string{cmd, "-n"},
 		); err != nil {
 			return errcode.Annotate(err, cmd)
@@ -137,8 +138,8 @@ func (n *nextcloud) fixVersion(major int) error {
 	return nil
 }
 
-func (n *nextcloud) upgrade(
-	img string, ladder []*drvapi.StepVersion, config *nextcloudConfig,
+func (n *Nextcloud) upgrade(
+	img string, ladder []*drvapi.StepVersion, config *config,
 ) error {
 	if len(ladder) == 0 {
 		return errcode.InvalidArgf("nextcloud ladder missing")
@@ -186,7 +187,7 @@ func (n *nextcloud) upgrade(
 	return nil
 }
 
-func (n *nextcloud) upgrade1(img, ver string, c *nextcloudConfig) error {
+func (n *Nextcloud) upgrade1(img, ver string, c *config) error {
 	if err := n.cont().Drop(); err != nil {
 		return errcode.Annotatef(err, "drop nextcloud")
 	}
@@ -208,14 +209,18 @@ func (n *nextcloud) upgrade1(img, ver string, c *nextcloudConfig) error {
 	return nil
 }
 
-func (n *nextcloud) Start() error { return n.cont().Start() }
-func (n *nextcloud) Stop() error  { return n.cont().Stop() }
+// Start starts the app.
+func (n *Nextcloud) Start() error { return n.cont().Start() }
 
-func (n *nextcloud) config() (*nextcloudConfig, error) {
-	return loadNextcloudConfig(n.core)
+// Stop stops the app.
+func (n *Nextcloud) Stop() error { return n.cont().Stop() }
+
+func (n *Nextcloud) config() (*config, error) {
+	return loadConfig(n.core)
 }
 
-func (n *nextcloud) Change(from, to *drvapi.AppMeta) error {
+// Change changes the version of the app.
+func (n *Nextcloud) Change(from, to *drvapi.AppMeta) error {
 	if to == nil {
 		if err := n.registerDomains(nil); err != nil {
 			return errcode.Annotate(err, "unregister domains")
@@ -227,10 +232,10 @@ func (n *nextcloud) Change(from, to *drvapi.AppMeta) error {
 		if err != nil {
 			return errcode.Annotate(err, "get db handle")
 		}
-		if err := psql.dropDB(nameNextcloud); err != nil {
+		if err := psql.DropDB(Name); err != nil {
 			return errcode.Annotate(err, "drop nextcloud db")
 		}
-		vol := homeapp.Vol(n.core, nameNextcloud)
+		vol := homeapp.Vol(n.core, Name)
 		if err := dock.RemoveVolume(n.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
@@ -247,41 +252,41 @@ func (n *nextcloud) Change(from, to *drvapi.AppMeta) error {
 	return n.upgrade(homeapp.Image(to), to.Steps, config)
 }
 
-func (n *nextcloud) db() (*postgres, error) {
-	db, err := n.core.App(namePostgres)
+func (n *Nextcloud) db() (*postgres.Postgres, error) {
+	db, err := n.core.App(postgres.Name)
 	if err != nil {
 		return nil, errcode.Annotate(err, "reflect postgres db")
 	}
-	psql, ok := db.(*postgres)
+	psql, ok := db.(*postgres.Postgres)
 	if !ok {
 		return nil, errcode.Internalf("reflected db is not postgres")
 	}
 	return psql, nil
 }
 
-func (n *nextcloud) registerDomains(domains []string) error {
+func (n *Nextcloud) registerDomains(domains []string) error {
 	appDomains := n.core.Domains()
 
 	if len(domains) == 0 {
-		return appDomains.Clear(nameNextcloud)
+		return appDomains.Clear(Name)
 	}
 	m := &homeapp.DomainMap{
-		App: nameNextcloud,
+		App: Name,
 		Map: make(map[string]*homeapp.DomainEntry),
 	}
-	ncFrontAddr := homeapp.Cont(n.core, nameNCFront) + ":8080"
+	ncFrontAddr := homeapp.Cont(n.core, NameFront) + ":8080"
 	for _, d := range domains {
 		m.Map[d] = &homeapp.DomainEntry{Dest: ncFrontAddr}
 	}
 	return appDomains.Set(m)
 }
 
-func (n *nextcloud) install(image string, config *nextcloudConfig) error {
+func (n *Nextcloud) install(image string, config *config) error {
 	psql, err := n.db()
 	if err != nil {
 		return errcode.Annotate(err, "get db handle")
 	}
-	if err := psql.createDB(nameNextcloud, config.dbPassword); err != nil {
+	if err := psql.CreateDB(Name, config.dbPassword); err != nil {
 		return errcode.Annotate(err, "create db")
 	}
 
@@ -300,7 +305,7 @@ func (n *nextcloud) install(image string, config *nextcloudConfig) error {
 	return nil
 }
 
-func (n *nextcloud) setRedisPassword(pwd string) error {
+func (n *Nextcloud) setRedisPassword(pwd string) error {
 	// TODO(h8liu): should first check if redis password is incorrect.
 	args := []string{
 		"config:system:set", "--quiet",

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package postgres
 
 import (
 	"log"
@@ -30,20 +30,28 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
-type postgres struct {
+// Name is the app's name.
+const Name = "postgres"
+
+// KeyPass is key to postgresql root password.
+const KeyPass = "postgress.pass"
+
+// Postgres is the postgresql database app.
+type Postgres struct {
 	core homeapp.Core
 }
 
-func newPostgres(c homeapp.Core) *postgres {
-	return &postgres{core: c}
+// New creates a new postgres app.
+func New(c homeapp.Core) *Postgres {
+	return &Postgres{core: c}
 }
 
-func (p *postgres) cont() *dock.Cont {
+func (p *Postgres) cont() *dock.Cont {
 	d := p.core.Docker()
-	return dock.NewCont(d, homeapp.Cont(p.core, namePostgres))
+	return dock.NewCont(d, homeapp.Cont(p.core, Name))
 }
 
-func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
+func (p *Postgres) createCont(image, pwd string) (*dock.Cont, error) {
 	if image == "" {
 		return nil, errcode.InvalidArgf("no image specified")
 	}
@@ -52,15 +60,15 @@ func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
 	}
 
 	d := p.core.Docker()
-	labels := drvcfg.NewNameLabel(namePostgres)
-	volName := homeapp.Vol(p.core, namePostgres)
+	labels := drvcfg.NewNameLabel(Name)
+	volName := homeapp.Vol(p.core, Name)
 	if _, err := dock.CreateVolumeIfNotExist(
 		d, volName, &dock.VolumeConfig{Labels: labels},
 	); err != nil {
 		return nil, errcode.Annotate(err, "create postgres volume")
 	}
 
-	name := homeapp.Cont(p.core, namePostgres)
+	name := homeapp.Cont(p.core, Name)
 
 	config := &dock.ContConfig{
 		Name:    name,
@@ -78,7 +86,7 @@ func (p *postgres) createCont(image, pwd string) (*dock.Cont, error) {
 	return dock.CreateCont(d, image, config)
 }
 
-func (p *postgres) install(image string) error {
+func (p *Postgres) install(image string) error {
 	pwd, err := p.password()
 	if err != nil {
 		return errcode.Annotate(err, "read password")
@@ -96,14 +104,14 @@ func (p *postgres) install(image string) error {
 	return nil
 }
 
-func (p *postgres) update(image string) error {
+func (p *Postgres) update(image string) error {
 	if image == "" {
 		return errcode.InvalidArgf("postgres image empty")
 	}
-	contName := homeapp.Cont(p.core, namePostgres)
+	contName := homeapp.Cont(p.core, Name)
 	d := p.core.Docker()
-	if err := dropContIfDifferent(d, contName, image); err != nil {
-		if err == errSameImage {
+	if err := apputil.DropIfDifferent(d, contName, image); err != nil {
+		if err == apputil.ErrSameImage {
 			return nil
 		}
 		return err
@@ -112,11 +120,11 @@ func (p *postgres) update(image string) error {
 	return p.install(image)
 }
 
-func (p *postgres) open(user, pwd, db string) (*sqlx.DB, error) {
+func (p *Postgres) open(user, pwd, db string) (*sqlx.DB, error) {
 	u := &url.URL{
 		Scheme: "postgres",
 		User:   url.UserPassword(user, pwd),
-		Host:   homeapp.Cont(p.core, namePostgres),
+		Host:   homeapp.Cont(p.core, Name),
 		Path:   path.Join("/", db),
 	}
 	q := make(url.Values)
@@ -126,11 +134,11 @@ func (p *postgres) open(user, pwd, db string) (*sqlx.DB, error) {
 	return sqlx.OpenPsql(u.String())
 }
 
-func (p *postgres) password() (string, error) {
-	return apputil.ReadPasswordOrSetRandom(p.core.Settings(), keyPostgresPass)
+func (p *Postgres) password() (string, error) {
+	return apputil.ReadPasswordOrSetRandom(p.core.Settings(), KeyPass)
 }
 
-func (p *postgres) openAdmin() (*sqlx.DB, error) {
+func (p *Postgres) openAdmin() (*sqlx.DB, error) {
 	password, err := p.password()
 	if err != nil {
 		return nil, errcode.Annotate(err, "read password")
@@ -138,7 +146,7 @@ func (p *postgres) openAdmin() (*sqlx.DB, error) {
 	return p.open("postgres", password, "")
 }
 
-func (p *postgres) startWait() error {
+func (p *Postgres) startWait() error {
 	db, err := p.openAdmin()
 	if err != nil {
 		return errcode.Annotate(err, "open db")
@@ -147,7 +155,8 @@ func (p *postgres) startWait() error {
 	return waitDB(db, 5*time.Minute)
 }
 
-func (p *postgres) createDB(name, pwd string) error {
+// CreateDB creates a new database.
+func (p *Postgres) CreateDB(name, pwd string) error {
 	db, err := p.openAdmin()
 	if err != nil {
 		return errcode.Annotate(err, "open db")
@@ -156,7 +165,8 @@ func (p *postgres) createDB(name, pwd string) error {
 	return createDB(db, name, pwd)
 }
 
-func (p *postgres) dropDB(name string) error {
+// DropDB drops a database.
+func (p *Postgres) DropDB(name string) error {
 	db, err := p.openAdmin()
 	if err != nil {
 		return errcode.Annotate(err, "open db")
@@ -165,14 +175,15 @@ func (p *postgres) dropDB(name string) error {
 	return dropDB(db, name)
 }
 
-func (p *postgres) Change(from, to *drvapi.AppMeta) error {
+// Change changes the version from one to another.
+func (p *Postgres) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
 		if err := p.cont().Drop(); err != nil {
 			return errcode.Annotate(err, "drop old postgres container")
 		}
 	}
 	if to == nil {
-		vol := homeapp.Vol(p.core, namePostgres)
+		vol := homeapp.Vol(p.core, Name)
 		if err := dock.RemoveVolume(p.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
@@ -197,5 +208,8 @@ func (p *postgres) Change(from, to *drvapi.AppMeta) error {
 	return nil
 }
 
-func (p *postgres) Start() error { return p.cont().Start() }
-func (p *postgres) Stop() error  { return p.cont().Stop() }
+// Start starts the app.
+func (p *Postgres) Start() error { return p.cont().Start() }
+
+// Stop stops the app.
+func (p *Postgres) Stop() error { return p.cont().Stop() }

@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/jsonx"
 	"shanhu.io/pisces/settings"
@@ -47,7 +48,7 @@ func endpointConfig(d *drive) (*drvapi.EndpointConfig, error) {
 }
 
 func initDone(d *drive) error {
-	ncPass, err := settings.String(d.settings, keyNextcloudAdminPass)
+	ncPass, err := settings.String(d.settings, nextcloud.KeyAdminPass)
 	if err != nil {
 		if errcode.IsNotFound(err) {
 			ncPass = ""
@@ -95,7 +96,7 @@ func install(d *drive, r *drvapi.Release) error {
 		return errcode.Annotate(err, "save main domain")
 	}
 	if doms := epConfig.NextcloudDomains; len(doms) > 0 {
-		if err := d.settings.Set(keyNextcloudDomains, doms); err != nil {
+		if err := d.settings.Set(nextcloud.KeyDomains, doms); err != nil {
 			return errcode.Annotate(err, "save nextcloud domains")
 		}
 	}

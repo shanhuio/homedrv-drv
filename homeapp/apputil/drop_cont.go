@@ -13,35 +13,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package apputil
 
 import (
+	"errors"
 	"log"
 
-	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
+	"shanhu.io/virgo/dock"
 )
 
-func fixThings(d *drive) {
-	if d.config.Bare {
-		return
-	}
+// ErrSameImage is returned when there is no image change.
+var ErrSameImage = errors.New("same image")
 
-	if err := fixOSUpgradeURL(d); err != nil {
-		log.Println("fix os upgrade url: ", err)
-	}
-	if err := nextcloud.Fix(d); err != nil {
-		log.Println("fix nextcloud: ", err)
-	}
-}
-
-func fixOSUpgradeURL(d *drive) error {
-	if !isOSUpdateSupported(d) {
-		return nil
-	}
-	b, err := d.burmilla()
+// DropIfDifferent drops the container with name if the image is
+// different. It returns ErrSameImage if the image is the same.
+func DropIfDifferent(d *dock.Client, name, img string) error {
+	c := dock.NewCont(d, name)
+	info, err := c.Inspect()
 	if err != nil {
-		return errcode.Annotate(err, "init os stub")
+		if errcode.IsNotFound(err) {
+			log.Printf("container %q not found", name)
+			return nil
+		}
+		return errcode.Annotatef(err, "inspect %s", name)
 	}
-	return setOSUpdateSource(b)
+	if info.Image == img {
+		return ErrSameImage // nothing to update
+	}
+	if err := c.Drop(); err != nil {
+		return errcode.Annotatef(err, "drop %s", name)
+	}
+	return nil
 }

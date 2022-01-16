@@ -13,18 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
 import (
 	"bytes"
 	"io"
 	"strings"
 
+	"shanhu.io/homedrv/executil"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )
 
-func nextcloudConfigSaysInstalled(config []byte) bool {
+func configSaysInstalled(config []byte) bool {
 	// check if the config file has the `'installed' => true` line.
 	lines := strings.Split(string(config), "\n")
 	for _, line := range lines {
@@ -39,23 +40,23 @@ func nextcloudConfigSaysInstalled(config []byte) bool {
 	return false
 }
 
-func nextcloudAptUpdate(c *dock.Cont, out io.Writer) error {
+func aptUpdate(c *dock.Cont, out io.Writer) error {
 	cmd := []string{"apt-get", "update"}
-	return execError(c.ExecWithSetup(&dock.ExecSetup{
+	return executil.RetError(c.ExecWithSetup(&dock.ExecSetup{
 		Cmd:    cmd,
 		Stdout: out,
 	}))
 }
 
-func nextcloudAptInstall(c *dock.Cont, pkg string, out io.Writer) error {
+func aptInstall(c *dock.Cont, pkg string, out io.Writer) error {
 	cmd := []string{"apt-get", "install", "-y", pkg}
-	return execError(c.ExecWithSetup(&dock.ExecSetup{
+	return executil.RetError(c.ExecWithSetup(&dock.ExecSetup{
 		Cmd:    cmd,
 		Stdout: out,
 	}))
 }
 
-func nextcloudOCCRet(
+func occRet(
 	c *dock.Cont, args []string, out io.Writer,
 ) (int, error) {
 	cmd := append([]string{"php", "occ"}, args...)
@@ -66,19 +67,19 @@ func nextcloudOCCRet(
 	})
 }
 
-func nextcloudOCC(c *dock.Cont, args []string, out io.Writer) error {
-	return execError(nextcloudOCCRet(c, args, out))
+func occ(c *dock.Cont, args []string, out io.Writer) error {
+	return executil.RetError(occRet(c, args, out))
 }
 
-func nextcloudOCCOutput(c *dock.Cont, args []string) ([]byte, error) {
+func occOutput(c *dock.Cont, args []string) ([]byte, error) {
 	out := new(bytes.Buffer)
-	if err := nextcloudOCC(c, args, out); err != nil {
+	if err := occ(c, args, out); err != nil {
 		return nil, err
 	}
 	return out.Bytes(), nil
 }
 
-func nextcloudTestReadConfig(cont *dock.Cont) ([]byte, error) {
+func testReadConfig(cont *dock.Cont) ([]byte, error) {
 	const configFile = "/var/www/html/config/config.php"
 
 	ret, err := cont.ExecWithSetup(&dock.ExecSetup{
@@ -94,20 +95,20 @@ func nextcloudTestReadConfig(cont *dock.Cont) ([]byte, error) {
 	return dock.ReadContFile(cont, configFile)
 }
 
-func nextcloudCron(cont *dock.Cont) error {
-	return execError(cont.ExecWithSetup(&dock.ExecSetup{
+func cron(cont *dock.Cont) error {
+	return executil.RetError(cont.ExecWithSetup(&dock.ExecSetup{
 		Cmd:    []string{"php", "cron.php"},
 		User:   "www-data",
 		Stdout: io.Discard,
 	}))
 }
 
-func nextcloudFixKey(major int) string {
+func fixKey(major int) string {
 	switch major {
 	case 20:
-		return keyNextcloud20Fixed
+		return Key20Fixed
 	case 21:
-		return keyNextcloud21Fixed
+		return Key21Fixed
 	}
 	return ""
 }

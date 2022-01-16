@@ -13,24 +13,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package executil
 
-const (
-	keySessionHMAC = "session.hmac"
-
-	// Init passwords.
-	keyJarvisPass = "jarvis.pass"
-
-	keyMainDomain = "main.domain"
-
-	keyFabricsServerDomain = "fabrics-server.domain"
-	keyCustomSubs          = "custom.subs"
-
-	keyBuild         = "build"
-	keyBuildUpdating = "build-updating"
-	keyManualBuild   = "manual-build"
-
-	keyIdentity = "identity"
-
-	keyAppsState = "apps.state"
+import (
+	"shanhu.io/misc/errcode"
 )
+
+// RetError wraps the return value and the error. If err is not nil, it
+// return err. When err is nil, if ret is not 0, it returns an internal
+// error.
+func RetError(ret int, err error) error {
+	if err != nil {
+		return err
+	}
+	if ret != 0 {
+		return errcode.Internalf("exit value: %d", ret)
+	}
+	return nil
+}

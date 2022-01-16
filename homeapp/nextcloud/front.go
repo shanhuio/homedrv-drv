@@ -13,77 +13,85 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
 import (
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/apputil"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )
 
-type ncfront struct {
+// Front is the ncfront app.
+type Front struct {
 	core homeapp.Core
 }
 
-func newNCFront(c homeapp.Core) *ncfront { return &ncfront{core: c} }
+// NewFront creates a new ncfront app.
+func NewFront(c homeapp.Core) *Front { return &Front{core: c} }
 
-func (n *ncfront) cont() *dock.Cont {
-	return dock.NewCont(n.core.Docker(), homeapp.Cont(n.core, nameNCFront))
+func (f *Front) cont() *dock.Cont {
+	return dock.NewCont(f.core.Docker(), homeapp.Cont(f.core, NameFront))
 }
 
-func (n *ncfront) createCont(image string) (*dock.Cont, error) {
+func (f *Front) createCont(image string) (*dock.Cont, error) {
 	if image == "" {
 		return nil, errcode.InvalidArgf("no image specified")
 	}
 
-	nextcloudAddr := homeapp.Cont(n.core, nameNextcloud) + ":80"
+	nextcloudAddr := homeapp.Cont(f.core, Name) + ":80"
 	config := &dock.ContConfig{
-		Name:          homeapp.Cont(n.core, nameNCFront),
-		Network:       homeapp.Network(n.core),
+		Name:          homeapp.Cont(f.core, NameFront),
+		Network:       homeapp.Network(f.core),
 		Env:           map[string]string{"NEXTCLOUD": nextcloudAddr},
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
-		Labels:        drvcfg.NewNameLabel(nameNCFront),
+		Labels:        drvcfg.NewNameLabel(NameFront),
 	}
-	return dock.CreateCont(n.core.Docker(), image, config)
+	return dock.CreateCont(f.core.Docker(), image, config)
 }
 
-func (n *ncfront) startWithImage(image string) error {
-	cont, err := n.createCont(image)
+func (f *Front) startWithImage(image string) error {
+	cont, err := f.createCont(image)
 	if err != nil {
 		return errcode.Annotate(err, "create ncfront container")
 	}
 	return cont.Start()
 }
 
-func (n *ncfront) install(image string) error {
-	return n.startWithImage(image)
+func (f *Front) install(image string) error {
+	return f.startWithImage(image)
 }
 
-func (n *ncfront) update(image string) error {
-	cont := homeapp.Cont(n.core, nameNCFront)
-	if err := dropContIfDifferent(n.core.Docker(), cont, image); err != nil {
-		if err == errSameImage {
+func (f *Front) update(image string) error {
+	d := f.core.Docker()
+	cont := homeapp.Cont(f.core, NameFront)
+	if err := apputil.DropIfDifferent(d, cont, image); err != nil {
+		if err == apputil.ErrSameImage {
 			return nil
 		}
 		return err
 	}
-	return n.startWithImage(image)
+	return f.startWithImage(image)
 }
 
-func (n *ncfront) Start() error { return n.cont().Start() }
-func (n *ncfront) Stop() error  { return n.cont().Stop() }
+// Start starts the app.
+func (f *Front) Start() error { return f.cont().Start() }
 
-func (n *ncfront) Change(from, to *drvapi.AppMeta) error {
+// Stop stops the app.
+func (f *Front) Stop() error { return f.cont().Stop() }
+
+// Change changes the app's version.
+func (f *Front) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
-		if err := n.cont().Drop(); err != nil {
+		if err := f.cont().Drop(); err != nil {
 			return errcode.Annotate(err, "drop old ncfront container")
 		}
 	}
 	if to == nil {
 		return nil
 	}
-	return n.install(homeapp.Image(to))
+	return f.install(homeapp.Image(to))
 }

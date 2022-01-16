@@ -13,24 +13,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
-import (
-	"testing"
+// Settings keys.
+const (
+	KeyDBPass      = "nextcloud-db.pass"
+	KeyAdminPass   = "nextcloud-admin.pass"
+	KeyDomain      = "nextcloud.domain"
+	KeyDomains     = "nextcloud.domains"
+	KeyDataMount   = "nextcloud.data-mount"
+	KeyExtraMounts = "nextcloud.extra-mounts"
+	Key18Fixed     = "nextcloud-18-fixed"
+	Key19Fixed     = "nextcloud-19-fixed"
+	Key20Fixed     = "nextcloud-20-fixed"
+	Key21Fixed     = "nextcloud-21-fixed"
 )
-
-func TestParseNextcloudStatus(t *testing.T) {
-	const s = "Nextcloud is weird...\n" +
-		`{"installed": false, "version": "0.1"}`
-
-	status, err := parseNextcloudStatus(s)
-	if err != nil {
-		t.Errorf("parse %q: %s", s, err)
-	}
-	if status.Installed != false {
-		t.Error("want not installed")
-	}
-	if want := "0.1"; status.Version != want {
-		t.Errorf("wrong version: got %q, want %q", status.Version, want)
-	}
-}

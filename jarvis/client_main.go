@@ -33,7 +33,6 @@ func clientCommands() *subcmd.List {
 	c := subcmd.New()
 	c.Add("update", "hints to check update", cmdUpdate)
 	c.Add("list-os", "list the available os versions", cmdListOS)
-	c.Add("occ", "runs occ on nextcloud", cmdOCC)
 	c.Add("settings", "prints settings", cmdSettings)
 	c.Add("set-password", "sets password of a user", cmdSetPassword)
 	c.Add("set-api-key", "sets API key", cmdSetAPIKey)

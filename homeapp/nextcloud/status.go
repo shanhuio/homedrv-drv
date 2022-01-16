@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
 import (
 	"bytes"
@@ -26,13 +26,13 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
-type nextcloudStatus struct {
+type status struct {
 	Installed     bool   `json:"installed"`
 	Version       string `json:"version"`
 	VersionString string `json:"versionstring"`
 }
 
-func parseNextcloudStatus(out string) (*nextcloudStatus, error) {
+func parseNextcloudStatus(out string) (*status, error) {
 	lines := strings.Split(out, "\n")
 	var theLine string
 	for _, line := range lines {
@@ -47,16 +47,16 @@ func parseNextcloudStatus(out string) (*nextcloudStatus, error) {
 		return nil, errcode.InvalidArgf("status not found: %q", out)
 	}
 
-	status := new(nextcloudStatus)
+	status := new(status)
 	if err := json.Unmarshal([]byte(theLine), status); err != nil {
 		return nil, errcode.Annotate(err, "parse status")
 	}
 	return status, nil
 }
 
-func nextcloudReadStatus(c *dock.Cont) (*nextcloudStatus, int, error) {
+func readStatus(c *dock.Cont) (*status, int, error) {
 	out := new(bytes.Buffer)
-	ret, err := nextcloudOCCRet(c, []string{"status", "--output=json"}, out)
+	ret, err := occRet(c, []string{"status", "--output=json"}, out)
 	if err != nil {
 		return nil, 0, errcode.Annotate(err, "occ status")
 	}
@@ -67,32 +67,32 @@ func nextcloudReadStatus(c *dock.Cont) (*nextcloudStatus, int, error) {
 	return status, 0, err
 }
 
-var errNextcloudNotInstalled = errcode.Internalf("status not ready")
+var errNotInstalled = errcode.Internalf("status not ready")
 
-func nextcloudCheckInstalled(c *dock.Cont, v string) error {
+func checkInstalled(c *dock.Cont, v string) error {
 	// Double check with occ status. Should be safe now.
-	status, ret, err := nextcloudReadStatus(c)
+	status, ret, err := readStatus(c)
 	if err != nil {
 		return err
 	}
 	if ret != 0 {
 		log.Printf("status exit with: %d", ret)
-		return errNextcloudNotInstalled
+		return errNotInstalled
 	}
 	if v != "" && status.VersionString != v {
 		log.Printf(
 			"not correct version: want %q, got %q",
 			v, status.VersionString,
 		)
-		return errNextcloudNotInstalled
+		return errNotInstalled
 	}
 	if !status.Installed {
-		return errNextcloudNotInstalled
+		return errNotInstalled
 	}
 	return nil
 }
 
-func nextcloudWaitReady(
+func waitReady(
 	cont *dock.Cont, timeout time.Duration, v string,
 ) error {
 	start := time.Now()
@@ -115,7 +115,7 @@ func nextcloudWaitReady(
 		}
 		i++
 
-		config, err := nextcloudTestReadConfig(cont)
+		config, err := testReadConfig(cont)
 		if err != nil {
 			return errcode.Annotate(err, "check config")
 		}
@@ -123,18 +123,18 @@ func nextcloudWaitReady(
 			log.Printf("config.php not created yet")
 			continue
 		}
-		if !nextcloudConfigSaysInstalled(config) {
+		if !configSaysInstalled(config) {
 			continue
 		}
 
-		if err := nextcloudCheckInstalled(cont, v); err != nil {
-			if err == errNextcloudNotInstalled {
+		if err := checkInstalled(cont, v); err != nil {
+			if err == errNotInstalled {
 				continue
 			}
 			return errcode.Annotate(err, "check installed")
 		}
 
-		mode, err := nextcloudOCCOutput(
+		mode, err := occOutput(
 			cont, []string{"maintenance:mode", "-n"},
 		)
 		if err != nil {

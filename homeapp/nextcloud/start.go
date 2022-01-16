@@ -13,29 +13,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package nextcloud
 
 import (
 	"strings"
 
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/postgres"
+	"shanhu.io/homedrv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )
 
-type nextcloudExtraMount struct {
+type extraMount struct {
 	host      string
 	container string
 }
 
-type nextcloudConfig struct {
+type config struct {
 	domains       []string
 	dbPassword    string
 	adminPassword string
 	redisPassword string
 	dataMount     string
-	extraMounts   []*nextcloudExtraMount
+	extraMounts   []*extraMount
 }
 
 func networkCIDRs(c homeapp.Core) ([]string, error) {
@@ -54,17 +56,17 @@ func networkCIDRs(c homeapp.Core) ([]string, error) {
 	return cidrs, nil
 }
 
-func nextcloudCreateCont(
-	c homeapp.Core, image string, config *nextcloudConfig,
+func createCont(
+	c homeapp.Core, image string, config *config,
 ) (*dock.Cont, error) {
 	if image == "" {
 		return nil, errcode.InvalidArgf("no image specified")
 	}
-	labels := drvcfg.NewNameLabel(nameNextcloud)
-	volName := homeapp.Vol(c, nameNextcloud)
+	labels := drvcfg.NewNameLabel(Name)
+	volName := homeapp.Vol(c, Name)
 
 	contConfig := &dock.ContConfig{
-		Name:          homeapp.Cont(c, nameNextcloud),
+		Name:          homeapp.Cont(c, Name),
 		Network:       homeapp.Network(c),
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
@@ -96,11 +98,11 @@ func nextcloudCreateCont(
 		})
 	}
 	contConfig.Env = map[string]string{
-		"POSTGRES_HOST":       homeapp.Cont(c, namePostgres),
+		"POSTGRES_HOST":       homeapp.Cont(c, postgres.Name),
 		"POSTGRES_DB":         "nextcloud",
 		"POSTGRES_USER":       "nextcloud",
 		"POSTGRES_PASSWORD":   config.dbPassword,
-		"REDIS_HOST":          homeapp.Cont(c, nameRedis),
+		"REDIS_HOST":          homeapp.Cont(c, redis.Name),
 		"REDIS_HOST_PASSWORD": config.redisPassword,
 
 		"NEXTCLOUD_ADMIN_USER":     "admin",
@@ -124,10 +126,10 @@ func nextcloudCreateCont(
 	return dock.CreateCont(d, image, contConfig)
 }
 
-func nextcloudStart(
-	c homeapp.Core, image string, config *nextcloudConfig,
+func start(
+	c homeapp.Core, image string, config *config,
 ) error {
-	cont, err := nextcloudCreateCont(c, image, config)
+	cont, err := createCont(c, image, config)
 	if err != nil {
 		return errcode.Annotate(err, "create nextcloud")
 	}

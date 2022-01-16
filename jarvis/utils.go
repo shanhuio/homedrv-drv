@@ -16,51 +16,17 @@
 package jarvis
 
 import (
-	"errors"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/jsonx"
 	"shanhu.io/misc/strutil"
 	"shanhu.io/misc/tarutil"
-	"shanhu.io/virgo/dock"
 )
-
-var errSameImage = errors.New("same image")
-
-func dropContIfDifferent(d *dock.Client, name, img string) error {
-	c := dock.NewCont(d, name)
-	info, err := c.Inspect()
-	if err != nil {
-		if errcode.IsNotFound(err) {
-			log.Printf("container %q not found on upgrading", name)
-			return nil
-		}
-		return errcode.Annotatef(err, "inspect %s", name)
-	}
-	if info.Image == img {
-		return errSameImage // nothing to update
-	}
-	if err := c.Drop(); err != nil {
-		return errcode.Annotatef(err, "drop %s", name)
-	}
-	return nil
-}
-
-func execError(ret int, err error) error {
-	if err != nil {
-		return err
-	}
-	if ret != 0 {
-		return errcode.Internalf("exit value: %d", ret)
-	}
-	return nil
-}
 
 func addJSONXToTarStream(
 	s *tarutil.Stream, f string, m *tarutil.Meta, obj interface{},

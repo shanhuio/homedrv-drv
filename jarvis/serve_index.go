@@ -20,6 +20,7 @@ import (
 	"net/url"
 
 	"shanhu.io/aries"
+	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 )
 
@@ -174,7 +175,7 @@ func serveCover(s *server, c *aries.C) error {
 
 	var ncDomains []string
 	if err := s.drive.settings.Get(
-		keyNextcloudDomains, &ncDomains,
+		nextcloud.KeyDomains, &ncDomains,
 	); err != nil {
 		if !errcode.IsNotFound(err) {
 			return aries.AltInternal(err, "failed to load server config")

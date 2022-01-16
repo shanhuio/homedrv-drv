@@ -17,6 +17,9 @@ package jarvis
 
 import (
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/homeapp/postgres"
+	"shanhu.io/homedrv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 )
 
@@ -30,10 +33,10 @@ func newBuiltInApps(c homeapp.Core) *builtInApps {
 		name string
 		app  homeapp.App
 	}{
-		{name: "redis", app: newRedis(c)},
-		{name: "postgres", app: newPostgres(c)},
-		{name: "ncfront", app: newNCFront(c)},
-		{name: "nextcloud", app: newNextcloud(c)},
+		{name: "redis", app: redis.New(c)},
+		{name: "postgres", app: postgres.New(c)},
+		{name: "ncfront", app: nextcloud.NewFront(c)},
+		{name: "nextcloud", app: nextcloud.New(c)},
 	} {
 		m[a.name] = &appStub{App: a.app}
 	}

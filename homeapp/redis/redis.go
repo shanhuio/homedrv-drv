@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package redis
 
 import (
 	"fmt"
@@ -28,13 +28,21 @@ import (
 	"shanhu.io/virgo/dock"
 )
 
-type redis struct {
+// Name is the name of the app.
+const Name = "redis"
+
+// KeyPass is the settings key to the redis password.
+const KeyPass = "redis.pass"
+
+// Redis is the redis app.
+type Redis struct {
 	core homeapp.Core
 }
 
-func newRedis(c homeapp.Core) *redis { return &redis{core: c} }
+// New creates a new redis app.
+func New(c homeapp.Core) *Redis { return &Redis{core: c} }
 
-func (r *redis) writeConfig(cont *dock.Cont, pwd string) error {
+func (r *Redis) writeConfig(cont *dock.Cont, pwd string) error {
 	confFile := tarutil.NewStream()
 	confContent := fmt.Sprintf("requirepass %q\n", pwd)
 	confFile.AddString("redis.conf", &tarutil.Meta{
@@ -45,11 +53,11 @@ func (r *redis) writeConfig(cont *dock.Cont, pwd string) error {
 	return dock.CopyInTarStream(cont, confFile, "/etc")
 }
 
-func (r *redis) cont() *dock.Cont {
-	return dock.NewCont(r.core.Docker(), homeapp.Cont(r.core, nameRedis))
+func (r *Redis) cont() *dock.Cont {
+	return dock.NewCont(r.core.Docker(), homeapp.Cont(r.core, Name))
 }
 
-func (r *redis) createCont(image, pwd string) (*dock.Cont, error) {
+func (r *Redis) createCont(image, pwd string) (*dock.Cont, error) {
 	if image == "" {
 		return nil, errcode.InvalidArgf("no image specified")
 	}
@@ -58,12 +66,12 @@ func (r *redis) createCont(image, pwd string) (*dock.Cont, error) {
 	}
 
 	config := &dock.ContConfig{
-		Name:          homeapp.Cont(r.core, nameRedis),
+		Name:          homeapp.Cont(r.core, Name),
 		Network:       homeapp.Network(r.core),
 		AutoRestart:   true,
 		JSONLogConfig: dock.LimitedJSONLog(),
 		Cmd:           []string{"redis-server", "/etc/redis.conf"},
-		Labels:        drvcfg.NewNameLabel(nameRedis),
+		Labels:        drvcfg.NewNameLabel(Name),
 	}
 
 	cont, err := dock.CreateCont(r.core.Docker(), image, config)
@@ -78,7 +86,7 @@ func (r *redis) createCont(image, pwd string) (*dock.Cont, error) {
 	return cont, nil
 }
 
-func (r *redis) install(image string) error {
+func (r *Redis) install(image string) error {
 	pwd, err := r.password()
 	if err != nil {
 		return errcode.Annotate(err, "read password")
@@ -93,15 +101,15 @@ func (r *redis) install(image string) error {
 	return nil
 }
 
-func (r *redis) update(image string, force bool) error {
+func (r *Redis) update(image string, force bool) error {
 	if image == "" {
 		return errcode.InvalidArgf("redis image empty")
 	}
-	contName := homeapp.Cont(r.core, nameRedis)
+	contName := homeapp.Cont(r.core, Name)
 	d := r.core.Docker()
 	if !force {
-		if err := dropContIfDifferent(d, contName, image); err != nil {
-			if err == errSameImage {
+		if err := apputil.DropIfDifferent(d, contName, image); err != nil {
+			if err == apputil.ErrSameImage {
 				return nil
 			}
 			return err
@@ -117,11 +125,12 @@ func (r *redis) update(image string, force bool) error {
 	return r.install(image)
 }
 
-func (r *redis) password() (string, error) {
-	return apputil.ReadPasswordOrSetRandom(r.core.Settings(), keyRedisPass)
+func (r *Redis) password() (string, error) {
+	return apputil.ReadPasswordOrSetRandom(r.core.Settings(), KeyPass)
 }
 
-func (r *redis) Change(from, to *drvapi.AppMeta) error {
+// Change changes the app's version.
+func (r *Redis) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
 		if err := r.cont().Drop(); err != nil {
 			return errcode.Annotate(err, "drop old redis container")
@@ -129,7 +138,7 @@ func (r *redis) Change(from, to *drvapi.AppMeta) error {
 	}
 
 	if to == nil {
-		vol := homeapp.Vol(r.core, nameRedis)
+		vol := homeapp.Vol(r.core, Name)
 		if err := dock.RemoveVolume(r.core.Docker(), vol); err != nil {
 			return errcode.Annotate(err, "remove volume")
 		}
@@ -139,5 +148,8 @@ func (r *redis) Change(from, to *drvapi.AppMeta) error {
 	return r.install(homeapp.Image(to))
 }
 
-func (r *redis) Start() error { return r.cont().Start() }
-func (r *redis) Stop() error  { return r.cont().Stop() }
+// Start starts the app.
+func (r *Redis) Start() error { return r.cont().Start() }
+
+// Stop stops the app.
+func (r *Redis) Stop() error { return r.cont().Stop() }

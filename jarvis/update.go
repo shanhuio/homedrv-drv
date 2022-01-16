@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/homeapp/apputil"
 	"shanhu.io/homedrv/homeboot"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
@@ -72,7 +73,7 @@ func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
 	// If update succeeds, the core will be swapped with a new
 	// instance, and updateCore() will never return.
 	if err := updateCore(d, rel.Jarvis); err != nil {
-		if err != errSameImage {
+		if err != apputil.ErrSameImage {
 			return errcode.Annotate(err, "update core")
 		}
 		// Core did not update, finish the rest of the system.

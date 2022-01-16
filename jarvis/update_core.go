@@ -19,6 +19,7 @@ import (
 	"log"
 	"time"
 
+	"shanhu.io/homedrv/homeapp/apputil"
 	"shanhu.io/homedrv/homeboot"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
@@ -87,7 +88,8 @@ func updateCore(d *drive, img string) error {
 		return errcode.Annotate(err, "inspect self")
 	}
 	if self.Image == img {
-		return errSameImage // Already up-to-date, no need to do anything.
+		// Already up-to-date, no need to do anything.
+		return apputil.ErrSameImage
 	}
 	return restartAs(d, img)
 }

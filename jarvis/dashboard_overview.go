@@ -19,6 +19,7 @@ import (
 	"net/url"
 
 	"shanhu.io/homedrv/burmilla"
+	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 )
 
@@ -53,7 +54,7 @@ func newDashboardOverviewData(s *server) (*DashboardOverviewData, error) {
 
 	var ncDomains []string
 	if err := s.drive.settings.Get(
-		keyNextcloudDomains, &ncDomains,
+		nextcloud.KeyDomains, &ncDomains,
 	); err != nil {
 		if !errcode.IsNotFound(err) {
 			return nil, errcode.Internalf("failed to get nextcloud domain")
