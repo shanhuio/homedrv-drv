@@ -24,17 +24,6 @@ import (
 	"shanhu.io/pisces/settings"
 )
 
-func setNextcloudDomainsIfNotExist(d *drive, domains []string) error {
-	ok, err := d.settings.Has(keyNextcloudDomains)
-	if err != nil {
-		return errcode.Annotate(err, "check nextcloud domain")
-	}
-	if ok {
-		return nil
-	}
-	return d.settings.Set(keyNextcloudDomains, domains)
-}
-
 func nextcloudDomains(s settings.Settings) ([]string, error) {
 	var domains []string
 	if err := s.Get(keyNextcloudDomains, &domains); err == nil {
