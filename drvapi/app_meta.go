@@ -17,10 +17,16 @@ package drvapi
 
 // StepVersion records a particular version of a nextcloud or postgres release.
 type StepVersion struct {
-	Major    int
-	Version  string
-	Source   string `json:",omitempty"`
-	Image    string
+	Major   int    // Major version.
+	Version string // Full version string.
+
+	// Source is where this image originally come from. Information only.
+	Source string `json:",omitempty"`
+
+	// Image ID, often the hash of the image.
+	Image string
+
+	// ImageSum is the checksum of the image's gzipped tarball.
 	ImageSum string `json:",omitempty"`
 }
 
