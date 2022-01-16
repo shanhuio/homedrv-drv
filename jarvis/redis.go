@@ -135,7 +135,7 @@ func (r *redis) Change(from, to *drvapi.AppMeta) error {
 		return nil
 	}
 
-	return r.install(appImage(to))
+	return r.install(homeapp.Image(to))
 }
 
 func (r *redis) Start() error { return r.cont().Start() }

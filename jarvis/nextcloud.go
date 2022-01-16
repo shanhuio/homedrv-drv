@@ -242,9 +242,9 @@ func (n *nextcloud) Change(from, to *drvapi.AppMeta) error {
 		return errcode.Annotate(err, "load config")
 	}
 	if from == nil {
-		return n.install(appImage(to), config)
+		return n.install(homeapp.Image(to), config)
 	}
-	return n.upgrade(appImage(to), to.Steps, config)
+	return n.upgrade(homeapp.Image(to), to.Steps, config)
 }
 
 func (n *nextcloud) db() (*postgres, error) {

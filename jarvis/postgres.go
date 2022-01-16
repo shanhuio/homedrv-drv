@@ -183,7 +183,7 @@ func (p *postgres) Change(from, to *drvapi.AppMeta) error {
 		return errcode.Annotate(err, "read password")
 	}
 	// TODO(h8liu): implement proper postgresql upgrade.
-	cont, err := p.createCont(appImage(to), pwd)
+	cont, err := p.createCont(homeapp.Image(to), pwd)
 	if err != nil {
 		return errcode.Annotate(err, "create postgres container")
 	}

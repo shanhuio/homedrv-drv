@@ -27,23 +27,6 @@ func makeManifest(metas []*drvapi.AppMeta) map[string]*drvapi.AppMeta {
 	return m
 }
 
-func sameAppVersion(m1, m2 *drvapi.AppMeta) bool {
-	return m1.Version == m2.Version &&
-		m1.SemVersion == m2.SemVersion &&
-		m1.Image == m2.Image
-}
-
-func appImage(meta *drvapi.AppMeta) string {
-	if meta.Image != "" {
-		return meta.Image
-	}
-	if n := len(meta.Steps); n > 0 {
-		last := meta.Steps[n-1]
-		return last.Image
-	}
-	return ""
-}
-
 type appQuerier interface {
 	// Returns the meta info for an app. Returns NotFound error if app not
 	// found.

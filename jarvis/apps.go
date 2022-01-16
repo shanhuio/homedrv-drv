@@ -18,9 +18,16 @@ package jarvis
 import (
 	"log"
 
+	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/strutil"
 )
+
+func sameAppVersion(m1, m2 *drvapi.AppMeta) bool {
+	return m1.Version == m2.Version &&
+		m1.SemVersion == m2.SemVersion &&
+		m1.Image == m2.Image
+}
 
 type apps struct {
 	state *appsState

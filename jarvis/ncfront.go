@@ -85,5 +85,5 @@ func (n *ncfront) Change(from, to *drvapi.AppMeta) error {
 	if to == nil {
 		return nil
 	}
-	return n.install(appImage(to))
+	return n.install(homeapp.Image(to))
 }
