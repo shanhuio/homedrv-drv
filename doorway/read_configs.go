@@ -17,8 +17,12 @@ package doorway
 
 import (
 	"crypto/tls"
+	"log"
 	"os"
+	"path/filepath"
 	"sort"
+	"strings"
+	"time"
 
 	"golang.org/x/crypto/acme/autocert"
 	"shanhu.io/misc/errcode"
@@ -66,6 +70,43 @@ func readManualCerts(h *osutil.Home) (map[string]*tls.Certificate, error) {
 	return certs, nil
 }
 
+func removeCertsBefore(dir string, t time.Time) error {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return errcode.Annotatef(err, "read dir %q", dir)
+	}
+
+	var toRemove []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		name := entry.Name()
+		if name == "acme_account+key" {
+			continue
+		}
+		if strings.HasPrefix(name, ".") {
+			continue
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return errcode.Annotatef(err, "get info of %q", entry)
+		}
+		if info.ModTime().Before(t) {
+			toRemove = append(toRemove, entry.Name())
+		}
+	}
+	sort.Strings(toRemove)
+
+	for _, name := range toRemove {
+		log.Printf("remove old cert %q", name)
+		if err := os.Remove(filepath.Join(dir, name)); err != nil {
+			return errcode.Annotatef(err, "remove old cert %q", name)
+		}
+	}
+	return nil
+}
+
 func serverConfigFromHome(h *osutil.Home) (*ServerConfig, error) {
 	hostMap, err := readHostMap(h.Etc("host-map.jsonx"))
 	if err != nil {
@@ -81,6 +122,10 @@ func serverConfigFromHome(h *osutil.Home) (*ServerConfig, error) {
 		if err := os.Mkdir(certCacheDir, 0700); err != nil {
 			return nil, errcode.Annotate(err, "make cert cache dir")
 		}
+	}
+	certCleanseCut := time.Date(2022, 1, 28, 0, 0, 0, 0, time.UTC)
+	if err := removeCertsBefore(certCacheDir, certCleanseCut); err != nil {
+		log.Print("error on removing old certs: ", err)
 	}
 
 	manualCerts, err := readManualCerts(h)
