@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/jsonx"
@@ -92,7 +93,7 @@ func install(d *drive, r *drvapi.Release) error {
 	if domain == "" {
 		domain = fmt.Sprintf("%s.homedrv.com", d.name)
 	}
-	if err := d.settings.Set(keyMainDomain, domain); err != nil {
+	if err := d.settings.Set(homeapp.KeyMainDomain, domain); err != nil {
 		return errcode.Annotate(err, "save main domain")
 	}
 	if doms := epConfig.NextcloudDomains; len(doms) > 0 {

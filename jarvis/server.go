@@ -23,6 +23,7 @@ import (
 	"shanhu.io/aries/oauth2"
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/osutil"
 	"shanhu.io/misc/signer"
@@ -124,7 +125,7 @@ func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 		stateSigner: stateSigner,
 		logs:        back.securityLogs,
 		issuer: func() (string, error) {
-			v, err := settings.String(back.settings, keyMainDomain)
+			v, err := settings.String(back.settings, homeapp.KeyMainDomain)
 			if errcode.IsNotFound(err) {
 				return "unknown.homedrive.io", nil
 			}

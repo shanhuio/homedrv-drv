@@ -52,7 +52,7 @@ func Domains(s settings.Settings) ([]string, error) {
 	}
 	// Single domain not found.
 
-	main, err := settings.String(s, KeyDomain)
+	main, err := settings.String(s, homeapp.KeyMainDomain)
 	if err != nil {
 		return nil, errcode.Annotate(err, "cannot determine domain")
 	}

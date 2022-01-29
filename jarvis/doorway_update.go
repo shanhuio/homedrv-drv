@@ -18,13 +18,14 @@ package jarvis
 import (
 	"log"
 
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces/settings"
 	"shanhu.io/virgo/dock"
 )
 
 func loadDoorwayConfig(d *drive) (*doorwayConfig, error) {
-	domain, err := settings.String(d.settings, keyMainDomain)
+	domain, err := settings.String(d.settings, homeapp.KeyMainDomain)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read main domain")
 	}

@@ -13,22 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package jarvis
+package homeapp
 
+// Common keys that can be used by other apps.
 const (
-	keySessionHMAC = "session.hmac"
-
-	// Init passwords.
-	keyJarvisPass = "jarvis.pass"
-
-	keyFabricsServerDomain = "fabrics-server.domain"
-	keyCustomSubs          = "custom.subs"
-
-	keyBuild         = "build"
-	keyBuildUpdating = "build-updating"
-	keyManualBuild   = "manual-build"
-
-	keyIdentity = "identity"
-
-	keyAppsState = "apps.state"
+	KeyMainDomain = "main.domain"
 )

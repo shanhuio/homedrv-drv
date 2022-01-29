@@ -20,6 +20,7 @@ import (
 	"sort"
 	"strings"
 
+	"shanhu.io/homedrv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/nameutil"
@@ -90,7 +91,7 @@ func cmdCustomSubs(args []string) error {
 			return "", errcode.Annotate(err, "check subdomain")
 		}
 
-		mainDomain, err := settings.String(d.settings, keyMainDomain)
+		mainDomain, err := settings.String(d.settings, homeapp.KeyMainDomain)
 		if err != nil {
 			return "", errcode.Annotate(err, "expand subdomain")
 		}
