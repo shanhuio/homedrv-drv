@@ -34,41 +34,19 @@ type Nextcloud struct {
 }
 
 // New creates a new Nextcloud app.
-func New(c homeapp.Core) *Nextcloud {
-	return &Nextcloud{core: c}
-}
+func New(c homeapp.Core) *Nextcloud { return &Nextcloud{core: c} }
 
 func (n *Nextcloud) cont() *dock.Cont {
 	cont := homeapp.Cont(n.core, Name)
 	return dock.NewCont(n.core.Docker(), cont)
 }
 
-func (n *Nextcloud) occRet(args []string, out io.Writer) (int, error) {
-	return occRet(n.cont(), args, out)
-}
-
-func (n *Nextcloud) occ(args []string, out io.Writer) error {
-	return occ(n.cont(), args, out)
-}
-
-func (n *Nextcloud) occOutput(args []string) ([]byte, error) {
-	return occOutput(n.cont(), args)
-}
-
-func (n *Nextcloud) status() (*status, int, error) {
-	return readStatus(n.cont())
-}
-
 func (n *Nextcloud) startWithImage(image string, config *config) error {
 	return start(n.core, image, config)
 }
 
-func (n *Nextcloud) waitReady(timeout time.Duration, v string) error {
-	return waitReady(n.cont(), timeout, v)
-}
-
 func (n *Nextcloud) version() (string, error) {
-	status, ret, err := n.status()
+	status, ret, err := readStatus(n.cont())
 	if err != nil {
 		return "", errcode.Annotate(err, "read status")
 	}
@@ -201,7 +179,8 @@ func (n *Nextcloud) upgrade(
 }
 
 func (n *Nextcloud) upgrade1(img, ver string, c *config) error {
-	if err := dropIfExists(n.cont()); err != nil {
+	cont := n.cont()
+	if err := dropIfExists(cont); err != nil {
 		return errcode.Annotate(err, "drop container")
 	}
 	// This is a dangerous moment. If the machine restarts at this point,
@@ -209,10 +188,10 @@ func (n *Nextcloud) upgrade1(img, ver string, c *config) error {
 	if err := n.startWithImage(img, c); err != nil {
 		return errcode.Annotate(err, "start new nextcloud")
 	}
-	if err := n.waitReady(5*time.Minute, ver); err != nil {
+	if err := waitReady(cont, 5*time.Minute, ver); err != nil {
 		return errcode.Annotate(err, "wait for install complete")
 	}
-	if err := n.setRedisPassword(c.redisPassword); err != nil {
+	if err := setRedisPassword(cont, c.redisPassword); err != nil {
 		return errcode.Annotate(err, "set redis password")
 	}
 	if err := n.fix(); err != nil {
@@ -303,7 +282,8 @@ func (n *Nextcloud) install(image string, config *config) error {
 	if err := n.startWithImage(image, config); err != nil {
 		return errcode.Annotate(err, "start container")
 	}
-	if err := n.waitReady(30*time.Minute, ""); err != nil {
+	cont := n.cont()
+	if err := waitReady(cont, 30*time.Minute, ""); err != nil {
 		return err
 	}
 	if err := n.fix(); err != nil {
@@ -313,8 +293,4 @@ func (n *Nextcloud) install(image string, config *config) error {
 		return errcode.Annotate(err, "register domains")
 	}
 	return nil
-}
-
-func (n *Nextcloud) setRedisPassword(pwd string) error {
-	return setRedisPassword(n.cont(), pwd)
 }
