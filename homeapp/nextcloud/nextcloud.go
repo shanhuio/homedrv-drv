@@ -139,16 +139,29 @@ func (n *Nextcloud) fixVersion(major int) error {
 }
 
 func (n *Nextcloud) upgrade(
-	img string, ladder []*drvapi.StepVersion, config *config,
+	img string, from *drvapi.AppMeta,
+	ladder []*drvapi.StepVersion, config *config,
 ) error {
 	if len(ladder) == 0 {
 		return errcode.InvalidArgf("nextcloud ladder missing")
 	}
 
-	version, err := n.version()
+	var version string
+	exists, err := n.cont().Exists()
 	if err != nil {
-		return errcode.Annotate(err, "read version")
+		return errcode.Annotatef(err, "check container exist")
 	}
+	if exists { // If container exists, try to get from true source.
+		v, err := n.version()
+		if err != nil {
+			log.Print("failed to read nextcloud version: ", err)
+		}
+		version = v
+	}
+	if version == "" && from != nil {
+		version = from.SemVersion
+	}
+
 	curMajor, err := semver.Major(version)
 	if err != nil {
 		return errcode.Add(errcode.Internal, err)
@@ -191,7 +204,6 @@ func (n *Nextcloud) upgrade1(img, ver string, c *config) error {
 	if err := n.cont().Drop(); err != nil {
 		return errcode.Annotatef(err, "drop nextcloud")
 	}
-
 	// This is a dangerous moment. If the machine restarts at this point,
 	// nextcloud won't be there anymore.
 	if err := n.startWithImage(img, c); err != nil {
@@ -215,9 +227,7 @@ func (n *Nextcloud) Start() error { return n.cont().Start() }
 // Stop stops the app.
 func (n *Nextcloud) Stop() error { return n.cont().Stop() }
 
-func (n *Nextcloud) config() (*config, error) {
-	return loadConfig(n.core)
-}
+func (n *Nextcloud) config() (*config, error) { return loadConfig(n.core) }
 
 // Change changes the version of the app.
 func (n *Nextcloud) Change(from, to *drvapi.AppMeta) error {
@@ -249,7 +259,7 @@ func (n *Nextcloud) Change(from, to *drvapi.AppMeta) error {
 	if from == nil {
 		return n.install(homeapp.Image(to), config)
 	}
-	return n.upgrade(homeapp.Image(to), to.Steps, config)
+	return n.upgrade(homeapp.Image(to), from, to.Steps, config)
 }
 
 func (n *Nextcloud) db() (*postgres.Postgres, error) {
@@ -306,11 +316,5 @@ func (n *Nextcloud) install(image string, config *config) error {
 }
 
 func (n *Nextcloud) setRedisPassword(pwd string) error {
-	// TODO(h8liu): should first check if redis password is incorrect.
-	args := []string{
-		"config:system:set", "--quiet",
-		"--value=" + pwd,    // value
-		"redis", "password", // key
-	}
-	return n.occ(args, nil)
+	return setRedisPassword(n.cont(), pwd)
 }

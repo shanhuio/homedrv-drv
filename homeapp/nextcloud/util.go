@@ -112,3 +112,13 @@ func fixKey(major int) string {
 	}
 	return ""
 }
+
+func setRedisPassword(cont *dock.Cont, pwd string) error {
+	// TODO(h8liu): should first check if redis password is incorrect.
+	args := []string{
+		"config:system:set", "--quiet",
+		"--value=" + pwd,    // value
+		"redis", "password", // key
+	}
+	return occ(cont, args, nil)
+}

@@ -69,13 +69,6 @@ type Artifacts struct {
 	ImageSums map[string]string `json:",omitempty"`
 }
 
-// ReleaseRequest sets the release of a particular channel to the given
-// release.
-type ReleaseRequest struct {
-	Channel string
-	Release string
-}
-
 // UpdateQueryRequest is a query for asking for latest update.
 type UpdateQueryRequest struct {
 	Channel      string
