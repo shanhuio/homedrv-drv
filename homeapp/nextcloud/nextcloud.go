@@ -201,8 +201,8 @@ func (n *Nextcloud) upgrade(
 }
 
 func (n *Nextcloud) upgrade1(img, ver string, c *config) error {
-	if err := n.cont().Drop(); err != nil {
-		return errcode.Annotatef(err, "drop nextcloud")
+	if err := dropIfExists(n.cont()); err != nil {
+		return errcode.Annotate(err, "drop container")
 	}
 	// This is a dangerous moment. If the machine restarts at this point,
 	// nextcloud won't be there anymore.

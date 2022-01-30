@@ -18,6 +18,7 @@ package nextcloud
 import (
 	"bytes"
 	"io"
+	"log"
 	"strings"
 
 	"shanhu.io/homedrv/executil"
@@ -121,4 +122,16 @@ func setRedisPassword(cont *dock.Cont, pwd string) error {
 		"redis", "password", // key
 	}
 	return occ(cont, args, nil)
+}
+
+func dropIfExists(cont *dock.Cont) error {
+	exists, err := cont.Exists()
+	if err != nil {
+		return errcode.Annotatef(err, "check container exists")
+	}
+	if !exists {
+		log.Println("nextcloud container does not exist; skip dropping")
+		return nil
+	}
+	return cont.Drop()
 }
