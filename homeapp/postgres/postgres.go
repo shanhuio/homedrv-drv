@@ -16,7 +16,6 @@
 package postgres
 
 import (
-	"log"
 	"net/url"
 	"path"
 	"time"
@@ -86,40 +85,6 @@ func (p *Postgres) createCont(image, pwd string) (*dock.Cont, error) {
 	return dock.CreateCont(d, image, config)
 }
 
-func (p *Postgres) install(image string) error {
-	pwd, err := p.password()
-	if err != nil {
-		return errcode.Annotate(err, "read password")
-	}
-	cont, err := p.createCont(image, pwd)
-	if err != nil {
-		return errcode.Annotate(err, "create container")
-	}
-	if err := cont.Start(); err != nil {
-		return errcode.Annotate(err, "start postgres")
-	}
-	if err := p.startWait(); err != nil {
-		return errcode.Annotate(err, "wait for db up")
-	}
-	return nil
-}
-
-func (p *Postgres) update(image string) error {
-	if image == "" {
-		return errcode.InvalidArgf("postgres image empty")
-	}
-	contName := homeapp.Cont(p.core, Name)
-	d := p.core.Docker()
-	if err := apputil.DropIfDifferent(d, contName, image); err != nil {
-		if err == apputil.ErrSameImage {
-			return nil
-		}
-		return err
-	}
-	log.Println("update postgres")
-	return p.install(image)
-}
-
 func (p *Postgres) open(user, pwd, db string) (*sqlx.DB, error) {
 	u := &url.URL{
 		Scheme: "postgres",
@@ -178,7 +143,7 @@ func (p *Postgres) DropDB(name string) error {
 // Change changes the version from one to another.
 func (p *Postgres) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
-		if err := p.cont().Drop(); err != nil {
+		if err := apputil.DropIfExists(p.cont()); err != nil {
 			return errcode.Annotate(err, "drop old postgres container")
 		}
 	}

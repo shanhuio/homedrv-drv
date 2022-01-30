@@ -17,7 +17,6 @@ package redis
 
 import (
 	"fmt"
-	"log"
 
 	"shanhu.io/homedrv/drvapi"
 	drvcfg "shanhu.io/homedrv/drvconfig"
@@ -101,30 +100,6 @@ func (r *Redis) install(image string) error {
 	return nil
 }
 
-func (r *Redis) update(image string, force bool) error {
-	if image == "" {
-		return errcode.InvalidArgf("redis image empty")
-	}
-	contName := homeapp.Cont(r.core, Name)
-	d := r.core.Docker()
-	if !force {
-		if err := apputil.DropIfDifferent(d, contName, image); err != nil {
-			if err == apputil.ErrSameImage {
-				return nil
-			}
-			return err
-		}
-	} else {
-		c := dock.NewCont(d, contName)
-		if err := c.Drop(); err != nil {
-			return errcode.Annotatef(err, "drop redis container")
-		}
-	}
-
-	log.Println("update redis")
-	return r.install(image)
-}
-
 func (r *Redis) password() (string, error) {
 	return apputil.ReadPasswordOrSetRandom(r.core.Settings(), KeyPass)
 }
@@ -132,7 +107,7 @@ func (r *Redis) password() (string, error) {
 // Change changes the app's version.
 func (r *Redis) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
-		if err := r.cont().Drop(); err != nil {
+		if err := apputil.DropIfExists(r.cont()); err != nil {
 			return errcode.Annotate(err, "drop old redis container")
 		}
 	}

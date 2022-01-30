@@ -46,3 +46,17 @@ func DropIfDifferent(d *dock.Client, name, img string) error {
 	}
 	return nil
 }
+
+// DropIfExists drops the container if the container exists.  Otherwise, it
+// prints a log line and do nothing.
+func DropIfExists(cont *dock.Cont) error {
+	exists, err := cont.Exists()
+	if err != nil {
+		return errcode.Annotatef(err, "check container exists")
+	}
+	if !exists {
+		log.Printf("container %q does not exist; skip dropping", cont.ID())
+		return nil
+	}
+	return cont.Drop()
+}

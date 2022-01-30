@@ -65,18 +65,6 @@ func (f *Front) install(image string) error {
 	return f.startWithImage(image)
 }
 
-func (f *Front) update(image string) error {
-	d := f.core.Docker()
-	cont := homeapp.Cont(f.core, NameFront)
-	if err := apputil.DropIfDifferent(d, cont, image); err != nil {
-		if err == apputil.ErrSameImage {
-			return nil
-		}
-		return err
-	}
-	return f.startWithImage(image)
-}
-
 // Start starts the app.
 func (f *Front) Start() error { return f.cont().Start() }
 
@@ -86,7 +74,7 @@ func (f *Front) Stop() error { return f.cont().Stop() }
 // Change changes the app's version.
 func (f *Front) Change(from, to *drvapi.AppMeta) error {
 	if from != nil {
-		if err := f.cont().Drop(); err != nil {
+		if err := apputil.DropIfExists(f.cont()); err != nil {
 			return errcode.Annotate(err, "drop old ncfront container")
 		}
 	}

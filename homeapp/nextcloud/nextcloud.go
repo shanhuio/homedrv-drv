@@ -22,6 +22,7 @@ import (
 
 	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/homeapp/apputil"
 	"shanhu.io/homedrv/homeapp/postgres"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/semver"
@@ -180,7 +181,7 @@ func (n *Nextcloud) upgrade(
 
 func (n *Nextcloud) upgrade1(img, ver string, c *config) error {
 	cont := n.cont()
-	if err := dropIfExists(cont); err != nil {
+	if err := apputil.DropIfExists(cont); err != nil {
 		return errcode.Annotate(err, "drop container")
 	}
 	// This is a dangerous moment. If the machine restarts at this point,
@@ -210,11 +211,12 @@ func (n *Nextcloud) config() (*config, error) { return loadConfig(n.core) }
 
 // Change changes the version of the app.
 func (n *Nextcloud) Change(from, to *drvapi.AppMeta) error {
+	cont := n.cont()
 	if to == nil {
 		if err := n.registerDomains(nil); err != nil {
 			return errcode.Annotate(err, "unregister domains")
 		}
-		if err := n.cont().Drop(); err != nil {
+		if err := apputil.DropIfExists(cont); err != nil {
 			return errcode.Annotate(err, "drop old nextcloud container")
 		}
 		psql, err := n.db()
