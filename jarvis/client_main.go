@@ -56,6 +56,7 @@ func clientCommands() *subcmd.List {
 	)
 	c.Add("update-os", "upgrade os", cmdUpdateOS)
 	c.Add("update-grub-config", "upgrade grub config", cmdUpdateGrubConfig)
+	c.Add("nextcloud-cron", "runs nextcloud cron job", cmdNextcloudCron)
 
 	return c
 }
@@ -209,4 +210,15 @@ func cmdSetNextcloudExtraMount(args []string) error {
 
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/set-nextcloud-extramnt", m, nil)
+}
+
+func cmdNextcloudCron(args []string) error {
+	flags := cmdFlags.New()
+	sock := declareJarvisSockFlag(flags)
+	args = flags.ParseArgs(args)
+	if len(args) != 0 {
+		return errcode.InvalidArgf("expect no arg")
+	}
+	c := httputil.NewUnixClient(*sock)
+	return c.Call("/api/nextcloud-cron", args[0], nil)
 }

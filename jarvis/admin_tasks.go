@@ -85,6 +85,12 @@ func (s *adminTasks) apiReinstallApp(c *aries.C, name string) error {
 	return d.tasks.run(fmt.Sprintf("reinstall %s", name), t)
 }
 
+func (s *adminTasks) apiNextcloudCron(c *aries.C) error {
+	d := s.server.drive
+	t := &taskNextcloudCron{drive: d}
+	return d.tasks.run("manual nextcloud cron", t)
+}
+
 func adminTasksAPI(s *server) *aries.Router {
 	tasks := &adminTasks{server: s}
 
@@ -97,5 +103,6 @@ func adminTasksAPI(s *server) *aries.Router {
 	r.Call("reinstall-app", tasks.apiReinstallApp)
 	r.Call("set-nextcloud-datamnt", tasks.apiSetNextcloudDataMount)
 	r.Call("set-nextcloud-extramnt", tasks.apiSetNextcloudExtraMounts)
+	r.Call("nextcloud-cron", tasks.apiNextcloudCron)
 	return r
 }
