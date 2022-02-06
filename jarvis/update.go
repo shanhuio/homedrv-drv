@@ -17,6 +17,7 @@ package jarvis
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -27,31 +28,22 @@ import (
 	"shanhu.io/misc/httputil"
 )
 
-func pushManualUpdate(d *drive, relBytes []byte) error {
-	if err := d.settings.Set(keyManualBuild, relBytes); err != nil {
-		return errcode.Annotate(err, "set to local build mode")
-	}
-	go func() {
-		if err := updateDriveToManualBuild(d); err != nil {
-			log.Printf("push update failed: %q", err)
-		}
-	}()
-	return nil
+type taskUpdate struct {
+	drive    *drive
+	rel      *drvapi.Release
+	skipCore bool
 }
 
-func updateDriveToManualBuild(d *drive) error {
-	r, err := readManualBuild(d)
-	if err != nil {
-		return errcode.Annotate(err, "read manual build release")
+func (t *taskUpdate) run() error {
+	if t.skipCore {
+		return t.updateAppsAndDoorway()
 	}
-	return updateDriveToRelease(d, r)
+	return t.updateToRelease()
 }
 
-func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
-	// TODO(h8liu): Needs to regulate where systemMu is being grabbed, to
-	// avoid double grabbing the mutex.
-	d.systemMu.Lock()
-	defer d.systemMu.Unlock()
+func (t *taskUpdate) updateToRelease() error {
+	d := t.drive
+	rel := t.rel
 
 	dl, err := downloader(d)
 	if err != nil {
@@ -77,11 +69,83 @@ func updateDriveToRelease(d *drive, rel *drvapi.Release) error {
 			return errcode.Annotate(err, "update core")
 		}
 		// Core did not update, finish the rest of the system.
-		return updateAppsAndDoorway(d, rel)
+		return t.updateAppsAndDoorway()
 	}
 
 	// This point should be unreachable.
 	return errcode.Internalf("core updated but still returned")
+}
+
+func (t *taskUpdate) updateAppsAndDoorway() error {
+	d := t.drive
+	r := t.rel
+
+	dl, err := downloader(d)
+	if err != nil {
+		return errcode.Annotate(err, "init downloader")
+	}
+
+	// Need to refetch the release info because the one fetched from the
+	// last version is unmarshalled by an older core, and the JSON blob might
+	// be incomplete.
+	refetched, err := dl.FetchBuild(r.Name)
+	if err != nil {
+		return errcode.Annotate(err, "refetch release info")
+	}
+	r = refetched
+
+	// And also need to download again.
+	dlConfig := &homeboot.DownloadConfig{
+		Release:            r,
+		Naming:             d.config.Naming,
+		CurrentSemVersions: d.apps.semVersions(),
+	}
+	if _, err := dl.DownloadRelease(dlConfig); err != nil {
+		return errcode.Annotate(err, "download release")
+	}
+
+	d.appRegistry.setRelease(r)
+	if err := d.apps.update(); err != nil {
+		return errcode.Annotate(err, "update apps")
+	}
+
+	log.Println("upgrade doorway")
+	if err := updateDoorway(d, r.Doorway); err != nil {
+		return errcode.Annotate(err, "update doorway")
+	}
+	if err := updateCleanUp(d, r); err != nil {
+		return errcode.Annotate(err, "cleanup")
+	}
+	var empty drvapi.Release
+	if err := d.settings.Set(keyBuild, r); err != nil {
+		return errcode.Annotate(err, "set build")
+	}
+	if err := d.settings.Set(keyBuildUpdating, &empty); err != nil {
+		return errcode.Annotate(err, "clear pending")
+	}
+	log.Println("update complete")
+	return nil
+}
+
+func pushManualUpdate(d *drive, relBytes []byte) error {
+	if err := d.settings.Set(keyManualBuild, relBytes); err != nil {
+		return errcode.Annotate(err, "set to local build mode")
+	}
+	go func() {
+		if err := updateDriveToManualBuild(d); err != nil {
+			log.Printf("push update failed: %q", err)
+		}
+	}()
+	return nil
+}
+
+func updateDriveToManualBuild(d *drive) error {
+	r, err := readManualBuild(d)
+	if err != nil {
+		return errcode.Annotate(err, "read manual build release")
+	}
+	t := &taskUpdate{drive: d, rel: r}
+	return d.tasks.run("update to custom build", t)
 }
 
 var errAlreadyUpToDate = errors.New("already up to date")
@@ -124,7 +188,8 @@ func updateDriveOnChannel(d *drive, ch string, manual bool) error {
 		}
 		return errcode.Annotate(err, "query channel update")
 	}
-	return updateDriveToRelease(d, r)
+	t := &taskUpdate{drive: d, rel: r}
+	return d.tasks.run(fmt.Sprintf("update to release %q", r.Name), t)
 }
 
 func sleepOrSignal(d time.Duration, signal <-chan bool) bool {
@@ -205,55 +270,10 @@ func maybeFinishUpdate(d *drive) error {
 }
 
 func finishUpdate(d *drive, r *drvapi.Release) error {
-	d.systemMu.Lock()
-	defer d.systemMu.Unlock()
-	return updateAppsAndDoorway(d, r)
-}
-
-func updateAppsAndDoorway(d *drive, r *drvapi.Release) error {
-	dl, err := downloader(d)
-	if err != nil {
-		return errcode.Annotate(err, "init downloader")
+	t := &taskUpdate{
+		drive:    d,
+		rel:      r,
+		skipCore: true,
 	}
-
-	// Need to refetch the release info because the one fetched from the
-	// last version is unmarshalled by an older core, and the JSON blob might
-	// be incomplete.
-	refetched, err := dl.FetchBuild(r.Name)
-	if err != nil {
-		return errcode.Annotate(err, "refetch release info")
-	}
-	r = refetched
-
-	// And also need to download again.
-	dlConfig := &homeboot.DownloadConfig{
-		Release:            r,
-		Naming:             d.config.Naming,
-		CurrentSemVersions: d.apps.semVersions(),
-	}
-	if _, err := dl.DownloadRelease(dlConfig); err != nil {
-		return errcode.Annotate(err, "download release")
-	}
-
-	d.appRegistry.setRelease(r)
-	if err := d.apps.update(); err != nil {
-		return errcode.Annotate(err, "update apps")
-	}
-
-	log.Println("upgrade doorway")
-	if err := updateDoorway(d, r.Doorway); err != nil {
-		return errcode.Annotate(err, "update doorway")
-	}
-	if err := updateCleanUp(d, r); err != nil {
-		return errcode.Annotate(err, "cleanup")
-	}
-	var empty drvapi.Release
-	if err := d.settings.Set(keyBuild, r); err != nil {
-		return errcode.Annotate(err, "set build")
-	}
-	if err := d.settings.Set(keyBuildUpdating, &empty); err != nil {
-		return errcode.Annotate(err, "clear pending")
-	}
-	log.Println("update complete")
-	return nil
+	return d.tasks.run("finish update", t)
 }

@@ -52,12 +52,14 @@ func updateDoorway(d *drive, img string) error {
 	return dw.update(img)
 }
 
-func recreateDoorway(d *drive) error {
-	d.systemMu.Lock()
-	defer d.systemMu.Unlock()
+type taskRecreateDoorway struct {
+	drive *drive
+}
 
+func (t *taskRecreateDoorway) run() error {
 	log.Println("re-creating doorway.")
 
+	d := t.drive
 	c := dock.NewCont(d.dock, d.cont(nameDoorway))
 	info, err := c.Inspect()
 	if err != nil {

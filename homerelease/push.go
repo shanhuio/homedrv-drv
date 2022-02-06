@@ -63,7 +63,7 @@ func cmdPush(server string, args []string) error {
 
 	bs, err := json.Marshal(release)
 	if err != nil {
-		return errcode.Annotate(err, "marshal  release")
+		return errcode.Annotate(err, "marshal release")
 	}
 	return c.Call("/api/sys/push-update", bs, nil)
 }

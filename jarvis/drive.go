@@ -18,7 +18,6 @@ package jarvis
 import (
 	"net/url"
 	"strings"
-	"sync"
 
 	"shanhu.io/aries/creds"
 	"shanhu.io/homedrv/burmilla"
@@ -71,9 +70,8 @@ type drive struct {
 	// HomeDrive kernel.
 	*kernel
 
-	// Mutex lock to block certain operations when one of the systems
-	// operation is running.
-	systemMu sync.Mutex
+	// System task runner.
+	tasks *taskLoop
 }
 
 func parseServer(s string) (*url.URL, error) {
@@ -129,6 +127,8 @@ func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {
 	ep := creds.NewRobot("~"+name, server.String(), "", nil)
 	ep.Key = key
 
+	tasks := newTaskLoop()
+
 	return &drive{
 		config:  config,
 		name:    name,
@@ -137,6 +137,7 @@ func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {
 		dock:    dock.NewUnixClient(userDockSock),
 		sysDock: sysDock,
 		kernel:  k,
+		tasks:   tasks,
 	}, nil
 }
 

@@ -80,6 +80,9 @@ func runServer(homeDir, addr string) error {
 		return errcode.Annotate(err, "update os")
 	}
 
+	// Ready to take system tasks.
+	go d.tasks.bg()
+
 	go func(d *drive, updateSignal <-chan bool) {
 		installed, err := d.settings.Has(keyBuild)
 		if err != nil {

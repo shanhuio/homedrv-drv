@@ -16,8 +16,6 @@
 package jarvis
 
 import (
-	"log"
-
 	"shanhu.io/aries"
 	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
@@ -33,12 +31,9 @@ func (s *adminTasks) apiUpdate(c *aries.C, sig bool) error {
 }
 
 func (s *adminTasks) apiRecreateDoorway(c *aries.C) error {
-	go func(s *server) {
-		if err := recreateDoorway(s.drive); err != nil {
-			log.Println(errcode.Annotate(err, "recreate doorway"))
-		}
-	}(s.server)
-	return nil
+	d := s.server.drive
+	t := &taskRecreateDoorway{drive: d}
+	return d.tasks.run("recreate doorway", t)
 }
 
 func (s *adminTasks) apiSetRootPassword(c *aries.C, pwd string) error {
@@ -53,6 +48,12 @@ func (s *adminTasks) apiSetAPIKey(c *aries.C, keyBytes []byte) error {
 	return s.server.keyRegistry.apiSet(c, keyBytes)
 }
 
+type taskReinstallNextcloud struct{ drive *drive }
+
+func (t *taskReinstallNextcloud) run() error {
+	return t.drive.apps.reinstall(nextcloud.Name)
+}
+
 func (s *adminTasks) apiSetNextcloudDataMount(c *aries.C, m string) error {
 	d := s.server.drive
 
@@ -60,9 +61,8 @@ func (s *adminTasks) apiSetNextcloudDataMount(c *aries.C, m string) error {
 		return errcode.Annotate(err, "set nextcloud data mount")
 	}
 
-	d.systemMu.Lock()
-	defer d.systemMu.Unlock()
-	return d.apps.reinstall(nextcloud.Name)
+	t := &taskReinstallNextcloud{drive: d}
+	return d.tasks.run("restart nextcloud", t)
 }
 
 func (s *adminTasks) apiSetNextcloudExtraMounts(
@@ -74,9 +74,8 @@ func (s *adminTasks) apiSetNextcloudExtraMounts(
 		return errcode.Annotate(err, "set nextcloud extra mounts")
 	}
 
-	d.systemMu.Lock()
-	defer d.systemMu.Unlock()
-	return d.apps.reinstall(nextcloud.Name)
+	t := &taskReinstallNextcloud{drive: d}
+	return d.tasks.run("restart nextcloud", t)
 }
 
 func adminTasksAPI(s *server) *aries.Router {
