@@ -1,4 +1,5 @@
-// Copyright (C) 2022  Shanhu Tech Inc.
+/
+Copyright (C) 2022  Shanhu Tech Inc.
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Affero General Public License as published by the
@@ -220,5 +221,5 @@ func cmdNextcloudCron(args []string) error {
 		return errcode.InvalidArgf("expect no arg")
 	}
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/nextcloud-cron", args[0], nil)
+	return c.Call("/api/nextcloud-cron", nil, nil)
 }
