@@ -122,3 +122,11 @@ func setRedisPassword(cont *dock.Cont, pwd string) error {
 	}
 	return occ(cont, args, nil)
 }
+
+func setCronMode(cont *dock.Cont) error {
+	args := []string{
+		"config:app:set", "--value", "cron",
+		"core", "backgroundjobs_mode",
+	}
+	return occ(cont, args, nil)
+}

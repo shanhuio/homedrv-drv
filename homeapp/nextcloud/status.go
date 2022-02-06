@@ -157,3 +157,32 @@ func waitReady(
 	}
 	return nil
 }
+
+func readTrueVersion(cont *dock.Cont) (string, error) {
+	status, ret, err := readStatus(cont)
+	if err != nil {
+		return "", errcode.Annotate(err, "read status")
+	}
+	if ret != 0 {
+		return "", errcode.Internalf("status exit with: %d", ret)
+	}
+	return status.VersionString, nil
+}
+
+func readVersion(cont *dock.Cont, def string) (string, error) {
+	exists, err := cont.Exists()
+	if err != nil {
+		return "", errcode.Annotatef(err, "check container exist")
+	}
+	if !exists {
+		return def, nil
+	}
+
+	// If container exists, try to get from true source.
+	v, err := readTrueVersion(cont)
+	if err != nil {
+		log.Print("failed to read nextcloud version: ", err)
+		return def, nil
+	}
+	return v, nil
+}

@@ -46,19 +46,8 @@ func (n *Nextcloud) startWithImage(image string, config *config) error {
 	return start(n.core, image, config)
 }
 
-func (n *Nextcloud) version() (string, error) {
-	status, ret, err := readStatus(n.cont())
-	if err != nil {
-		return "", errcode.Annotate(err, "read status")
-	}
-	if ret != 0 {
-		return "", errcode.Internalf("status exit with: %d", ret)
-	}
-	return status.VersionString, nil
-}
-
 func (n *Nextcloud) fix() error {
-	version, err := n.version()
+	version, err := readTrueVersion(n.cont())
 	if err != nil {
 		return errcode.Annotate(err, "get version")
 	}
@@ -70,10 +59,11 @@ func (n *Nextcloud) fix() error {
 }
 
 func (n *Nextcloud) fixVersion(major int) error {
+	cont := n.cont()
+
 	// For version 21+, this needs to be executed every time a new
 	// docker is installed.
 	if major >= 21 {
-		cont := n.cont()
 		if err := aptUpdate(cont, io.Discard); err != nil {
 			return errcode.Annotate(err, "apt update for nc21")
 		}
@@ -81,6 +71,9 @@ func (n *Nextcloud) fixVersion(major int) error {
 		if err := aptInstall(cont, pkg, io.Discard); err != nil {
 			return errcode.Annotate(err, "install svg support")
 		}
+	}
+	if err := setCronMode(cont); err != nil {
+		return errcode.Annotate(err, "set cron mode")
 	}
 
 	k := fixKey(major)
@@ -95,8 +88,6 @@ func (n *Nextcloud) fixVersion(major int) error {
 	if ok {
 		return nil
 	}
-
-	cont := n.cont()
 
 	for _, cmd := range []string{
 		"db:add-missing-indices",
@@ -125,22 +116,17 @@ func (n *Nextcloud) upgrade(
 		return errcode.InvalidArgf("nextcloud ladder missing")
 	}
 
-	var version string
-	exists, err := n.cont().Exists()
+	var defVersion string
+	if from != nil {
+		defVersion = from.SemVersion
+	}
+	version, err := readVersion(n.cont(), defVersion)
 	if err != nil {
-		return errcode.Annotatef(err, "check container exist")
+		return errcode.Annotatef(err, "read version")
 	}
-	if exists { // If container exists, try to get from true source.
-		v, err := n.version()
-		if err != nil {
-			log.Print("failed to read nextcloud version: ", err)
-		}
-		version = v
+	if version == "" {
+		return errcode.Annotatef(err, "cannot determin last version")
 	}
-	if version == "" && from != nil {
-		version = from.SemVersion
-	}
-
 	curMajor, err := semver.Major(version)
 	if err != nil {
 		return errcode.Add(errcode.Internal, err)
