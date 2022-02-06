@@ -116,7 +116,7 @@ func fixKey(major int) string {
 func setRedisPassword(cont *dock.Cont, pwd string) error {
 	// TODO(h8liu): should first check if redis password is incorrect.
 	args := []string{
-		"config:system:set", "--quiet",
+		"config:system:set", "-q",
 		"--value=" + pwd,    // value
 		"redis", "password", // key
 	}
@@ -125,7 +125,7 @@ func setRedisPassword(cont *dock.Cont, pwd string) error {
 
 func setCronMode(cont *dock.Cont) error {
 	args := []string{
-		"config:app:set", "--value", "cron",
+		"config:app:set", "-q", "--value=cron",
 		"core", "backgroundjobs_mode",
 	}
 	return occ(cont, args, nil)
