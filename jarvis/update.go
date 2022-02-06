@@ -28,58 +28,7 @@ import (
 	"shanhu.io/misc/httputil"
 )
 
-type taskUpdate struct {
-	drive    *drive
-	rel      *drvapi.Release
-	skipCore bool
-}
-
-func (t *taskUpdate) run() error {
-	if t.skipCore {
-		return t.updateAppsAndDoorway()
-	}
-	return t.updateToRelease()
-}
-
-func (t *taskUpdate) updateToRelease() error {
-	d := t.drive
-	rel := t.rel
-
-	dl, err := downloader(d)
-	if err != nil {
-		return errcode.Annotate(err, "init downloader")
-	}
-	config := &homeboot.DownloadConfig{
-		Release:            rel,
-		Naming:             d.config.Naming,
-		CurrentSemVersions: d.apps.semVersions(),
-	}
-	if _, err := dl.DownloadRelease(config); err != nil {
-		return errcode.Annotate(err, "download release")
-	}
-
-	if err := d.settings.Set(keyBuildUpdating, rel); err != nil {
-		return errcode.Annotatef(err, "set %q", keyBuildUpdating)
-	}
-
-	// If update succeeds, the core will be swapped with a new
-	// instance, and updateCore() will never return.
-	if err := updateCore(d, rel.Jarvis); err != nil {
-		if err != apputil.ErrSameImage {
-			return errcode.Annotate(err, "update core")
-		}
-		// Core did not update, finish the rest of the system.
-		return t.updateAppsAndDoorway()
-	}
-
-	// This point should be unreachable.
-	return errcode.Internalf("core updated but still returned")
-}
-
-func (t *taskUpdate) updateAppsAndDoorway() error {
-	d := t.drive
-	r := t.rel
-
+func updateAppsAndDoorway(d *drive, r *drvapi.Release) error {
 	dl, err := downloader(d)
 	if err != nil {
 		return errcode.Annotate(err, "init downloader")
@@ -125,6 +74,46 @@ func (t *taskUpdate) updateAppsAndDoorway() error {
 	}
 	log.Println("update complete")
 	return nil
+}
+
+type taskUpdate struct {
+	drive *drive
+	rel   *drvapi.Release
+}
+
+func (t *taskUpdate) run() error {
+	d := t.drive
+	rel := t.rel
+
+	dl, err := downloader(d)
+	if err != nil {
+		return errcode.Annotate(err, "init downloader")
+	}
+	config := &homeboot.DownloadConfig{
+		Release:            rel,
+		Naming:             d.config.Naming,
+		CurrentSemVersions: d.apps.semVersions(),
+	}
+	if _, err := dl.DownloadRelease(config); err != nil {
+		return errcode.Annotate(err, "download release")
+	}
+
+	if err := d.settings.Set(keyBuildUpdating, rel); err != nil {
+		return errcode.Annotatef(err, "set %q", keyBuildUpdating)
+	}
+
+	// If update succeeds, the core will be swapped with a new
+	// instance, and updateCore() will never return.
+	if err := updateCore(d, rel.Jarvis); err != nil {
+		if err != apputil.ErrSameImage {
+			return errcode.Annotate(err, "update core")
+		}
+		// Core did not update, finish the rest of the system.
+		return updateAppsAndDoorway(t.drive, t.rel)
+	}
+
+	// This point should be unreachable.
+	return errcode.Internalf("core updated but still returned")
 }
 
 func pushManualUpdate(d *drive, relBytes []byte) error {
@@ -266,14 +255,5 @@ func maybeFinishUpdate(d *drive) error {
 	if r.Name == "" {
 		return nil
 	}
-	return finishUpdate(d, r)
-}
-
-func finishUpdate(d *drive, r *drvapi.Release) error {
-	t := &taskUpdate{
-		drive:    d,
-		rel:      r,
-		skipCore: true,
-	}
-	return d.tasks.run("finish update", t)
+	return updateAppsAndDoorway(d, r)
 }

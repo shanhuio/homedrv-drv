@@ -47,7 +47,41 @@ func makeService(s *server, admin aries.Service) aries.Service {
 	}
 }
 
-func runServer(homeDir, addr string) error {
+func bg(s *server) {
+	d := s.Drive()
+
+	// Before starting the system tasks scheduler, make sure the system is
+	// properlly installed.
+	installed, err := d.settings.Has(keyBuild)
+	if err != nil {
+		// Basic install check failed.
+		log.Println("check installed: ", err)
+	} else if !installed { // This is first time.
+		if err := downloadAndInstall(d); err != nil {
+			log.Println("install failed: ", err)
+		}
+	} else { // Not first time.
+		if err := maybeFinishUpdate(d); err != nil {
+			log.Println("update failed: ", err)
+			// It is important to proceed here, as the next update might be
+			// able to fix the issue. At this point, the apps are in
+			// undefiend state, but jarvis is already on the latest.
+		}
+		fixThings(d)
+	}
+
+	// Start the background update heartbeat querier.
+	if d.config.Bare {
+		log.Println("running in bare mode, no update in background")
+	} else if d.config.Channel != "" {
+		// Subscribe channel and maybe schedule update task.
+		go cronUpdateOnChannel(d, s.updateSignal)
+	}
+
+	d.tasks.bg() // Handle background system tasks now.
+}
+
+func run(homeDir, addr string) error {
 	h, err := osutil.NewHome(homeDir)
 	if err != nil {
 		return errcode.Annotate(err, "open home dir")
@@ -80,34 +114,7 @@ func runServer(homeDir, addr string) error {
 		return errcode.Annotate(err, "update os")
 	}
 
-	// Ready to take system tasks.
-	go d.tasks.bg()
-
-	go func(d *drive, updateSignal <-chan bool) {
-		installed, err := d.settings.Has(keyBuild)
-		if err != nil {
-			// Basic install check failed.
-			log.Println("check installed: ", err)
-		} else if !installed { // This is first time.
-			if err := downloadAndInstall(d); err != nil {
-				log.Println("install failed: ", err)
-			}
-		} else { // Not first time.
-			if err := maybeFinishUpdate(d); err != nil {
-				log.Println("update failed: ", err)
-				// It is important to proceed here, as the next update might be
-				// able to fix the issue. At this point, the apps are in
-				// undefiend state, but jarvis is already on the latest.
-			}
-			fixThings(d)
-		}
-
-		if d.config.Bare {
-			log.Println("running in bare mode, no update in background")
-		} else if d.config.Channel != "" {
-			go cronUpdateOnChannel(d, updateSignal)
-		}
-	}(d, s.updateSignal)
+	go bg(s)
 
 	const sock = "var/jarvis.sock"
 	log.Printf("serve on %s and %s", sock, addr)
@@ -131,7 +138,7 @@ func serverMain() {
 	home := flag.String("home", ".", "home dir")
 	flag.Parse()
 
-	if err := runServer(*home, *addr); err != nil {
+	if err := run(*home, *addr); err != nil {
 		log.Fatal(err)
 	}
 }
