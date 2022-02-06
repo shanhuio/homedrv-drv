@@ -1,9 +1,5 @@
 package jarvis
 
-import (
-	"log"
-)
-
 type task interface {
 	run() error
 }
@@ -36,7 +32,6 @@ func (l *taskLoop) run(name string, t task) error {
 
 func (l *taskLoop) bg() {
 	for t := range l.tasks {
-		log.Printf("run task: %s", t.name)
 		t.done <- t.task.run()
 	}
 }

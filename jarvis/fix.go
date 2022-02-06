@@ -30,8 +30,10 @@ func fixThings(d *drive) {
 	if err := fixOSUpgradeURL(d); err != nil {
 		log.Println("fix os upgrade url: ", err)
 	}
-	if err := nextcloud.Fix(d); err != nil {
-		log.Println("fix nextcloud: ", err)
+	if d.apps.isInstalled(nextcloud.Name) {
+		if err := nextcloud.Fix(d); err != nil {
+			log.Println("fix nextcloud: ", err)
+		}
 	}
 }
 

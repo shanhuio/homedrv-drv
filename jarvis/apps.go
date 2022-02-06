@@ -107,6 +107,10 @@ func (a *apps) stubOrMake(name string) (*appStub, error) {
 
 func (a *apps) removeStub(name string) { delete(a.m, name) }
 
+func (a *apps) isInstalled(name string) bool {
+	return a.state.meta(name) != nil
+}
+
 func (a *apps) reinstall(name string) error {
 	m := a.state.meta(name)
 	if m == nil {

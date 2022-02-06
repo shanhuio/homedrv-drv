@@ -296,3 +296,6 @@ func (n *Nextcloud) install(image string, config *config) error {
 	}
 	return nil
 }
+
+// Cron runs the nextcloud cron job
+func (n *Nextcloud) Cron() error { return cron(n.cont()) }

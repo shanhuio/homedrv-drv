@@ -16,6 +16,8 @@
 package jarvis
 
 import (
+	"fmt"
+
 	"shanhu.io/aries"
 	"shanhu.io/homedrv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
@@ -48,20 +50,21 @@ func (s *adminTasks) apiSetAPIKey(c *aries.C, keyBytes []byte) error {
 	return s.server.keyRegistry.apiSet(c, keyBytes)
 }
 
-type taskReinstallNextcloud struct{ drive *drive }
+type taskReinstallApp struct {
+	drive *drive
+	name  string
+}
 
-func (t *taskReinstallNextcloud) run() error {
-	return t.drive.apps.reinstall(nextcloud.Name)
+func (t *taskReinstallApp) run() error {
+	return t.drive.apps.reinstall(t.name)
 }
 
 func (s *adminTasks) apiSetNextcloudDataMount(c *aries.C, m string) error {
 	d := s.server.drive
-
 	if err := d.settings.Set(nextcloud.KeyDataMount, m); err != nil {
 		return errcode.Annotate(err, "set nextcloud data mount")
 	}
-
-	t := &taskReinstallNextcloud{drive: d}
+	t := &taskReinstallApp{drive: d, name: nextcloud.Name}
 	return d.tasks.run("restart nextcloud", t)
 }
 
@@ -69,13 +72,17 @@ func (s *adminTasks) apiSetNextcloudExtraMounts(
 	c *aries.C, m map[string]string,
 ) error {
 	d := s.server.drive
-
 	if err := d.settings.Set(nextcloud.KeyExtraMounts, m); err != nil {
 		return errcode.Annotate(err, "set nextcloud extra mounts")
 	}
-
-	t := &taskReinstallNextcloud{drive: d}
+	t := &taskReinstallApp{drive: d, name: nextcloud.Name}
 	return d.tasks.run("restart nextcloud", t)
+}
+
+func (s *adminTasks) apiReinstallApp(c *aries.C, name string) error {
+	d := s.server.drive
+	t := &taskReinstallApp{drive: d, name: name}
+	return d.tasks.run(fmt.Sprintf("reinstall %s", name), t)
 }
 
 func adminTasksAPI(s *server) *aries.Router {
@@ -87,6 +94,7 @@ func adminTasksAPI(s *server) *aries.Router {
 	r.Call("set-root-password", tasks.apiSetRootPassword)
 	r.Call("disable-totp", tasks.apiDisableTOTP)
 	r.Call("set-api-key", tasks.apiSetAPIKey)
+	r.Call("reinstall-app", tasks.apiReinstallApp)
 	r.Call("set-nextcloud-datamnt", tasks.apiSetNextcloudDataMount)
 	r.Call("set-nextcloud-extramnt", tasks.apiSetNextcloudExtraMounts)
 	return r
