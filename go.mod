@@ -6,7 +6,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/lib/pq v1.10.4
 	github.com/pquerna/otp v1.3.0
-	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
+	golang.org/x/crypto v0.0.0-20220210151621-f4118a5b28e2
 	modernc.org/sqlite v1.14.6
 	shanhu.io/aries v0.0.0-20220205021111-c0c91fa04781
 	shanhu.io/misc v0.0.0-20220205021022-1555ae413203
@@ -27,7 +27,7 @@ require (
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a // indirect
+	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.9 // indirect
