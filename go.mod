@@ -3,10 +3,10 @@ module shanhu.io/homedrv
 go 1.17
 
 require (
-	github.com/gorilla/websocket v1.4.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/lib/pq v1.10.4
 	github.com/pquerna/otp v1.3.0
-	golang.org/x/crypto v0.0.0-20220210151621-f4118a5b28e2
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	modernc.org/sqlite v1.14.6
 	shanhu.io/aries v0.0.0-20220205021111-c0c91fa04781
 	shanhu.io/misc v0.0.0-20220205021022-1555ae413203
