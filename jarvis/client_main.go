@@ -16,7 +16,9 @@
 package jarvis
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"strings"
 
@@ -26,16 +28,31 @@ import (
 	"shanhu.io/misc/flagutil"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/jsonutil"
+	"shanhu.io/misc/jsonx"
 	"shanhu.io/misc/subcmd"
 )
 
 func clientCommands() *subcmd.List {
 	c := subcmd.New()
+
+	// Jarvis related
+	c.Add("version", "prints release info", cmdVersion)
 	c.Add("update", "hints to check update", cmdUpdate)
-	c.Add("list-os", "list the available os versions", cmdListOS)
 	c.Add("settings", "prints settings", cmdSettings)
-	c.Add("set-password", "sets password of a user", cmdSetPassword)
 	c.Add("set-api-key", "sets API key", cmdSetAPIKey)
+	c.Add("set-password", "sets password of a user", cmdSetPassword)
+	c.Add("disable-totp", "disables TOTP 2FA", cmdDisableTOTP)
+	c.Add(
+		"custom-subs", "view or modify additional custom subdomains",
+		cmdCustomSubs,
+	)
+
+	// OS related
+	c.Add("list-os", "list the available os versions", cmdListOS)
+	c.Add("update-os", "upgrade os", cmdUpdateOS)
+	c.Add("update-grub-config", "upgrade grub config", cmdUpdateGrubConfig)
+
+	// Nextcloud related
 	c.Add(
 		"set-nextcloud-datamnt", "sets nextcloud data mount point",
 		cmdSetNextcloudDataMount,
@@ -44,19 +61,13 @@ func clientCommands() *subcmd.List {
 		"set-nextcloud-extramnt", "sets nextcloud extra mount points",
 		cmdSetNextcloudExtraMount,
 	)
-	c.Add("disable-totp", "disables TOTP 2FA", cmdDisableTOTP)
-	c.Add("version", "prints release info", cmdVersion)
+	c.Add("nextcloud-cron", "runs nextcloud cron job", cmdNextcloudCron)
 	c.Add(
 		"nextcloud-domains", "view or modify nextcloud domains",
 		cmdNextcloudDomains,
 	)
-	c.Add(
-		"custom-subs", "view or modify additional custom subdomains",
-		cmdCustomSubs,
-	)
-	c.Add("update-os", "upgrade os", cmdUpdateOS)
-	c.Add("update-grub-config", "upgrade grub config", cmdUpdateGrubConfig)
-	c.Add("nextcloud-cron", "runs nextcloud cron job", cmdNextcloudCron)
+
+	c.Add("call", "invokes an admin rpc call", cmdCall)
 
 	return c
 }
@@ -221,4 +232,38 @@ func cmdNextcloudCron(args []string) error {
 	}
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/nextcloud-cron", nil, nil)
+}
+
+func cmdCall(args []string) error {
+	flags := cmdFlags.New()
+	sock := declareJarvisSockFlag(flags)
+	args = flags.ParseArgs(args)
+	if len(args) == 0 {
+		return errcode.InvalidArgf("expect a path to call")
+	}
+	if len(args) > 2 {
+		return errcode.InvalidArgf("too many args")
+	}
+
+	c := httputil.NewUnixClient(*sock)
+
+	var req io.Reader
+	if len(args) == 1 {
+		bs, errs := jsonx.ToJSON([]byte(args[1]))
+		if errs != nil {
+			return errcode.Annotate(errs[0], "convert request to json")
+		}
+		req = bytes.NewReader(bs)
+	}
+	resp := new(bytes.Buffer)
+	if err := c.Post(args[0], req, resp); err != nil {
+		return err
+	}
+	respBytes := resp.Bytes()
+	bs, err := jsonutil.Format(respBytes)
+	if err != nil {
+		return errcode.Annotatef(err, "format respose: %s", respBytes)
+	}
+	fmt.Println(string(bs))
+	return nil
 }
