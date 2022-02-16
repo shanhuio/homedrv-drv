@@ -40,20 +40,34 @@ func configSaysInstalled(config []byte) bool {
 	return false
 }
 
-func aptUpdate(c *dock.Cont, out io.Writer) error {
-	cmd := []string{"apt-get", "update"}
+func exec(c *dock.Cont, cmd []string, out io.Writer) error {
 	return executil.RetError(c.ExecWithSetup(&dock.ExecSetup{
 		Cmd:    cmd,
 		Stdout: out,
 	}))
 }
 
-func aptInstall(c *dock.Cont, pkg string, out io.Writer) error {
-	cmd := []string{"apt-get", "install", "-y", pkg}
-	return executil.RetError(c.ExecWithSetup(&dock.ExecSetup{
-		Cmd:    cmd,
-		Stdout: out,
-	}))
+func aptUpdate(c *dock.Cont, out io.Writer) error {
+	cmd := []string{"apt-get", "update"}
+	return exec(c, cmd, out)
+}
+
+func aptInstall(c *dock.Cont, pkgs []string, out io.Writer) error {
+	cmd := []string{"apt-get", "install", "-y"}
+	cmd = append(cmd, pkgs...)
+	return exec(c, cmd, out)
+}
+
+func enableSMB(c *dock.Cont, out io.Writer) error {
+	cmd := []string{"pecl", "install", "smbclient"}
+	if err := exec(c, cmd, out); err != nil {
+		return errcode.Annotate(err, "pecl install")
+	}
+	cmd = []string{"docker-php-ext-enable", "smbclient"}
+	if err := exec(c, cmd, out); err != nil {
+		return errcode.Annotate(err, "docker-php-ext-enable")
+	}
+	return nil
 }
 
 func occRet(

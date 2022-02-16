@@ -61,17 +61,27 @@ func (n *Nextcloud) fix() error {
 func (n *Nextcloud) fixVersion(major int) error {
 	cont := n.cont()
 
-	// For version 21+, this needs to be executed every time a new
-	// docker is installed.
 	if major >= 21 {
+		// For version 21+, this needs to be executed every time a new
+		// docker is installed.
 		if err := aptUpdate(cont, io.Discard); err != nil {
 			return errcode.Annotate(err, "apt update for nc21")
 		}
-		const pkg = "libmagickcore-6.q16-6-extra"
-		if err := aptInstall(cont, pkg, io.Discard); err != nil {
-			return errcode.Annotate(err, "install svg support")
+
+		pkgs := []string{
+			"libmagickcore-6.q16-6-extra",
+			"smbclient",
+			"libsmbclient-dev",
+		}
+		if err := aptInstall(cont, pkgs, io.Discard); err != nil {
+			return errcode.Annotate(err, "install additional packages")
+		}
+
+		if err := enableSMB(cont, io.Discard); err != nil {
+			return errcode.Annotate(err, "enable SMB")
 		}
 	}
+
 	if err := setCronMode(cont); err != nil {
 		return errcode.Annotate(err, "set cron mode")
 	}
