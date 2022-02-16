@@ -64,4 +64,5 @@ func (e *LogEntry) setJSONValue(typ string, v interface{}) error {
 const (
 	logTypeLoginAttempt   = "loginAttempt"
 	logTypeTwoFactorEvent = "twoFactorEvent"
+	logTypeChangePassword = "changePassword"
 )

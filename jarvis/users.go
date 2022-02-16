@@ -26,10 +26,16 @@ import (
 
 type users struct {
 	t *pisces.KV
+
+	onChangePassword func(user string)
 }
 
 func newUsers(b *pisces.Tables) *users {
 	return &users{t: b.NewKV("users")}
+}
+
+func (b *users) setOnChangePassword(f func(user string)) {
+	b.onChangePassword = f
 }
 
 func (b *users) create(user, password string) error {
@@ -68,7 +74,7 @@ func (b *users) setPassword(user, password string, old *string) error {
 	if err != nil {
 		return err
 	}
-	return b.mutate(user, func(info *userInfo) error {
+	if err := b.mutate(user, func(info *userInfo) error {
 		if old != nil {
 			if err := checkUserPassword(info, *old); err != nil {
 				return err
@@ -76,7 +82,14 @@ func (b *users) setPassword(user, password string, old *string) error {
 		}
 		info.BcryptPassword = crypt
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
+
+	if b.onChangePassword != nil {
+		b.onChangePassword(user)
+	}
+	return nil
 }
 
 func (b *users) checkPassword(user, password string) error {

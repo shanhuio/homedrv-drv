@@ -34,7 +34,7 @@ func (b *securityLogs) add(entry *LogEntry) error {
 	return b.t.Add(entry.K, entry)
 }
 
-type loginAttempt struct {
+type loginEvent struct {
 	From      string `json:",omitempty"`
 	TwoFactor string `json:",omitempty"`
 	Failed    bool   `json:",omitempty"`
@@ -43,7 +43,7 @@ type loginAttempt struct {
 func (b *securityLogs) recordLogin(user, from, twoFactor string) error {
 	msg := fmt.Sprintf("login from %q", from)
 	entry := newLogEntry(user, msg)
-	if err := entry.setJSONValue(logTypeLoginAttempt, &loginAttempt{
+	if err := entry.setJSONValue(logTypeLoginAttempt, &loginEvent{
 		From:      from,
 		TwoFactor: twoFactor,
 	}); err != nil {
@@ -57,11 +57,23 @@ func (b *securityLogs) recordFailedLogin(
 ) error {
 	msg := fmt.Sprintf("failed login from %q", from)
 	entry := newLogEntry(user, msg)
-	if err := entry.setJSONValue(logTypeLoginAttempt, &loginAttempt{
+	if err := entry.setJSONValue(logTypeLoginAttempt, &loginEvent{
 		From:      from,
 		TwoFactor: twoFactor,
 		Failed:    true,
 	}); err != nil {
+		return errcode.Annotate(err, "set log value")
+	}
+	return b.add(entry)
+}
+
+type changePasswordEvent struct{}
+
+func (b *securityLogs) recordChangePassword(user string) error {
+	msg := fmt.Sprintf("password of user %q changed", user)
+	entry := newLogEntry(user, msg)
+	ev := &changePasswordEvent{}
+	if err := entry.setJSONValue(logTypeChangePassword, ev); err != nil {
 		return errcode.Annotate(err, "set log value")
 	}
 	return b.add(entry)

@@ -59,15 +59,23 @@ func newBackend(file string) (*backend, error) {
 		newIdentityStore(settings, keyIdentity), nil,
 	)
 
+	secLogs := newSecurityLogs(tables)
+
 	b := &backend{
 		tables: tables,
 
 		settings:     settings,
 		identity:     id,
 		users:        users,
-		securityLogs: newSecurityLogs(tables),
+		securityLogs: secLogs,
 		appDomains:   newAppDomains(tables),
 	}
+
+	users.setOnChangePassword(func(u string) {
+		if err := secLogs.recordChangePassword(u); err != nil {
+			log.Println("record change password event: ", err)
+		}
+	})
 
 	if !dbExist {
 		log.Print("initializing backend")
