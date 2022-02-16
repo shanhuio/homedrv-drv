@@ -637,6 +637,8 @@ shanhu.io/aries v0.0.0-20220205021111-c0c91fa04781 h1:bHrwlGE33Lvy5YTm0MS8MH9hok
 shanhu.io/aries v0.0.0-20220205021111-c0c91fa04781/go.mod h1:dvz0r7wzdPL7GSwz7GJOYEyzxmbZ2w6e45pJwgmDrHM=
 shanhu.io/misc v0.0.0-20220205021022-1555ae413203 h1:gOXGMD3rH8pPtQS3/tpTie3yphCfkcKD2x6E9/C75+w=
 shanhu.io/misc v0.0.0-20220205021022-1555ae413203/go.mod h1:CIjDgW/fLkoLuDd0Ebu6QZvQt2Wv8GkOlRz0wT1sUzs=
+shanhu.io/misc v0.0.0-20220216035600-f28b589c6a5a h1:wMSoC/4dJqkbJ2nOYPao25+EoIj8WMFLQBF3cKepZLY=
+shanhu.io/misc v0.0.0-20220216035600-f28b589c6a5a/go.mod h1:Xd5mysptlu0WDCSggOZqSOdmag4s6/Ci1czILQPdTu4=
 shanhu.io/pisces v0.0.0-20220205021223-9007cd0b60fb h1:ABAKvBQU0ipFMI6kTMp6OnwLTeeE67NiQau+Rykwsh4=
 shanhu.io/pisces v0.0.0-20220205021223-9007cd0b60fb/go.mod h1:8UFxqHHZzmZsbrDTuUNyRfGkwer1gtLpk3i7Kn6BSqc=
 shanhu.io/text v0.0.0-20220122184333-0dca95772fe1 h1:e06ysulZWNSHFJ66dNELt2EsSaurDajTpYEZNauI+T0=

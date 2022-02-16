@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"shanhu.io/aries"
+	"shanhu.io/misc/argon2"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces"
 )
@@ -39,14 +40,13 @@ func (b *users) setOnChangePassword(f func(user string)) {
 }
 
 func (b *users) create(user, password string) error {
-	crypt, err := bcryptPassword(password)
+	hashed, err := argon2.NewPassword([]byte(password))
 	if err != nil {
-		return err
+		return errcode.Annotate(err, "hash password")
 	}
-
 	info := &userInfo{
 		Name:           user,
-		BcryptPassword: crypt,
+		Argon2Password: hashed,
 	}
 	return b.t.Add(user, info)
 }
@@ -70,9 +70,9 @@ func (b *users) mutate(user string, f func(info *userInfo) error) error {
 }
 
 func (b *users) setPassword(user, password string, old *string) error {
-	crypt, err := bcryptPassword(password)
+	hashed, err := argon2.NewPassword([]byte(password))
 	if err != nil {
-		return err
+		return errcode.Annotate(err, "hash password")
 	}
 	if err := b.mutate(user, func(info *userInfo) error {
 		if old != nil {
@@ -80,7 +80,8 @@ func (b *users) setPassword(user, password string, old *string) error {
 				return err
 			}
 		}
-		info.BcryptPassword = crypt
+		info.BcryptPassword = nil // Clear old bcrypt version.
+		info.Argon2Password = hashed
 		return nil
 	}); err != nil {
 		return err

@@ -17,28 +17,33 @@ package jarvis
 
 import (
 	"golang.org/x/crypto/bcrypt"
+	"shanhu.io/misc/argon2"
 	"shanhu.io/misc/errcode"
 )
 
 type userInfo struct {
 	Name string
 
-	BcryptPassword []byte
-	TwoFactor      *twoFactorInfo `json:",omitempty"`
+	BcryptPassword []byte           `json:",omitempty"`
+	Argon2Password *argon2.Password `json:",omitempty"`
+	TwoFactor      *twoFactorInfo   `json:",omitempty"`
 
 	RecentLoginFailures *recentFailures `json:",omitempty"`
 
 	APIKeys []byte
 }
 
-func bcryptPassword(pw string) ([]byte, error) {
-	// TODO(h8liu): use argon2
-	return bcrypt.GenerateFromPassword([]byte(pw), 0)
-}
-
 var errWrongPassword = errcode.Unauthorizedf("wrong password")
 
 func checkUserPassword(info *userInfo, password string) error {
+	if info.Argon2Password != nil {
+		if !info.Argon2Password.Check([]byte(password)) {
+			return errWrongPassword
+		}
+		return nil
+	}
+
+	// Fallback to old bcrypt checking.
 	if err := bcrypt.CompareHashAndPassword(
 		info.BcryptPassword, []byte(password),
 	); err != nil {

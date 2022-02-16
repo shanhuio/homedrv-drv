@@ -9,7 +9,7 @@ require (
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	modernc.org/sqlite v1.14.6
 	shanhu.io/aries v0.0.0-20220205021111-c0c91fa04781
-	shanhu.io/misc v0.0.0-20220205021022-1555ae413203
+	shanhu.io/misc v0.0.0-20220216035600-f28b589c6a5a
 	shanhu.io/pisces v0.0.0-20220205021223-9007cd0b60fb
 	shanhu.io/virgo v0.0.0-20220205021353-ff32f19754ce
 )
