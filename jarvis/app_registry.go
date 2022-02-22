@@ -17,22 +17,11 @@ package jarvis
 
 import (
 	"shanhu.io/homedrv/drvapi"
-	"shanhu.io/homedrv/homeapp/nextcloud"
-	"shanhu.io/homedrv/homeapp/postgres"
-	"shanhu.io/homedrv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 )
 
 type appRegistry struct {
 	manifest map[string]*drvapi.AppMeta
-}
-
-func lastStepVersion(steps []*drvapi.StepVersion) string {
-	if len(steps) == 0 {
-		return ""
-	}
-	last := steps[len(steps)-1]
-	return last.Version
 }
 
 func manifestFromRelease(rel *drvapi.Release) map[string]*drvapi.AppMeta {
@@ -44,31 +33,7 @@ func manifestFromRelease(rel *drvapi.Release) map[string]*drvapi.AppMeta {
 		if rel.Artifacts == nil {
 			return make(map[string]*drvapi.AppMeta)
 		}
-		for _, m := range []*drvapi.AppMeta{{
-			Name:  redis.Name,
-			Image: rel.Redis,
-		}, {
-			Name:  postgres.Name,
-			Image: rel.Postgres,
-			Steps: rel.Postgreses,
-		}, {
-			Name:  nextcloud.NameFront,
-			Image: rel.NCFront,
-		}, {
-			Name: nextcloud.Name,
-			Deps: []string{
-				nextcloud.NameFront,
-				postgres.Name,
-				redis.Name,
-			},
-			Image:      rel.Nextcloud,
-			SemVersion: lastStepVersion(rel.Nextclouds),
-			Steps:      rel.Nextclouds,
-		}} {
-			if m.Image != "" {
-				metas = append(metas, m)
-			}
-		}
+		metas = drvapi.LegacyAppsFromArtifacts(rel.Artifacts)
 	}
 	return makeManifest(metas)
 }

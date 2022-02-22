@@ -109,10 +109,6 @@ func (b *builder) buildRelease(name, typ string) error {
 		name:   "redis",
 		images: []string{"redis"},
 		final:  &arts.Redis,
-	}, {
-		name:   "influxdb",
-		images: []string{"influxdb"},
-		final:  &arts.InfluxDB,
 	}} {
 		final := ""
 		for _, img := range entry.images {

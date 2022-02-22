@@ -59,7 +59,6 @@ type Artifacts struct {
 	Nextcloud string
 	Redis     string
 	Postgres  string
-	InfluxDB  string
 
 	// Upgrade path for nextcloud
 	Nextclouds []*StepVersion `json:",omitempty"`
@@ -82,4 +81,53 @@ type UpdateQueryRequest struct {
 type UpdateQueryResponse struct {
 	Release       *Release `json:",omitempty"`
 	AlreadyLatest bool     `json:",omitempty"`
+}
+
+func lastStepVersion(steps []*StepVersion) string {
+	if len(steps) == 0 {
+		return ""
+	}
+	last := steps[len(steps)-1]
+	return last.Version
+}
+
+// LegacyAppsFromArtifacts returns the apps that that is implied by the
+// release. These are for releases that does not have the Apps filled.
+func LegacyAppsFromArtifacts(arts *Artifacts) []*AppMeta {
+	var metas []*AppMeta
+
+	const (
+		appRedis          = "redis"
+		appPostgres       = "postgres"
+		appNextcloudFront = "ncfront"
+		appNextcloud      = "nextcloud"
+	)
+
+	for _, m := range []*AppMeta{{
+		Name:  appRedis,
+		Image: arts.Redis,
+	}, {
+		Name:  appPostgres,
+		Image: arts.Postgres,
+		Steps: arts.Postgreses,
+	}, {
+		Name:  appNextcloudFront,
+		Image: arts.NCFront,
+	}, {
+		Name: appNextcloud,
+		Deps: []string{
+			appNextcloudFront,
+			appPostgres,
+			appRedis,
+		},
+		Image:      arts.Nextcloud,
+		SemVersion: lastStepVersion(arts.Nextclouds),
+		Steps:      arts.Nextclouds,
+	}} {
+		if m.Image != "" {
+			metas = append(metas, m)
+		}
+	}
+
+	return metas
 }

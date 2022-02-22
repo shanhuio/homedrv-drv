@@ -36,7 +36,6 @@ func releaseImagesToKeep(r *drvapi.Release) map[string]bool {
 			arts.Nextcloud,
 			arts.Redis,
 			arts.Postgres,
-			arts.InfluxDB,
 		} {
 			if img == "" {
 				continue
