@@ -41,8 +41,8 @@ type Config struct {
 	// Path to system docker unix domain socket.
 	SystemDockerSock string `json:",omitempty"`
 
-	// Running outside a docker. Useful for testing.
-	Bare bool `json:",omitempty"`
+	// Not running inside a docker.
+	External bool `json:",omitempty"`
 
 	// HTTPPort provides alternative http port for doorway container to
 	// listen on. If it is negative, then doorway will not listen on
@@ -61,7 +61,4 @@ type Config struct {
 	// Instead of reading the endpoint init config from the server,
 	// read from this file.
 	EndpointConfigFile string `json:",omitempty"`
-
-	// Dev mode device.
-	Dev bool `json:",omitempty"`
 }

@@ -112,9 +112,12 @@ func (d *doorway) hostMap() (map[string]string, error) {
 		}
 	}
 
-	if main := d.config.domain; main != "" {
-		m[main] = d.coreAddr()
+	if !d.drive.config.External {
+		if main := d.config.domain; main != "" {
+			m[main] = d.coreAddr()
+		}
 	}
+
 	return m, nil
 }
 

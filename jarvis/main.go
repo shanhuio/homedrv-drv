@@ -55,14 +55,14 @@ func bg(s *server) {
 	installed, err := d.settings.Has(keyBuild)
 	if err != nil {
 		// Basic install check failed.
-		log.Println("check installed: ", err)
+		log.Println("check installed:", err)
 	} else if !installed { // This is first time.
 		if err := downloadAndInstall(d); err != nil {
-			log.Println("install failed: ", err)
+			log.Println("install failed:", err)
 		}
 	} else { // Not first time.
 		if err := maybeFinishUpdate(d); err != nil {
-			log.Println("update failed: ", err)
+			log.Println("update failed:", err)
 			// It is important to proceed here, as the next update might be
 			// able to fix the issue. At this point, the apps are in
 			// undefiend state, but jarvis is already on the latest.
@@ -70,10 +70,7 @@ func bg(s *server) {
 		fixThings(d)
 	}
 
-	// Start the background update heartbeat querier.
-	if d.config.Bare {
-		log.Println("running in bare mode, no update in background")
-	} else if d.config.Channel != "" {
+	if d.config.Channel != "" {
 		// Subscribe channel and maybe schedule update task.
 		go cronUpdateOnChannel(d, s.updateSignal)
 	}
@@ -104,7 +101,7 @@ func run(homeDir, addr string) error {
 		return errcode.Annotate(err, "build empty docker image")
 	}
 
-	if !config.Bare {
+	if !config.External {
 		if err := killOldCoreIfExist(s.drive); err != nil {
 			return errcode.Annotate(err, "kill old core")
 		}

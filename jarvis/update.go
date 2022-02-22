@@ -102,6 +102,11 @@ func (t *taskUpdate) run() error {
 		return errcode.Annotatef(err, "set %q", keyBuildUpdating)
 	}
 
+	if d.config.External {
+		log.Println("external mode, skip updating core.")
+		return updateAppsAndDoorway(t.drive, t.rel)
+	}
+
 	// If update succeeds, the core will be swapped with a new
 	// instance, and updateCore() will never return.
 	if err := updateCore(d, rel.Jarvis); err != nil {

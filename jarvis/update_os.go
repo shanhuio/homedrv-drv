@@ -45,6 +45,9 @@ func isOSUpdateSupported(d *drive) bool {
 }
 
 func checkOSUpdateSupported(d *drive) error {
+	if d.config.External {
+		return errcode.Internalf("external mode does not manage OS")
+	}
 	if d.sysDock == nil {
 		return errcode.Internalf(
 			"system-docker not found, will not manage OS",
@@ -52,9 +55,6 @@ func checkOSUpdateSupported(d *drive) error {
 	}
 	if runtime.GOARCH != "amd64" {
 		return errcode.Internalf("os update only supported on amd64")
-	}
-	if d.config.Dev {
-		return errcode.Internalf("dev mode never update OS")
 	}
 	return nil
 }

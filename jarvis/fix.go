@@ -23,10 +23,6 @@ import (
 )
 
 func fixThings(d *drive) {
-	if d.config.Bare {
-		return
-	}
-
 	if err := fixOSUpgradeURL(d); err != nil {
 		log.Println("fix os upgrade url: ", err)
 	}

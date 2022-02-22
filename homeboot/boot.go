@@ -92,7 +92,6 @@ func (c *BootConfig) declareFlags(flags *flagutil.FlagSet) {
 		&drv.AutoAvoidPortBinding, "auto_avoid_port_binding", true,
 		"avoid binding ports when the port is 0 and not managing the OS",
 	)
-	flags.BoolVar(&drv.Dev, "dev", false, "enable dev mode")
 }
 
 func (c *BootConfig) fixLegacyNaming() {
