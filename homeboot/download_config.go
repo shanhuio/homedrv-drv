@@ -33,7 +33,9 @@ type DownloadConfig struct {
 	Naming *drvcfg.Naming // Naming conventions.
 
 	// Download the core only; only used in homeboot for bootstraping.
-	CoreOnly   bool
+	CoreOnly bool
+
+	// Only downloads the latest one from the ladder.
 	LatestOnly bool
 
 	// If set, ignore major versions that are lower than this.
