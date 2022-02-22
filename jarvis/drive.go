@@ -191,7 +191,6 @@ func (d *drive) tags() string {
 func (d *drive) downloadConfig() *homeboot.DownloadConfig {
 	return &homeboot.DownloadConfig{
 		Channel: d.config.Channel,
-		Build:   d.config.Build,
 		Naming:  d.config.Naming,
 	}
 }

@@ -142,8 +142,8 @@ func install(d *drive, r *drvapi.Release) error {
 }
 
 func downloadAndInstall(d *drive) error {
-	if d.config.Build == "" && d.config.Channel == "" {
-		return errcode.InvalidArgf("install target not specified")
+	if d.config.Channel == "" {
+		return errcode.InvalidArgf("install channel not specified")
 	}
 
 	dl, err := downloader(d)

@@ -23,9 +23,6 @@ type Config struct {
 	// Server address, default https://www.homedrive.io
 	Server string `json:",omitempty"`
 
-	// Pin to a particular build.
-	Build string `json:",omitempty"`
-
 	// Subscribe to which release channel.
 	Channel string `json:",omitempty"`
 

@@ -63,7 +63,6 @@ func (c *BootConfig) declareFlags(flags *flagutil.FlagSet) {
 	)
 	flags.StringVar(&drv.Name, "name", "", "endpoint name")
 	flags.StringVar(&c.Code, "code", "", "registration one time passcode")
-	flags.StringVar(&drv.Build, "build", "", "build to install")
 	flags.StringVar(
 		&drv.Channel, "channel", stableChannel(),
 		"release channel to subscribe",
@@ -138,7 +137,6 @@ func (b *boot) downloadCore(
 
 	d := NewOfficialDownloader(c, dock)
 	rel, err := d.DownloadRelease(&DownloadConfig{
-		Build:    drv.Build,
 		Channel:  drv.Channel,
 		CoreOnly: true,
 		Naming:   config.Naming,
