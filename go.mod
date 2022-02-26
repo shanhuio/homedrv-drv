@@ -7,7 +7,7 @@ require (
 	github.com/lib/pq v1.10.4
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
-	modernc.org/sqlite v1.14.6
+	modernc.org/sqlite v1.14.7
 	shanhu.io/aries v0.0.0-20220224040418-f34b8aa9a4e0
 	shanhu.io/misc v0.0.0-20220224040410-fc71141b9226
 	shanhu.io/pisces v0.0.0-20220224040427-16dbea853b7a
@@ -25,9 +25,9 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
+	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b // indirect
-	golang.org/x/sys v0.0.0-20220224003255-dbe011f71a99 // indirect
+	golang.org/x/sys v0.0.0-20220224120231-95c6836cb0e7 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.9 // indirect
