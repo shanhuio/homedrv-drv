@@ -156,11 +156,13 @@ func (d *drive) network() string { return homeapp.Network(d) }
 func (d *drive) core() string    { return drvcfg.Core(d.config.Naming) }
 func (d *drive) oldCore() string { return drvcfg.OldCore(d.config.Naming) }
 
-func (d *drive) hasSys() bool { return d.sysDock != nil }
+func (d *drive) hasSys() bool {
+	return !d.config.External && d.sysDock != nil
+}
 
 func (d *drive) burmilla() (*burmilla.Burmilla, error) {
-	if d.sysDock == nil {
-		return nil, errcode.Internalf("system-docker not found")
+	if !d.hasSys() {
+		return nil, errcode.Internalf("this drive does not manage the OS")
 	}
 	return burmilla.New(d.sysDock), nil
 }

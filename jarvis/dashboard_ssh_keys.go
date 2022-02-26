@@ -31,7 +31,7 @@ type DashboardSSHKeysData struct {
 func newDashboardSSHKeysData(s *server, c *aries.C) (
 	*DashboardSSHKeysData, error,
 ) {
-	if s.drive.sysDock == nil {
+	if !s.drive.hasSys() {
 		return &DashboardSSHKeysData{Disabled: true}, nil
 	}
 
