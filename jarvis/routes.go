@@ -58,6 +58,17 @@ func userRouter(s *server, api aries.Service) *aries.Router {
 	return r
 }
 
+type adminOnly struct {
+	s aries.Service
+}
+
+func (r *adminOnly) Serve(c *aries.C) error {
+	if c.User == "" {
+		return aries.NotFound
+	}
+	return r.s.Serve(c)
+}
+
 func apiRouter(s *server) *aries.Router {
 	r := aries.NewRouter()
 	r.DirService("user", s.users.api())
@@ -66,6 +77,9 @@ func apiRouter(s *server) *aries.Router {
 	r.DirService("dashboard", dashboardAPI(s))
 	r.DirService("id", identity.NewService(s.identity))
 	r.DirService("obj", s.drive.objects.api())
-	r.DirService("admin", adminTasksAPI(s))
+
+	// All users are admin for now.
+	r.DirService("admin", &adminOnly{s: adminTasksAPI(s)})
+
 	return r
 }
