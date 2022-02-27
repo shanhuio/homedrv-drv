@@ -46,10 +46,6 @@ func (s *adminTasks) apiDisableTOTP(c *aries.C, user string) error {
 	return s.server.users.disableTOTP(user)
 }
 
-func (s *adminTasks) apiSetAPIKey(c *aries.C, keyBytes []byte) error {
-	return s.server.keyRegistry.apiSet(c, keyBytes)
-}
-
 type taskReinstallApp struct {
 	drive *drive
 	name  string
@@ -91,6 +87,10 @@ func (s *adminTasks) apiNextcloudCron(c *aries.C) error {
 	return d.tasks.run("manual nextcloud cron", t)
 }
 
+func (s *adminTasks) apiPushUpdate(c *aries.C, bs []byte) error {
+	return pushManualUpdate(s.server.drive, bs)
+}
+
 func adminTasksAPI(s *server) *aries.Router {
 	tasks := &adminTasks{server: s}
 
@@ -99,10 +99,10 @@ func adminTasksAPI(s *server) *aries.Router {
 	r.Call("recreate-doorway", tasks.apiRecreateDoorway)
 	r.Call("set-root-password", tasks.apiSetRootPassword)
 	r.Call("disable-totp", tasks.apiDisableTOTP)
-	r.Call("set-api-key", tasks.apiSetAPIKey)
 	r.Call("reinstall-app", tasks.apiReinstallApp)
 	r.Call("set-nextcloud-datamnt", tasks.apiSetNextcloudDataMount)
 	r.Call("set-nextcloud-extramnt", tasks.apiSetNextcloudExtraMounts)
 	r.Call("nextcloud-cron", tasks.apiNextcloudCron)
+	r.Call("push-update", tasks.apiPushUpdate)
 	return r
 }

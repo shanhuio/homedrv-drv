@@ -51,9 +51,9 @@ func guestRouter(s *server) *aries.Router {
 	return r
 }
 
-func userRouter(s *server) *aries.Router {
+func userRouter(s *server, api aries.Service) *aries.Router {
 	r := aries.NewRouter()
-	r.DirService("api", apiRouter(s))
+	r.DirService("api", api)
 	r.DirService("obj", s.drive.objects)
 	return r
 }
@@ -66,16 +66,6 @@ func apiRouter(s *server) *aries.Router {
 	r.DirService("dashboard", dashboardAPI(s))
 	r.DirService("id", identity.NewService(s.identity))
 	r.DirService("obj", s.drive.objects.api())
-
-	// just stubbing
-	r.Call("sys/push-update", func(c *aries.C, bs []byte) error {
-		return pushManualUpdate(s.drive, bs)
-	})
-	return r
-}
-
-func adminRouter(s *server) *aries.Router {
-	r := aries.NewRouter()
-	r.DirService("api", adminTasksAPI(s))
+	r.DirService("admin", adminTasksAPI(s))
 	return r
 }

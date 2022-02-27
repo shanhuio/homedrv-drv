@@ -242,14 +242,3 @@ func maybeUpdateOS(d *drive) error {
 
 	return updateOS(d)
 }
-
-func cmdUpdateOS(args []string) error {
-	flags := cmdFlags.New()
-	cflags := newClientFlags(flags)
-	flags.ParseArgs(args)
-	d, err := newClientDrive(cflags)
-	if err != nil {
-		return errcode.Annotate(err, "init homedrive stub")
-	}
-	return updateOS(d)
-}

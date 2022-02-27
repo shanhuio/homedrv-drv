@@ -38,11 +38,10 @@ func Main() {
 	clientMain()
 }
 
-func makeService(s *server, admin aries.Service) aries.Service {
+func makeService(s *server, api aries.Service) aries.Service {
 	return &aries.ServiceSet{
 		Auth:  s.auth.Auth(),
-		User:  userRouter(s),
-		Admin: admin,
+		User:  userRouter(s, api),
 		Guest: guestRouter(s),
 	}
 }
@@ -118,14 +117,17 @@ func run(homeDir, addr string) error {
 	const sock = "var/jarvis.sock"
 	log.Printf("serve on %s and %s", sock, addr)
 
-	adminService := adminRouter(s)
-	go func() {
-		if err := aries.ListenAndServe(sock, adminService); err != nil {
+	api := apiRouter(s)
+	go func(api aries.Service) {
+		r := aries.NewRouter()
+		r.DirService("api", api)
+
+		if err := aries.ListenAndServe(sock, r); err != nil {
 			log.Fatal(errcode.Annotate(err, "listen and serve on socket"))
 		}
-	}()
+	}(api)
 
-	service := makeService(s, adminService)
+	service := makeService(s, api)
 	if err := aries.ListenAndServe(addr, service); err != nil {
 		return errcode.Annotate(err, "listen and serve")
 	}

@@ -19,10 +19,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 
-	"shanhu.io/homedrv/burmilla"
 	"shanhu.io/homedrv/drvapi"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/flagutil"
@@ -35,22 +33,18 @@ import (
 func clientCommands() *subcmd.List {
 	c := subcmd.New()
 
+	c.Add("call", "invokes an admin rpc call", cmdCall)
+
 	// Jarvis related
 	c.Add("version", "prints release info", cmdVersion)
 	c.Add("update", "hints to check update", cmdUpdate)
 	c.Add("settings", "prints settings", cmdSettings)
-	c.Add("set-api-key", "sets API key", cmdSetAPIKey)
 	c.Add("set-password", "sets password of a user", cmdSetPassword)
 	c.Add("disable-totp", "disables TOTP 2FA", cmdDisableTOTP)
 	c.Add(
 		"custom-subs", "view or modify additional custom subdomains",
 		cmdCustomSubs,
 	)
-
-	// OS related
-	c.Add("list-os", "list the available os versions", cmdListOS)
-	c.Add("update-os", "upgrade os", cmdUpdateOS)
-	c.Add("update-grub-config", "upgrade grub config", cmdUpdateGrubConfig)
 
 	// Nextcloud related
 	c.Add(
@@ -62,12 +56,6 @@ func clientCommands() *subcmd.List {
 		cmdSetNextcloudExtraMount,
 	)
 	c.Add("nextcloud-cron", "runs nextcloud cron job", cmdNextcloudCron)
-	c.Add(
-		"nextcloud-domains", "view or modify nextcloud domains",
-		cmdNextcloudDomains,
-	)
-
-	c.Add("call", "invokes an admin rpc call", cmdCall)
 
 	return c
 }
@@ -83,35 +71,10 @@ func declareJarvisSockFlag(flags *flagutil.FlagSet) *string {
 func cmdUpdate(args []string) error {
 	flags := cmdFlags.New()
 	sock := declareJarvisSockFlag(flags)
-	stop := flags.Bool(
-		"stop", false, "stop the channel update cron job",
-	)
+	stop := flags.Bool("stop", false, "stop the channel update cron job")
 	args = flags.ParseArgs(args)
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/update", !*stop, nil)
-}
-
-func cmdListOS(args []string) error {
-	flags := cmdFlags.New()
-	cflags := newClientFlags(flags)
-	flags.ParseArgs(args)
-	d, err := newClientDrive(cflags)
-	if err != nil {
-		return errcode.Annotate(err, "init homedrive stub")
-	}
-
-	b, err := d.burmilla()
-	if err != nil {
-		return errcode.Annotate(err, "init burmilla stub")
-	}
-	lines, err := burmilla.ListOS(b)
-	if err != nil {
-		return err
-	}
-	for _, line := range lines {
-		fmt.Println(line)
-	}
-	return nil
+	return c.Call("/api/admin/update", !*stop, nil)
 }
 
 func cmdVersion(args []string) error {
@@ -163,7 +126,7 @@ func cmdSetPassword(args []string) error {
 		return errcode.InvalidArgf("new password is empty")
 	}
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/set-password", *pass, nil)
+	return c.Call("/api/admin/set-password", *pass, nil)
 }
 
 func cmdDisableTOTP(args []string) error {
@@ -171,24 +134,7 @@ func cmdDisableTOTP(args []string) error {
 	sock := declareJarvisSockFlag(flags)
 	args = flags.ParseArgs(args)
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/disable-totp", rootUser, nil)
-}
-
-func cmdSetAPIKey(args []string) error {
-	flags := cmdFlags.New()
-	sock := declareJarvisSockFlag(flags)
-	keyFile := flags.String("key", "", "key file")
-	args = flags.ParseArgs(args)
-
-	if *keyFile == "" {
-		return errcode.InvalidArgf("key file is empty")
-	}
-	key, err := ioutil.ReadFile(*keyFile)
-	if err != nil {
-		return errcode.Annotate(err, "read key file")
-	}
-	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/set-api-key", key, nil)
+	return c.Call("/api/admin/disable-totp", rootUser, nil)
 }
 
 func cmdSetNextcloudDataMount(args []string) error {
@@ -199,7 +145,7 @@ func cmdSetNextcloudDataMount(args []string) error {
 		return errcode.InvalidArgf("expect one arg")
 	}
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/set-nextcloud-datamnt", args[0], nil)
+	return c.Call("/api/admin/set-nextcloud-datamnt", args[0], nil)
 }
 
 func cmdSetNextcloudExtraMount(args []string) error {
@@ -220,7 +166,7 @@ func cmdSetNextcloudExtraMount(args []string) error {
 	}
 
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/set-nextcloud-extramnt", m, nil)
+	return c.Call("/api/admin/set-nextcloud-extramnt", m, nil)
 }
 
 func cmdNextcloudCron(args []string) error {
@@ -231,7 +177,7 @@ func cmdNextcloudCron(args []string) error {
 		return errcode.InvalidArgf("expect no arg")
 	}
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/nextcloud-cron", nil, nil)
+	return c.Call("/api/admin/nextcloud-cron", nil, nil)
 }
 
 func cmdCall(args []string) error {

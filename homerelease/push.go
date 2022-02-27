@@ -65,5 +65,5 @@ func cmdPush(server string, args []string) error {
 	if err != nil {
 		return errcode.Annotate(err, "marshal release")
 	}
-	return c.Call("/api/sys/push-update", bs, nil)
+	return c.Call("/api/admin/push-update", bs, nil)
 }
