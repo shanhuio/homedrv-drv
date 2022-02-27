@@ -132,5 +132,5 @@ func cmdCustomSubs(args []string) error {
 
 	// Ping jarvis to recreate doorway so that hostmap will be updated.
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/recreate-doorway", nil, nil)
+	return c.Call("/api/admin/recreate-doorway", nil, nil)
 }

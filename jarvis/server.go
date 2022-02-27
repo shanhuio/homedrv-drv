@@ -49,7 +49,7 @@ type server struct {
 }
 
 func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
-	back, err := newBackend("")
+	back, err := newBackend(h)
 	if err != nil {
 		return nil, errcode.Annotate(err, "create backend")
 	}

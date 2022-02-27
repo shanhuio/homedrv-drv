@@ -86,7 +86,7 @@ func run(homeDir, addr string) error {
 	}
 
 	// jarvis reads config from var.
-	config, err := readConfig(h.Var("config.jsonx"))
+	config, err := readConfig(h)
 	if err != nil {
 		return errcode.Annotate(err, "read config")
 	}

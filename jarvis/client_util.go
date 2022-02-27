@@ -16,33 +16,36 @@
 package jarvis
 
 import (
+	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/flagutil"
+	"shanhu.io/misc/osutil"
 )
 
 var cmdFlags = flagutil.NewFactory("jarvis")
 
 type clientFlags struct {
-	config string
-	db     string
+	home string
 }
 
 func newClientFlags(flags *flagutil.FlagSet) *clientFlags {
 	c := new(clientFlags)
-	flags.StringVar(&c.config, "config", "var/config.jsonx", "config file")
-	flags.StringVar(&c.db, "db", "var/jarvis.db", "database file")
+	flags.StringVar(&c.home, "home", ".", "home directory")
 	return c
 }
 
 func newClientDrive(flags *clientFlags) (*drive, error) {
-	c, err := readConfig(flags.config)
+	h, err := osutil.NewHome(flags.home)
+	if err != nil {
+		return nil, errcode.Annotate(err, "new home")
+	}
+	c, err := readConfig(h)
+	if err != nil {
+		return nil, errcode.Annotate(err, "read config")
+	}
+	b, err := newBackend(h)
 	if err != nil {
 		return nil, err
 	}
-	b, err := newBackend(flags.db)
-	if err != nil {
-		return nil, err
-	}
-
 	d, err := newDrive(c, b.kernel())
 	if err != nil {
 		return nil, err

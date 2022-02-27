@@ -32,6 +32,10 @@ func (s *adminTasks) apiUpdate(c *aries.C, sig bool) error {
 	return nil
 }
 
+func (s *adminTasks) apiPushUpdate(c *aries.C, bs []byte) error {
+	return pushManualUpdate(s.server.drive, bs)
+}
+
 func (s *adminTasks) apiRecreateDoorway(c *aries.C) error {
 	d := s.server.drive
 	t := &taskRecreateDoorway{drive: d}
@@ -87,15 +91,12 @@ func (s *adminTasks) apiNextcloudCron(c *aries.C) error {
 	return d.tasks.run("manual nextcloud cron", t)
 }
 
-func (s *adminTasks) apiPushUpdate(c *aries.C, bs []byte) error {
-	return pushManualUpdate(s.server.drive, bs)
-}
-
 func adminTasksAPI(s *server) *aries.Router {
 	tasks := &adminTasks{server: s}
 
 	r := aries.NewRouter()
 	r.Call("update", tasks.apiUpdate)
+	r.Call("push-update", tasks.apiPushUpdate)
 	r.Call("recreate-doorway", tasks.apiRecreateDoorway)
 	r.Call("set-root-password", tasks.apiSetRootPassword)
 	r.Call("disable-totp", tasks.apiDisableTOTP)
@@ -103,6 +104,6 @@ func adminTasksAPI(s *server) *aries.Router {
 	r.Call("set-nextcloud-datamnt", tasks.apiSetNextcloudDataMount)
 	r.Call("set-nextcloud-extramnt", tasks.apiSetNextcloudExtraMounts)
 	r.Call("nextcloud-cron", tasks.apiNextcloudCron)
-	r.Call("push-update", tasks.apiPushUpdate)
+
 	return r
 }

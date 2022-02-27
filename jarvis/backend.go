@@ -37,17 +37,15 @@ type backend struct {
 	appDomains   *appDomains
 }
 
-func newBackend(file string) (*backend, error) {
-	if file == "" {
-		file = "var/jarvis.db"
-	}
+func newBackend(h *osutil.Home) (*backend, error) {
+	dbFile := h.Var("jarvis.db")
 
-	dbExist, err := osutil.Exist(file)
+	dbExist, err := osutil.Exist(dbFile)
 	if err != nil {
 		return nil, errcode.Annotate(err, "check database file exist")
 	}
 
-	tables, err := pisces.OpenSqlite3Tables(file)
+	tables, err := pisces.OpenSqlite3Tables(dbFile)
 	if err != nil {
 		return nil, err
 	}

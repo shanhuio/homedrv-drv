@@ -18,11 +18,13 @@ package jarvis
 import (
 	drvcfg "shanhu.io/homedrv/drvconfig"
 	"shanhu.io/misc/jsonx"
+	"shanhu.io/misc/osutil"
 )
 
-func readConfig(p string) (*drvcfg.Config, error) {
+func readConfig(h *osutil.Home) (*drvcfg.Config, error) {
+	f := h.Var("config.jsonx")
 	c := new(drvcfg.Config)
-	if err := jsonx.ReadFile(p, c); err != nil {
+	if err := jsonx.ReadFile(f, c); err != nil {
 		return nil, err
 	}
 	return c, nil

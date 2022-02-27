@@ -37,8 +37,9 @@ func clientCommands() *subcmd.List {
 
 	// Jarvis related
 	c.Add("version", "prints release info", cmdVersion)
-	c.Add("update", "hints to check update", cmdUpdate)
 	c.Add("settings", "prints settings", cmdSettings)
+
+	c.Add("update", "hints to check update", cmdUpdate)
 	c.Add("set-password", "sets password of a user", cmdSetPassword)
 	c.Add("disable-totp", "disables TOTP 2FA", cmdDisableTOTP)
 	c.Add(
