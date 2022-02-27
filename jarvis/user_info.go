@@ -29,8 +29,6 @@ type userInfo struct {
 	TwoFactor      *twoFactorInfo   `json:",omitempty"`
 
 	RecentLoginFailures *recentFailures `json:",omitempty"`
-
-	APIKeys []byte
 }
 
 var errWrongPassword = errcode.Unauthorizedf("wrong password")
