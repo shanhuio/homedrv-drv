@@ -28,9 +28,9 @@ import (
 	"shanhu.io/pisces/settings"
 )
 
-func endpointConfig(d *drive) (*drvapi.EndpointConfig, error) {
-	if f := d.config.EndpointConfigFile; f != "" {
-		config := new(drvapi.EndpointConfig)
+func endpointInitConfig(d *drive) (*drvapi.EndpointInitConfig, error) {
+	if f := d.config.EndpointInitConfigFile; f != "" {
+		config := new(drvapi.EndpointInitConfig)
 		if err := jsonx.ReadFile(f, config); err != nil {
 			return nil, errcode.Annotate(err, "read local config")
 		}
@@ -41,7 +41,7 @@ func endpointConfig(d *drive) (*drvapi.EndpointConfig, error) {
 	if err != nil {
 		return nil, errcode.Annotate(err, "dial server")
 	}
-	config := new(drvapi.EndpointConfig)
+	config := new(drvapi.EndpointInitConfig)
 	if err := c.Call("/pubapi/endpoint/config", nil, config); err != nil {
 		return nil, errcode.Annotate(err, "fetch remote config")
 	}
@@ -81,7 +81,7 @@ func initDone(d *drive) error {
 }
 
 func install(d *drive, r *drvapi.Release) error {
-	epConfig, err := endpointConfig(d)
+	initConfig, err := endpointInitConfig(d)
 	if err != nil {
 		return errcode.Annotate(err, "read endpoint config")
 	}
@@ -89,19 +89,19 @@ func install(d *drive, r *drvapi.Release) error {
 	// TODO(h8liu): fetch owner and owner's ssh keys and merge them?
 
 	// Populate endpoint configs.
-	domain := epConfig.MainDomain
+	domain := initConfig.MainDomain
 	if domain == "" {
 		domain = fmt.Sprintf("%s.homedrv.com", d.name)
 	}
 	if err := d.settings.Set(homeapp.KeyMainDomain, domain); err != nil {
 		return errcode.Annotate(err, "save main domain")
 	}
-	if doms := epConfig.NextcloudDomains; len(doms) > 0 {
+	if doms := initConfig.NextcloudDomains; len(doms) > 0 {
 		if err := d.settings.Set(nextcloud.KeyDomains, doms); err != nil {
 			return errcode.Annotate(err, "save nextcloud domains")
 		}
 	}
-	if f := epConfig.FabricsServer; f != "" {
+	if f := initConfig.FabricsServer; f != "" {
 		if err := d.settings.Set(keyFabricsServerDomain, f); err != nil {
 			return errcode.Annotate(err, "save fabrics server domain")
 		}
@@ -109,7 +109,7 @@ func install(d *drive, r *drvapi.Release) error {
 
 	d.appRegistry.setRelease(r)
 
-	apps := epConfig.Apps
+	apps := initConfig.Apps
 	if apps == nil {
 		apps = []string{nextcloud.Name}
 	}
@@ -121,7 +121,7 @@ func install(d *drive, r *drvapi.Release) error {
 
 	doorwayConfig := &doorwayConfig{
 		domain:        domain,
-		fabricsServer: epConfig.FabricsServer,
+		fabricsServer: initConfig.FabricsServer,
 	}
 	doorway := newDoorway(d, doorwayConfig)
 	if err := doorway.install(r.Doorway); err != nil {

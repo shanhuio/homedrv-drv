@@ -135,7 +135,7 @@ func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 		return nil, errcode.Annotate(err, "create totp")
 	}
 
-	return &server{
+	s := &server{
 		backend:     back,
 		drive:       drive,
 		appRegistry: appReg,
@@ -151,7 +151,8 @@ func newServer(h *osutil.Home, c *drvcfg.Config) (*server, error) {
 		static: aries.NewStaticFiles(h.Lib("static")),
 
 		updateSignal: make(chan bool),
-	}, nil
+	}
+	return s, nil
 }
 
 func (s *server) Drive() *drive { return s.drive }

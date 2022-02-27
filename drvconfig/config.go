@@ -59,5 +59,5 @@ type Config struct {
 
 	// Instead of reading the endpoint init config from the server,
 	// read from this file.
-	EndpointConfigFile string `json:",omitempty"`
+	EndpointInitConfigFile string `json:",omitempty"`
 }

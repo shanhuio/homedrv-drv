@@ -15,10 +15,10 @@
 
 package drvapi
 
-// EndpointConfig is the basic settings of an endpoint. This only affects the
-// init time of an endpoint. After an endpoint is provisioned, a user might
-// be able to change the configuration via jarvis' user interface.
-type EndpointConfig struct {
+// EndpointInitConfig is the basic settings to initialize an endpoint. This only
+// affects the init time of an endpoint. After an endpoint is provisioned, a
+// user might be able to change the configuration via jarvis' user interface.
+type EndpointInitConfig struct {
 	// Main domain. Will serve jarvis Web UI. Currently redirects to the first
 	// Nextcloud domain. If missing, an endpoint's main domain is
 	// <name>.homedrv.com
