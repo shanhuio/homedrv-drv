@@ -37,4 +37,7 @@ type EndpointConfig struct {
 
 	// Fabrics server to connect to. Default using "fabrics.homedrive.io"
 	FabricsServer string `json:",omitempty"`
+
+	// If to expose admin API on the jarvis's HTTP interface.
+	ExposeAdminAPI bool `json:",omitempty"`
 }

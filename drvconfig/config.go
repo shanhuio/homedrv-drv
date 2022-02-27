@@ -15,8 +15,10 @@
 
 package drvconfig
 
-// Config is the configuration of jarvis. These configurations are critical for
-// initializing an endpoint and are largely immutable.
+// Config is the configuration of a HomeDrive. These configurations are
+// critical for initializing an endpoint. The configurations here provides
+// information about the drive's operating systems, network and identity,
+// so that the drive can be properly installed and initialized.
 type Config struct {
 	Name string // Name of the endpoint.
 
