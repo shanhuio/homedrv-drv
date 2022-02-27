@@ -36,8 +36,8 @@ type EndpointInitConfig struct {
 	ExtraDomains []string `json:",omitempty"`
 
 	// Fabrics server to connect to. Default using "fabrics.homedrive.io"
+	//
+	// TODO(h8liu): deprecate this and get the shareded fabrics server
+	// address from the centralized server.
 	FabricsServer string `json:",omitempty"`
-
-	// If to expose admin API on the jarvis's HTTP interface.
-	ExposeAdminAPI bool `json:",omitempty"`
 }
