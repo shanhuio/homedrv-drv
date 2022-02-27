@@ -66,17 +66,19 @@ func (d *doorway) generateFabricsKey(t *tarutil.Stream) error {
 	if err != nil {
 		return err
 	}
-	client, err := d.dialServer()
-	if err != nil {
-		return errcode.Annotate(err, "dial server")
-	}
 	t.AddBytes("fabrics.pem", d.tarMeta(0600), pri)
 	t.AddBytes("fabrics.pub", d.tarMeta(0644), pub)
 
-	const p = "/pubapi/endpoint/register:doorway"
-	req := &drvapi.RegisterDoorwayRequest{PublicKey: string(pub)}
-	if err := client.Call(p, req, nil); err != nil {
-		return errcode.Annotate(err, "register to fabrics")
+	if d.hasServer() {
+		client, err := d.dialServer()
+		if err != nil {
+			return errcode.Annotate(err, "dial server")
+		}
+		const p = "/pubapi/endpoint/register:doorway"
+		req := &drvapi.RegisterDoorwayRequest{PublicKey: string(pub)}
+		if err := client.Call(p, req, nil); err != nil {
+			return errcode.Annotate(err, "register to fabrics")
+		}
 	}
 	return nil
 }

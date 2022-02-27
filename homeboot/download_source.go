@@ -48,9 +48,16 @@ func FetchBuildRelease(c *httputil.Client, b string) (*drvapi.Release, error) {
 
 // DownloadSource is a source for downloading a release.
 type DownloadSource struct {
-	Build      func(b string) (*drvapi.Release, error)
-	Channel    func(ch string) (*drvapi.Release, error)
+	// Build gets the release by name.
+	Build func(b string) (*drvapi.Release, error)
+
+	// Channel gets the release of a channel.
+	Channel func(ch string) (*drvapi.Release, error)
+
+	// OpenObject opens an object by name.
 	OpenObject func(name string) (io.ReadCloser, error)
+
+	// OpenDocker is the legacy way to download a docker image.
 	OpenDocker func(name, hash string) (io.ReadCloser, error)
 }
 

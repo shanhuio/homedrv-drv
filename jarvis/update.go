@@ -200,9 +200,6 @@ func sleepOrSignal(d time.Duration, signal <-chan bool) bool {
 func cronUpdateOnChannel(d *drive, signal <-chan bool) {
 	defer log.Println("cron update on channel exited")
 
-	// TODO(h8liu): add a stop signal, so this background update
-	// routine can be stopped gracefully.
-
 	ch := d.downloadConfig().Channel
 	if ch == "" {
 		log.Println("not running on a channel, quiting update cron")
@@ -215,8 +212,7 @@ func cronUpdateOnChannel(d *drive, signal <-chan bool) {
 	tickerChan := ticker.C
 
 	manual := false
-	stop := false
-	for !stop {
+	for {
 		if mb, err := d.settings.Has(keyManualBuild); err != nil {
 			log.Println(errcode.Annotate(err, "check manual build"))
 		} else if mb {
@@ -239,12 +235,9 @@ func cronUpdateOnChannel(d *drive, signal <-chan bool) {
 
 		manual = false
 		select {
-		case <-tickerChan:
-		case b := <-signal:
-			if !b {
-				stop = true
-			}
+		case <-signal:
 			manual = true
+		case <-tickerChan:
 		}
 	}
 }

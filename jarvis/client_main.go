@@ -72,10 +72,9 @@ func declareJarvisSockFlag(flags *flagutil.FlagSet) *string {
 func cmdUpdate(args []string) error {
 	flags := cmdFlags.New()
 	sock := declareJarvisSockFlag(flags)
-	stop := flags.Bool("stop", false, "stop the channel update cron job")
 	args = flags.ParseArgs(args)
 	c := httputil.NewUnixClient(*sock)
-	return c.Call("/api/admin/update", !*stop, nil)
+	return c.Call("/api/admin/update", nil, nil)
 }
 
 func cmdVersion(args []string) error {

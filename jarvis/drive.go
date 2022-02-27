@@ -55,11 +55,11 @@ type drive struct {
 	// Name of the endpoint (without leading '~').
 	name string
 
-	// User credential
-	creds *creds.Endpoint
-
 	// Remote server of homedrive.io, for downloading and credential management.
 	server *url.URL
+
+	// User credential
+	creds *creds.Endpoint
 
 	// Uesr docker client
 	dock *dock.Client
@@ -75,6 +75,9 @@ type drive struct {
 }
 
 func parseServer(s string) (*url.URL, error) {
+	if s == drvcfg.NoServer {
+		return nil, nil
+	}
 	if s == "" {
 		return &url.URL{
 			Scheme: "https",
@@ -106,6 +109,11 @@ func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {
 	if err != nil {
 		return nil, errcode.Annotate(err, "parse server URL")
 	}
+	var ep *creds.Endpoint
+	if server != nil {
+		ep = creds.NewRobot("~"+name, server.String(), "", nil)
+		ep.Key = key
+	}
 
 	userDockSock := config.DockerSock
 	if userDockSock == "" {
@@ -124,16 +132,13 @@ func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {
 		sysDock = dock.NewUnixClient(sysDockSock)
 	}
 
-	ep := creds.NewRobot("~"+name, server.String(), "", nil)
-	ep.Key = key
-
 	tasks := newTaskLoop()
 
 	return &drive{
 		config:  config,
+		server:  server,
 		name:    name,
 		creds:   ep,
-		server:  server,
 		dock:    dock.NewUnixClient(userDockSock),
 		sysDock: sysDock,
 		kernel:  k,
@@ -141,7 +146,14 @@ func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {
 	}, nil
 }
 
+func (d *drive) hasServer() bool {
+	return d.server != nil
+}
+
 func (d *drive) dialServer() (*httputil.Client, error) {
+	if d.creds == nil {
+		return nil, errcode.Internalf("no remote server configured")
+	}
 	return creds.DialEndpoint(d.creds)
 }
 

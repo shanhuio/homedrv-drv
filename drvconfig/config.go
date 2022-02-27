@@ -15,6 +15,9 @@
 
 package drvconfig
 
+// NoServer to indicate there is no remote server.
+const NoServer = "-"
+
 // Config is the configuration of a HomeDrive. These configurations are
 // critical for initializing an endpoint. The configurations here provides
 // information about the drive's operating systems, network and identity,
@@ -23,6 +26,7 @@ type Config struct {
 	Name string // Name of the endpoint.
 
 	// Server address, default https://www.homedrive.io
+	// "-" means no remote server is being used.
 	Server string `json:",omitempty"`
 
 	// Subscribe to which release channel.

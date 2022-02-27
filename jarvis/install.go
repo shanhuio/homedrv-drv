@@ -37,6 +37,10 @@ func endpointInitConfig(d *drive) (*drvapi.EndpointInitConfig, error) {
 		return config, nil
 	}
 
+	if !d.hasServer() {
+		return &drvapi.EndpointInitConfig{Apps: []string{}}, nil
+	}
+
 	c, err := d.dialServer()
 	if err != nil {
 		return nil, errcode.Annotate(err, "dial server")
@@ -49,6 +53,10 @@ func endpointInitConfig(d *drive) (*drvapi.EndpointInitConfig, error) {
 }
 
 func initDone(d *drive) error {
+	if !d.hasServer() {
+		return nil
+	}
+
 	ncPass, err := settings.String(d.settings, nextcloud.KeyAdminPass)
 	if err != nil {
 		if errcode.IsNotFound(err) {

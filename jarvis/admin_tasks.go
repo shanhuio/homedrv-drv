@@ -27,8 +27,8 @@ type adminTasks struct {
 	server *server
 }
 
-func (s *adminTasks) apiUpdate(c *aries.C, sig bool) error {
-	s.server.updateSignal <- sig
+func (s *adminTasks) apiUpdate(c *aries.C) error {
+	s.server.updateSignal <- true
 	return nil
 }
 

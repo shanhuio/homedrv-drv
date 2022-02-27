@@ -46,7 +46,7 @@ func downloader(d *drive) (*homeboot.Downloader, error) {
 		return nil, errcode.Annotate(err, "check manual build mode")
 	}
 
-	getRelease := func(string) (*drvapi.Release, error) {
+	getRelease := func(_ string) (*drvapi.Release, error) {
 		// When in manual build mode, always returns the release
 		// from keyManualBuild.
 		return readManualBuild(d)
@@ -67,6 +67,9 @@ func downloader(d *drive) (*homeboot.Downloader, error) {
 		return homeboot.NewDownloader(src, d.dock), nil
 	}
 
+	if !d.hasServer() {
+		return nil, errcode.Internalf("no server to download")
+	}
 	client, err := d.dialServer()
 	if err != nil {
 		return nil, errcode.Annotate(err, "dial server")
