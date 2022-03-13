@@ -86,6 +86,12 @@ func (n *Nextcloud) fixVersion(major int) error {
 		return errcode.Annotate(err, "set cron mode")
 	}
 
+	// Might be also needed in minor upgrades.
+	const addIndexCmd = "db:add-missing-indices"
+	if _, err := occOutput(cont, []string{addIndexCmd, "-n"}); err != nil {
+		return errcode.Annotate(err, addIndexCmd)
+	}
+
 	k := fixKey(major)
 	if k == "" {
 		return nil
@@ -100,14 +106,11 @@ func (n *Nextcloud) fixVersion(major int) error {
 	}
 
 	for _, cmd := range []string{
-		"db:add-missing-indices",
 		"db:convert-filecache-bigint",
 		"db:add-missing-columns",
 		"db:add-missing-primary-keys",
 	} {
-		if _, err := occOutput(
-			cont, []string{cmd, "-n"},
-		); err != nil {
+		if _, err := occOutput(cont, []string{cmd, "-n"}); err != nil {
 			return errcode.Annotate(err, cmd)
 		}
 	}
