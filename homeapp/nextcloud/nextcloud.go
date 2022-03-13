@@ -155,10 +155,14 @@ func (n *Nextcloud) upgrade(
 	last := ""
 	for {
 		v, ok := ladderMap[curMajor]
-		if !ok { // Top of the upgrade ladder now.
+		if !ok { // Out of the top of the upgrade ladder now.
 			break
 		}
-		log.Printf("upgrade nextcloud from %q to %q", version, v.Version)
+		if version == v.Version {
+			log.Printf("reinstalling nextcloud %q", version)
+		} else {
+			log.Printf("upgrade nextcloud from %q to %q", version, v.Version)
+		}
 		if err := n.upgrade1(v.Image, v.Version, config); err != nil {
 			return errcode.Annotatef(
 				err, "upgrade nextcloud from %q to %q", version, v.Version,
