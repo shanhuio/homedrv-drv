@@ -59,6 +59,19 @@ func aptInstall(c *dock.Cont, pkgs []string, out io.Writer) error {
 }
 
 func enableSMB(c *dock.Cont, out io.Writer) error {
+	peclList := new(bytes.Buffer)
+	if err := exec(c, []string{"pecl", "list"}, peclList); err != nil {
+		return errcode.Annotate(err, "pecl list")
+	}
+	lines := strings.Split(peclList.String(), "\n")
+	for _, line := range lines {
+		fields := strings.Fields(line)
+		if len(fields) == 3 && fields[0] == "smbclient" {
+			// smbclient already installed; let's skip.
+			return nil
+		}
+	}
+
 	cmd := []string{"pecl", "install", "smbclient"}
 	if err := exec(c, cmd, out); err != nil {
 		return errcode.Annotate(err, "pecl install")

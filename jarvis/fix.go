@@ -28,7 +28,7 @@ func fixThings(d *drive) {
 	}
 	if d.apps.isInstalled(nextcloud.Name) {
 		if err := nextcloud.Fix(d); err != nil {
-			log.Println("fix nextcloud: ", err)
+			log.Println("fix nextcloud:", err)
 		}
 	}
 }
