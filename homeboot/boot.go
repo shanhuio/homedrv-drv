@@ -128,9 +128,8 @@ func (b *boot) downloadCore(
 ) (string, error) {
 	drv := b.Drive
 	user := "~" + drv.Name
-	ep := creds.NewRobot(user, drv.Server, "", nil)
-	ep.Key = pem
-	c, err := creds.DialEndpoint(ep)
+	ep := &creds.RobotEndpoint{Server: drv.Server, User: user, Key: pem}
+	c, err := ep.Dial()
 	if err != nil {
 		return "", err
 	}
