@@ -8,7 +8,7 @@ require (
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
 	modernc.org/sqlite v1.15.2
-	shanhu.io/aries v0.0.0-20220320060752-a01eb1cb09b0
+	shanhu.io/aries v0.0.0-20220320063159-8421ff0396fd
 	shanhu.io/misc v0.0.0-20220319030403-dbbc9988844d
 	shanhu.io/pisces v0.0.0-20220320061826-2fde3d626852
 	shanhu.io/virgo v0.0.0-20220313165936-65a9d6fd09ed
