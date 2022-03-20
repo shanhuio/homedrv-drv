@@ -584,6 +584,8 @@ shanhu.io/misc v0.0.0-20220319030403-dbbc9988844d h1:SkLmQKBrS8LBUK551tVuxiYsMy+
 shanhu.io/misc v0.0.0-20220319030403-dbbc9988844d/go.mod h1:gvDa+la7KDXnDTzip1O5vMjRP/E/b8/RumF231RNsn8=
 shanhu.io/pisces v0.0.0-20220313165534-08a45b190302 h1:/R8jGIkncCBTOl96kUKa8ZG3pS3mEVCn7mMTX01IVKM=
 shanhu.io/pisces v0.0.0-20220313165534-08a45b190302/go.mod h1:De6K/hNJYsuJWMrcOIvm+o0pdC3YAGnHzLEpXjbZ+a0=
+shanhu.io/pisces v0.0.0-20220320061826-2fde3d626852 h1:FV7TFg+6O9TbrpjnJZEGKQDAQlctWMQtG9eMw+Or8Q4=
+shanhu.io/pisces v0.0.0-20220320061826-2fde3d626852/go.mod h1:+PjStJ27+DR3xHM60gcCCAMSRN4HzBamM2tUlo+r5hM=
 shanhu.io/text v0.0.0-20220122184333-0dca95772fe1 h1:e06ysulZWNSHFJ66dNELt2EsSaurDajTpYEZNauI+T0=
 shanhu.io/text v0.0.0-20220122184333-0dca95772fe1/go.mod h1:Np11lL3hfbT5QunuDgouCl65s112Pz3QHvNAdXpJWq8=
 shanhu.io/virgo v0.0.0-20220313165936-65a9d6fd09ed h1:AWbYJ6ZP/lAdatGsFlYNjp+L9aZfmqhnT4Bu3EOIUDI=
