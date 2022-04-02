@@ -68,7 +68,6 @@ func (b *builder) buildRelease(name, typ string) error {
 		"nextcloud22",
 		"postgres12",
 		"redis",
-		"influxdb",
 
 		"jarvis",
 		"doorway",
