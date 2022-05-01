@@ -16,7 +16,7 @@
 package main
 
 import (
-	"shanhu.io/homedrv/ncfront"
+	"shanhu.io/homedrv/drv/ncfront"
 )
 
 func main() {

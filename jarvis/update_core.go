@@ -19,8 +19,8 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/homedrv/homeapp/apputil"
-	"shanhu.io/homedrv/homeboot"
+	"shanhu.io/homedrv/drv/homeapp/apputil"
+	"shanhu.io/homedrv/drv/homeboot"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )

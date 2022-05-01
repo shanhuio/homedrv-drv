@@ -19,8 +19,8 @@ import (
 	"encoding/json"
 	"io"
 
-	"shanhu.io/homedrv/drvapi"
-	"shanhu.io/homedrv/homeboot"
+	"shanhu.io/homedrv/drv/drvapi"
+	"shanhu.io/homedrv/drv/homeboot"
 	"shanhu.io/misc/errcode"
 )
 

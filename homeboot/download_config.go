@@ -18,8 +18,8 @@ package homeboot
 import (
 	"log"
 
-	"shanhu.io/homedrv/drvapi"
-	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/drv/drvapi"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/misc/semver"
 )
 

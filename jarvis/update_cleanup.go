@@ -19,7 +19,7 @@ import (
 	"log"
 	"strings"
 
-	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )

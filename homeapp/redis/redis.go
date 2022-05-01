@@ -18,10 +18,10 @@ package redis
 import (
 	"fmt"
 
-	"shanhu.io/homedrv/drvapi"
-	drvcfg "shanhu.io/homedrv/drvconfig"
-	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/homedrv/homeapp/apputil"
+	"shanhu.io/homedrv/drv/drvapi"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
+	"shanhu.io/homedrv/drv/homeapp"
+	"shanhu.io/homedrv/drv/homeapp/apputil"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/tarutil"
 	"shanhu.io/virgo/dock"

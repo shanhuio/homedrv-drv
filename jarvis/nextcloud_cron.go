@@ -19,7 +19,7 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/drv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 )
 

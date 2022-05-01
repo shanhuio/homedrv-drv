@@ -16,7 +16,7 @@
 package main
 
 import (
-	"shanhu.io/homedrv/jarvis"
+	"shanhu.io/homedrv/drv/jarvis"
 )
 
 func main() {

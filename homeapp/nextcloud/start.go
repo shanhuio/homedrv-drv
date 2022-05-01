@@ -18,10 +18,10 @@ package nextcloud
 import (
 	"strings"
 
-	drvcfg "shanhu.io/homedrv/drvconfig"
-	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/homedrv/homeapp/postgres"
-	"shanhu.io/homedrv/homeapp/redis"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
+	"shanhu.io/homedrv/drv/homeapp"
+	"shanhu.io/homedrv/drv/homeapp/postgres"
+	"shanhu.io/homedrv/drv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )

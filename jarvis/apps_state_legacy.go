@@ -16,10 +16,10 @@
 package jarvis
 
 import (
-	"shanhu.io/homedrv/drvapi"
-	"shanhu.io/homedrv/homeapp/nextcloud"
-	"shanhu.io/homedrv/homeapp/postgres"
-	"shanhu.io/homedrv/homeapp/redis"
+	"shanhu.io/homedrv/drv/drvapi"
+	"shanhu.io/homedrv/drv/homeapp/nextcloud"
+	"shanhu.io/homedrv/drv/homeapp/postgres"
+	"shanhu.io/homedrv/drv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 )
 

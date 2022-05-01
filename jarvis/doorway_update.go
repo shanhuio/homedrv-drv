@@ -18,7 +18,7 @@ package jarvis
 import (
 	"log"
 
-	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces/settings"
 	"shanhu.io/virgo/dock"

@@ -20,7 +20,7 @@ import (
 	"io"
 	"strings"
 
-	"shanhu.io/homedrv/executil"
+	"shanhu.io/homedrv/drv/executil"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )

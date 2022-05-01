@@ -19,9 +19,9 @@ import (
 	"log"
 	"sort"
 
-	doorwaypkg "shanhu.io/homedrv/doorway"
-	"shanhu.io/homedrv/drvapi"
-	drvcfg "shanhu.io/homedrv/drvconfig"
+	doorwaypkg "shanhu.io/homedrv/drv/doorway"
+	"shanhu.io/homedrv/drv/drvapi"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/rsautil"
 	"shanhu.io/misc/tarutil"

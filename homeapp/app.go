@@ -16,7 +16,7 @@
 package homeapp
 
 import (
-	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/drv/drvapi"
 )
 
 // App is a generic application object that manages the lifecycle

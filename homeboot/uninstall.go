@@ -19,7 +19,7 @@ import (
 	"log"
 	"strings"
 
-	drvcfg "shanhu.io/homedrv/drvconfig"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/dock"
 )

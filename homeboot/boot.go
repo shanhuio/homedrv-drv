@@ -26,8 +26,8 @@ import (
 	"strings"
 
 	"shanhu.io/aries/creds"
-	"shanhu.io/homedrv/drvapi"
-	drvcfg "shanhu.io/homedrv/drvconfig"
+	"shanhu.io/homedrv/drv/drvapi"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/flagutil"
 	"shanhu.io/misc/httputil"

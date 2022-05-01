@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"sort"
 
-	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/homedrv/homeapp/apputil"
-	"shanhu.io/homedrv/homeapp/redis"
+	"shanhu.io/homedrv/drv/homeapp"
+	"shanhu.io/homedrv/drv/homeapp/apputil"
+	"shanhu.io/homedrv/drv/homeapp/redis"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces/settings"
 )

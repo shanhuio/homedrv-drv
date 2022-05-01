@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"time"
 
-	"shanhu.io/homedrv/burmilla"
+	"shanhu.io/homedrv/drv/burmilla"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/bosinit"
 )

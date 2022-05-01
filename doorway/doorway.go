@@ -23,7 +23,7 @@ import (
 	"net/http"
 
 	"shanhu.io/aries"
-	fabdial "shanhu.io/homedrv/fabricsdial"
+	fabdial "shanhu.io/homedrv/drv/fabricsdial"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/netutil"
 	"shanhu.io/virgo/counting"

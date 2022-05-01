@@ -18,8 +18,8 @@ package jarvis
 import (
 	"net/url"
 
-	"shanhu.io/homedrv/burmilla"
-	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/drv/burmilla"
+	"shanhu.io/homedrv/drv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 )
 

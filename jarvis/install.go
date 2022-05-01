@@ -20,9 +20,9 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/homedrv/drvapi"
-	"shanhu.io/homedrv/homeapp"
-	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/drv/drvapi"
+	"shanhu.io/homedrv/drv/homeapp"
+	"shanhu.io/homedrv/drv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/jsonx"
 	"shanhu.io/pisces/settings"

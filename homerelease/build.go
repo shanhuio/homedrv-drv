@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"time"
 
-	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/jsonutil"
 	"shanhu.io/misc/jsonx"

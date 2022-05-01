@@ -20,8 +20,8 @@ import (
 	"log"
 
 	"shanhu.io/aries"
-	drvcfg "shanhu.io/homedrv/drvconfig"
-	"shanhu.io/homedrv/homeboot"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
+	"shanhu.io/homedrv/drv/homeboot"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/osutil"
 

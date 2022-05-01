@@ -21,9 +21,9 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/homedrv/drvapi"
-	"shanhu.io/homedrv/homeapp/apputil"
-	"shanhu.io/homedrv/homeboot"
+	"shanhu.io/homedrv/drv/drvapi"
+	"shanhu.io/homedrv/drv/homeapp/apputil"
+	"shanhu.io/homedrv/drv/homeboot"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 )

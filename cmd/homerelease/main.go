@@ -16,7 +16,7 @@
 package main
 
 import (
-	"shanhu.io/homedrv/homerelease"
+	"shanhu.io/homedrv/drv/homerelease"
 )
 
 func main() { homerelease.Main() }

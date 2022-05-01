@@ -16,7 +16,7 @@
 package nextcloud
 
 import (
-	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/drv/homeapp"
 )
 
 // Fix fixes the nextcloud app.

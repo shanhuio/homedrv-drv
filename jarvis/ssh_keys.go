@@ -19,7 +19,7 @@ import (
 	"strings"
 
 	"shanhu.io/aries"
-	"shanhu.io/homedrv/burmilla"
+	"shanhu.io/homedrv/drv/burmilla"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/tarutil"
 	"shanhu.io/virgo/bosinit"

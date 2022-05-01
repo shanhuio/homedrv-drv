@@ -20,7 +20,7 @@ import (
 	"net/url"
 
 	"shanhu.io/aries"
-	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/drv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 )
 

@@ -18,7 +18,7 @@ package jarvis
 import (
 	"log"
 
-	"shanhu.io/homedrv/homeapp/nextcloud"
+	"shanhu.io/homedrv/drv/homeapp/nextcloud"
 	"shanhu.io/misc/errcode"
 )
 

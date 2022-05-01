@@ -1,4 +1,4 @@
-module shanhu.io/homedrv
+module shanhu.io/homedrv/drv
 
 go 1.18
 

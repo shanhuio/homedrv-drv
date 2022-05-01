@@ -20,7 +20,7 @@ import (
 	"sort"
 	"strings"
 
-	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/nameutil"

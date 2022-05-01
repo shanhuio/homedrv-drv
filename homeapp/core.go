@@ -16,7 +16,7 @@
 package homeapp
 
 import (
-	drvcfg "shanhu.io/homedrv/drvconfig"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/pisces/settings"
 	"shanhu.io/virgo/dock"
 )

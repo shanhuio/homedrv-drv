@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"shanhu.io/aries/https/httpstest"
-	fabdial "shanhu.io/homedrv/fabricsdial"
+	fabdial "shanhu.io/homedrv/drv/fabricsdial"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/counting"
 )

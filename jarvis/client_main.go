@@ -21,7 +21,7 @@ import (
 	"io"
 	"strings"
 
-	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/flagutil"
 	"shanhu.io/misc/httputil"

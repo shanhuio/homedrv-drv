@@ -21,9 +21,9 @@ import (
 
 	"shanhu.io/aries"
 	"shanhu.io/aries/oauth2"
-	"shanhu.io/homedrv/drvapi"
-	drvcfg "shanhu.io/homedrv/drvconfig"
-	"shanhu.io/homedrv/homeapp"
+	"shanhu.io/homedrv/drv/drvapi"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
+	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/osutil"
 	"shanhu.io/misc/signer"

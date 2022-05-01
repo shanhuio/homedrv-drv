@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"reflect"
 
-	"shanhu.io/homedrv/drvapi"
+	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/strutil"
 )

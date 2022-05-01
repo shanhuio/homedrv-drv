@@ -16,7 +16,7 @@
 package jarvis
 
 import (
-	drvcfg "shanhu.io/homedrv/drvconfig"
+	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/misc/jsonx"
 	"shanhu.io/misc/osutil"
 )
