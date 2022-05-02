@@ -77,7 +77,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		"toolbox",
 	} {
 		log.Printf("checksuming %s", d)
-		tgz := filePath(b.out, repo, d+".tgz")
+		tgz := filePath(b.out, repo, d+".tar.gz")
 		img, err := sumDockerTgz(tgz)
 		if err != nil {
 			return errcode.Annotatef(err, "checksum for %q", d)
