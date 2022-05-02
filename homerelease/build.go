@@ -66,6 +66,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		"nextcloud20",
 		"nextcloud21",
 		"nextcloud22",
+		"nextcloud23",
 		"postgres12",
 		"redis",
 
@@ -95,7 +96,8 @@ func (b *builder) buildRelease(name, typ string) error {
 	}{{
 		name: "nextcloud",
 		images: []string{
-			"nextcloud20", "nextcloud21", "nextcloud22",
+			"nextcloud20", "nextcloud21",
+			"nextcloud22", "nextcloud23",
 		},
 		steps: &arts.Nextclouds,
 		final: &arts.Nextcloud,
