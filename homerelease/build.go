@@ -33,6 +33,11 @@ type builder struct {
 	out string
 }
 
+// dockerSum from caco3 docker build/pull output.
+type dockerSum struct {
+	Origin string `json:",omitempty"`
+}
+
 func (b *builder) buildRelease(name, typ string) error {
 	switch typ {
 	case "":
@@ -43,7 +48,7 @@ func (b *builder) buildRelease(name, typ string) error {
 	}
 
 	arts := new(drvapi.Artifacts)
-	const repo = "docker/homedrv"
+	const repo = "shanhu.io/homedrv/dockers"
 
 	log.Println("reading os info")
 	osInfoFile := filePath(b.src, repo, "os.jsonx")
@@ -52,13 +57,6 @@ func (b *builder) buildRelease(name, typ string) error {
 		return errcode.Annotate(err, "read os info")
 	}
 	arts.OS = osInfo.Version
-
-	log.Println("reading docker pulls")
-	pull := make(map[string]string)
-	pullFile := filePath(b.src, "docker/homedrv/pull.jsonx")
-	if err := jsonx.ReadFile(pullFile, &pull); err != nil {
-		return errcode.Annotate(err, "pull tag info")
-	}
 
 	images := make(map[string]*dockerImage)
 	imageObjs := make(map[string]string)
@@ -70,7 +68,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		"postgres12",
 		"redis",
 
-		"jarvis",
+		"core",
 		"doorway",
 		"ncfront",
 		"homeboot",
@@ -114,12 +112,22 @@ func (b *builder) buildRelease(name, typ string) error {
 		final := ""
 		for _, img := range entry.images {
 			id := images[img]
-			src := pull[img]
-			_, tag := dock.ParseImageTag(src)
+			sumFile := filePath(b.out, repo, img+".dockersum")
+			sum := new(dockerSum)
+			if err := jsonutil.ReadFile(sumFile, sum); err != nil {
+				return errcode.Annotatef(
+					err, "read sum file %q", sumFile,
+				)
+			}
+			if sum.Origin == "" {
+				return errcode.InvalidArgf("origin missing for %q", img)
+			}
+
+			_, tag := dock.ParseImageTag(sum.Origin)
 			major, err := semver.Major(tag)
 			if err != nil {
 				return errcode.Annotatef(
-					err, "parse tag of %s: %q", img, src,
+					err, "parse tag of %s: %q", img, sum.Origin,
 				)
 			}
 
@@ -127,7 +135,7 @@ func (b *builder) buildRelease(name, typ string) error {
 				step := &drvapi.StepVersion{
 					Major:    major,
 					Version:  tag,
-					Source:   src,
+					Source:   sum.Origin,
 					Image:    id.id,
 					ImageSum: id.sum,
 				}
@@ -146,7 +154,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		name string
 		id   *string
 	}{
-		{name: "jarvis", id: &arts.Jarvis},
+		{name: "core", id: &arts.Jarvis},
 		{name: "doorway", id: &arts.Doorway},
 		{name: "ncfront", id: &arts.NCFront},
 		{name: "homeboot", id: &arts.HomeBoot},
@@ -173,7 +181,7 @@ func (b *builder) buildRelease(name, typ string) error {
 		Arch:      runtime.GOARCH,
 		Artifacts: arts,
 	}
-	relOut := filePath(b.out, repo, "/release.json")
+	relOut := filePath(b.out, repo, "release.json")
 	if err := jsonutil.WriteFileReadable(relOut, rel); err != nil {
 		return errcode.Annotate(err, "write out release")
 	}
