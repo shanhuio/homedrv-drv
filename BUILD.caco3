@@ -11,6 +11,7 @@ docker_run {
         "go", "install",
         "-ldflags=-s -w", "-trimpath",
         "./cmd/homeboot",
+        "./cmd/homerelease",
         "./daemon/jarvisd",
         "./daemon/doorwayd",
         "./daemon/ncfrontd",
@@ -18,6 +19,7 @@ docker_run {
     ],
     Output: {
         "cmd/homeboot": "/go/bin/homeboot",
+        "cmd/homerelease": "/go/bin/homerelease",
         "daemon/jarvisd": "/go/bin/jarvisd",
         "daemon/doorwayd": "/go/bin/doorwayd",
         "daemon/ncfrontd": "/go/bin/ncfrontd",
