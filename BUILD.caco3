@@ -1,0 +1,34 @@
+docker_run {
+    Name: "bins",
+    Image: "/shanhu.io/lib/dockers/forge",
+    MountWorkspace: "/work",
+    WorkDir: "/work/src/shanhu.io/homedrv/drv",
+    Envs: [
+        "GOPRIVATE=shanhu.io",
+        "GOPATH=/go",
+    ],
+    Command: [
+        "go", "install",
+        "-ldflags=-s -w", "-trimpath",
+        "./cmd/homeboot",
+        "./daemon/jarvisd",
+        "./daemon/doorwayd",
+        "./daemon/ncfrontd",
+        "./daemon/toolboxd",
+    ],
+    Output: {
+        "cmd/homeboot": "/go/bin/homeboot",
+        "daemon/jarvisd": "/go/bin/jarvisd",
+        "daemon/doorwayd": "/go/bin/doorwayd",
+        "daemon/ncfrontd": "/go/bin/ncfrontd",
+        "daemon/toolboxd": "/go/bin/toolboxd",
+    },
+    Deps: [
+        "all_files",
+    ],
+}
+
+file_set {
+    Name: "all_files",
+    Select: ["**"],
+}
