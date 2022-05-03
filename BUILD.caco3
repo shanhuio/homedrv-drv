@@ -9,7 +9,9 @@ docker_run {
     ],
     Command: [
         "go", "install",
-        "-ldflags=-s -w", "-trimpath",
+        "-ldflags=-s -w",
+        "-trimpath",
+        "-buildvcs=false",
         "./cmd/homeboot",
         "./cmd/homerelease",
         "./daemon/jarvisd",
