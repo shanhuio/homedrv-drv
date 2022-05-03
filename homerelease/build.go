@@ -33,17 +33,9 @@ type builder struct {
 	out string
 }
 
-func (b *builder) buildRelease(name, typ string) error {
-	switch typ {
-	case "":
-		typ = "dev"
-	case "dev", "prod":
-	default:
-		return errcode.InvalidArgf("type must be 'dev' or 'prod'")
-	}
-
+func (b *builder) buildRelease(name string) error {
 	arts := new(drvapi.Artifacts)
-	const repo = "docker/homedrv"
+	const repo = "shanhu.io/homedrv/dockers"
 
 	log.Println("reading os info")
 	osInfoFile := filePath(b.src, repo, "os.jsonx")
@@ -169,7 +161,6 @@ func (b *builder) buildRelease(name, typ string) error {
 	rel := &drvapi.Release{
 		Name:      name,
 		Time:      time.Now(),
-		Type:      typ,
 		Arch:      runtime.GOARCH,
 		Artifacts: arts,
 	}
@@ -192,7 +183,6 @@ func cmdBuild(args []string) error {
 	src := flags.String("src", "src", "source directory")
 	out := flags.String("out", "out", "output directory")
 	name := flags.String("name", "", "release name")
-	typ := flags.String("type", "", "release type")
 	args = flags.ParseArgs(args)
 
 	b := &builder{
@@ -200,5 +190,5 @@ func cmdBuild(args []string) error {
 		out: *out,
 	}
 
-	return b.buildRelease(*name, *typ)
+	return b.buildRelease(*name)
 }
