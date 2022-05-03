@@ -23,8 +23,11 @@ const (
 	KeyDomains     = "nextcloud.domains"
 	KeyDataMount   = "nextcloud.data-mount"
 	KeyExtraMounts = "nextcloud.extra-mounts"
-	Key18Fixed     = "nextcloud-18-fixed"
-	Key19Fixed     = "nextcloud-19-fixed"
-	Key20Fixed     = "nextcloud-20-fixed"
-	Key21Fixed     = "nextcloud-21-fixed"
+
+	Key18Fixed = "nextcloud-18-fixed"
+	Key19Fixed = "nextcloud-19-fixed"
+	Key20Fixed = "nextcloud-20-fixed"
+	Key21Fixed = "nextcloud-21-fixed"
+	Key22Fixed = "nextcloud-22-fixed"
+	Key23Fixed = "nextcloud-23-fixed"
 )
