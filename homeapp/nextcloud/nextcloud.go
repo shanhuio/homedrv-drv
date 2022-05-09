@@ -192,7 +192,7 @@ func (n *Nextcloud) upgrade1(img, ver string, c *config) error {
 	if err := n.startWithImage(img, c); err != nil {
 		return errcode.Annotate(err, "start new nextcloud")
 	}
-	if err := waitReady(cont, 5*time.Minute, ver); err != nil {
+	if err := waitReady(cont, 30*time.Minute, ver); err != nil {
 		return errcode.Annotate(err, "wait for install complete")
 	}
 	if err := setRedisPassword(cont, c.redisPassword); err != nil {
