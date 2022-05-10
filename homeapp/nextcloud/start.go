@@ -107,6 +107,8 @@ func createCont(
 
 		"NEXTCLOUD_ADMIN_USER":     "admin",
 		"NEXTCLOUD_ADMIN_PASSWORD": config.adminPassword,
+
+		"PHP_MEMORY_LIMIT": "2G",
 	}
 	if len(config.domains) > 0 {
 		domains := strings.Join(config.domains, " ")
