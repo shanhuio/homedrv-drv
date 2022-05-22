@@ -16,7 +16,6 @@
 package nextcloud
 
 import (
-	"io"
 	"log"
 	"time"
 
@@ -26,6 +25,7 @@ import (
 	"shanhu.io/homedrv/drv/homeapp/postgres"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/semver"
+	"shanhu.io/pisces/settings"
 	"shanhu.io/virgo/dock"
 )
 
@@ -46,79 +46,14 @@ func (n *Nextcloud) startWithImage(image string, config *config) error {
 	return start(n.core, image, config)
 }
 
-func (n *Nextcloud) fix() error {
-	version, err := readTrueVersion(n.cont())
-	if err != nil {
-		return errcode.Annotate(err, "get version")
-	}
-	major, err := semver.Major(version)
-	if err != nil {
-		return errcode.Add(errcode.Internal, err)
-	}
-	return n.fixVersion(major)
+func (n *Nextcloud) fix() error { return fix(n.cont(), n.core.Settings()) }
+
+func (n *Nextcloud) versionHint() (string, error) {
+	return settings.String(n.core.Settings(), KeyVersionHint)
 }
 
-func (n *Nextcloud) fixVersion(major int) error {
-	cont := n.cont()
-
-	if major >= 21 {
-		// For version 21+, this needs to be executed every time a new
-		// docker is installed.
-		if err := aptUpdate(cont, io.Discard); err != nil {
-			return errcode.Annotate(err, "apt update for nc21")
-		}
-
-		pkgs := []string{
-			"libmagickcore-6.q16-6-extra",
-			"smbclient",
-			"libsmbclient-dev",
-		}
-		if err := aptInstall(cont, pkgs, io.Discard); err != nil {
-			return errcode.Annotate(err, "install additional packages")
-		}
-
-		if err := enableSMB(cont, io.Discard); err != nil {
-			return errcode.Annotate(err, "enable SMB")
-		}
-	}
-
-	if err := setCronMode(cont); err != nil {
-		return errcode.Annotate(err, "set cron mode")
-	}
-
-	// Might be also needed in minor upgrades.
-	const addIndexCmd = "db:add-missing-indices"
-	if _, err := occOutput(cont, []string{addIndexCmd, "-n"}); err != nil {
-		return errcode.Annotate(err, addIndexCmd)
-	}
-
-	k := fixKey(major)
-	if k == "" {
-		return nil
-	}
-	settings := n.core.Settings()
-	ok, err := settings.Has(k)
-	if err != nil {
-		return errcode.Annotatef(err, "check fixed flag v%d", major)
-	}
-	if ok {
-		return nil
-	}
-
-	for _, cmd := range []string{
-		"db:convert-filecache-bigint",
-		"db:add-missing-columns",
-		"db:add-missing-primary-keys",
-	} {
-		if _, err := occOutput(cont, []string{cmd, "-n"}); err != nil {
-			return errcode.Annotate(err, cmd)
-		}
-	}
-
-	if err := settings.Set(k, true); err != nil {
-		return errcode.Annotatef(err, "set fixed flag v%d", major)
-	}
-	return nil
+func (n *Nextcloud) setVersionHint(v string) error {
+	return n.core.Settings().Set(KeyVersionHint, v)
 }
 
 func (n *Nextcloud) upgrade(
@@ -129,11 +64,19 @@ func (n *Nextcloud) upgrade(
 		return errcode.InvalidArgf("nextcloud ladder missing")
 	}
 
-	var defVersion string
+	var verHint string
 	if from != nil {
-		defVersion = from.SemVersion
+		verHint = from.SemVersion
 	}
-	version, err := readVersion(n.cont(), defVersion)
+	if hint, err := n.versionHint(); err != nil {
+		if !errcode.IsNotFound(err) {
+			return errcode.Annotatef(err, "read version hint")
+		}
+	} else {
+		verHint = hint
+	}
+
+	version, err := readVersion(n.cont(), verHint)
 	if err != nil {
 		return errcode.Annotatef(err, "read version")
 	}
@@ -171,6 +114,10 @@ func (n *Nextcloud) upgrade(
 		version = v.Version
 		curMajor++
 		last = v.Image
+
+		if err := n.setVersionHint(version); err != nil {
+			return errcode.Annotatef(err, "set version hint to %q", version)
+		}
 		log.Printf("upgraded to %q", version)
 	}
 	if img != last {
@@ -302,3 +249,6 @@ func (n *Nextcloud) install(image string, config *config) error {
 
 // Cron runs the nextcloud cron job
 func (n *Nextcloud) Cron() error { return cron(n.cont()) }
+
+// Fix fixes the nextcloud app.
+func Fix(c homeapp.Core) error { return New(c).fix() }

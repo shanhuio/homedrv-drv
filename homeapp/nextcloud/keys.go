@@ -23,6 +23,7 @@ const (
 	KeyDomains     = "nextcloud.domains"
 	KeyDataMount   = "nextcloud.data-mount"
 	KeyExtraMounts = "nextcloud.extra-mounts"
+	KeyVersionHint = "nextcloud.version-hint" // version hint
 
 	Key18Fixed = "nextcloud-18-fixed"
 	Key19Fixed = "nextcloud-19-fixed"
