@@ -91,6 +91,10 @@ func (s *adminTasks) apiNextcloudCron(c *aries.C) error {
 	return d.tasks.run("manual nextcloud cron", t)
 }
 
+func (s *adminTasks) apiSetNextcloudVersionHint(c *aries.C, v string) error {
+	return s.server.drive.settings.Set(nextcloud.KeyVersionHint, v)
+}
+
 func adminTasksAPI(s *server) *aries.Router {
 	tasks := &adminTasks{server: s}
 
@@ -103,6 +107,7 @@ func adminTasksAPI(s *server) *aries.Router {
 	r.Call("reinstall-app", tasks.apiReinstallApp)
 	r.Call("set-nextcloud-datamnt", tasks.apiSetNextcloudDataMount)
 	r.Call("set-nextcloud-extramnt", tasks.apiSetNextcloudExtraMounts)
+	r.Call("set-nextcloud-version-hint", tasks.apiSetNextcloudVersionHint)
 	r.Call("nextcloud-cron", tasks.apiNextcloudCron)
 
 	return r

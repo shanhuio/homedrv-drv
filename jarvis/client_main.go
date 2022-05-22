@@ -56,6 +56,10 @@ func clientCommands() *subcmd.List {
 		"set-nextcloud-extramnt", "sets nextcloud extra mount points",
 		cmdSetNextcloudExtraMount,
 	)
+	c.Add(
+		"set-nextcloud-version-hint", "sets the nextcloud version hint",
+		cmdSetNextcloudVersionHint,
+	)
 	c.Add("nextcloud-cron", "runs nextcloud cron job", cmdNextcloudCron)
 
 	return c
@@ -146,6 +150,17 @@ func cmdSetNextcloudDataMount(args []string) error {
 	}
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/admin/set-nextcloud-datamnt", args[0], nil)
+}
+
+func cmdSetNextcloudVersionHint(args []string) error {
+	flags := cmdFlags.New()
+	sock := declareJarvisSockFlag(flags)
+	args = flags.ParseArgs(args)
+	if len(args) != 1 {
+		return errcode.InvalidArgf("expect one arg")
+	}
+	c := httputil.NewUnixClient(*sock)
+	return c.Call("/api/admin/set-nextcloud-version-hint", args[0], nil)
 }
 
 func cmdSetNextcloudExtraMount(args []string) error {

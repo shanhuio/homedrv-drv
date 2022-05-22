@@ -72,7 +72,8 @@ func (n *Nextcloud) upgrade(
 		if !errcode.IsNotFound(err) {
 			return errcode.Annotatef(err, "read version hint")
 		}
-	} else {
+	} else if hint != "" {
+		log.Printf("nextcloud version hint: %s", hint)
 		verHint = hint
 	}
 
