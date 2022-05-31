@@ -16,6 +16,7 @@
 package jarvis
 
 import (
+	"crypto/rand"
 	"log"
 	"time"
 
@@ -24,6 +25,10 @@ import (
 	"shanhu.io/misc/errcode"
 	"shanhu.io/pisces"
 )
+
+func hashPassword(password string) (*argon2.Password, error) {
+	return argon2.NewPassword([]byte(password), rand.Reader)
+}
 
 type users struct {
 	t *pisces.KV
@@ -40,7 +45,7 @@ func (b *users) setOnChangePassword(f func(user string)) {
 }
 
 func (b *users) create(user, password string) error {
-	hashed, err := argon2.NewPassword([]byte(password))
+	hashed, err := hashPassword(password)
 	if err != nil {
 		return errcode.Annotate(err, "hash password")
 	}
@@ -70,7 +75,7 @@ func (b *users) mutate(user string, f func(info *userInfo) error) error {
 }
 
 func (b *users) setPassword(user, password string, old *string) error {
-	hashed, err := argon2.NewPassword([]byte(password))
+	hashed, err := hashPassword(password)
 	if err != nil {
 		return errcode.Annotate(err, "hash password")
 	}
