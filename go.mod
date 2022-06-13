@@ -10,7 +10,7 @@ require (
 	modernc.org/sqlite v1.17.3
 	shanhu.io/aries v0.0.0-20220611060334-6329a1fa2163
 	shanhu.io/misc v0.0.0-20220611060315-8859eeda5904
-	shanhu.io/pisces v0.0.0-20220611060344-f40cf3b08319
+	shanhu.io/pisces v0.0.0-20220613063451-0b25eb4cba47
 	shanhu.io/virgo v0.0.0-20220611060349-319a7a841fa0
 )
 
