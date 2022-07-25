@@ -31,4 +31,5 @@ const (
 	Key21Fixed = "nextcloud-21-fixed"
 	Key22Fixed = "nextcloud-22-fixed"
 	Key23Fixed = "nextcloud-23-fixed"
+	Key24Fixed = "nextcloud-24-fixed"
 )
