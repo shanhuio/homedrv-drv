@@ -8,10 +8,10 @@ require (
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
 	modernc.org/sqlite v1.18.1
-	shanhu.io/aries v0.0.0-20220818060448-8d71f4aa03c2
-	shanhu.io/misc v0.0.0-20220818060438-f077069862f3
-	shanhu.io/pisces v0.0.0-20220818060457-230098d667bd
-	shanhu.io/virgo v0.0.0-20220818060501-1a90ff44e39e
+	shanhu.io/aries v0.0.0-20220820222509-df953ba5ed1b
+	shanhu.io/misc v0.0.0-20220820222500-86b210f46c7e
+	shanhu.io/pisces v0.0.0-20220820222525-3c5276b8cd39
+	shanhu.io/virgo v0.0.0-20220820222533-460a64f7ce8a
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
 	golang.org/x/oauth2 v0.0.0-20220808172628-8227340efae7 // indirect
-	golang.org/x/sys v0.0.0-20220817070843-5a390386f1f2 // indirect
+	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
