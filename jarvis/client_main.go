@@ -62,6 +62,13 @@ func clientCommands() *subcmd.List {
 	)
 	c.Add("nextcloud-cron", "runs nextcloud cron job", cmdNextcloudCron)
 
+	// OS upgrade
+	// Important for OS upgrade; do not remove this.
+	c.Add(
+		"update-grub-config", "upgrades grub config for os",
+		cmdUpdateGrubConfig,
+	)
+
 	return c
 }
 
