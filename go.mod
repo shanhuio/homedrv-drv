@@ -6,12 +6,12 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/lib/pq v1.10.6
 	github.com/pquerna/otp v1.3.0
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
+	golang.org/x/crypto v0.0.0-20220824171710-5757bc0c5503
 	modernc.org/sqlite v1.18.1
-	shanhu.io/aries v0.0.0-20220820222509-df953ba5ed1b
-	shanhu.io/misc v0.0.0-20220820222500-86b210f46c7e
-	shanhu.io/pisces v0.0.0-20220820222525-3c5276b8cd39
-	shanhu.io/virgo v0.0.0-20220820222533-460a64f7ce8a
+	shanhu.io/aries v0.0.0-20220825034839-87bf396cedd8
+	shanhu.io/misc v0.0.0-20220825034832-d5eacdfeb2c4
+	shanhu.io/pisces v0.0.0-20220825034844-820b65f34a92
+	shanhu.io/virgo v0.0.0-20220825034848-c72e40dc7b7a
 )
 
 require (
@@ -24,9 +24,9 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
-	golang.org/x/oauth2 v0.0.0-20220808172628-8227340efae7 // indirect
-	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
+	golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c // indirect
+	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
+	golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24 // indirect
 	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
@@ -34,11 +34,11 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
-	modernc.org/cc/v3 v3.36.1 // indirect
+	modernc.org/cc/v3 v3.36.2 // indirect
 	modernc.org/ccgo/v3 v3.16.8 // indirect
-	modernc.org/libc v1.16.19 // indirect
-	modernc.org/mathutil v1.4.1 // indirect
-	modernc.org/memory v1.1.1 // indirect
+	modernc.org/libc v1.17.0 // indirect
+	modernc.org/mathutil v1.5.0 // indirect
+	modernc.org/memory v1.2.0 // indirect
 	modernc.org/opt v0.1.3 // indirect
 	modernc.org/strutil v1.1.2 // indirect
 	modernc.org/token v1.0.0 // indirect
