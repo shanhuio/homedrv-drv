@@ -50,28 +50,20 @@ type fabricsConfig struct {
 	*FabricsConfig
 	identity Identity
 
-	dialTransport     http.RoundTripper
-	registerTransport http.RoundTripper
+	dialTransport http.RoundTripper
 
 	// counters track the number of bytes communicated over the tunnel.
 	counters *counting.ConnCounters
 }
 
-type fabricsClient struct {
-	config *fabricsConfig // Dialer from configuration.
-}
-
-func newFabricsClient(config *fabricsConfig) *fabricsClient {
-	return &fabricsClient{config: config}
-}
-
-func (f *fabricsClient) dialer(ctx C) (*fabdial.Dialer, error) {
-	config := f.config
+func makeFabricsDialer(ctx C, config *fabricsConfig) (
+	*fabdial.Dialer, error,
+) {
 	if config.dialer != nil {
 		return config.dialer, nil
 	}
 
-	key, err := f.config.identity.Load(ctx)
+	key, err := config.identity.Load(ctx)
 	if err != nil {
 		return nil, errcode.Annotate(err, "read fabrics key")
 	}
@@ -80,7 +72,7 @@ func (f *fabricsClient) dialer(ctx C) (*fabdial.Dialer, error) {
 		Host:      config.host(),
 		User:      config.User,
 		Key:       key,
-		Transport: f.config.dialTransport,
+		Transport: config.dialTransport,
 	}
 
 	if config.InsecurelyDialTo != "" {
@@ -89,8 +81,8 @@ func (f *fabricsClient) dialer(ctx C) (*fabdial.Dialer, error) {
 	return dialer, nil
 }
 
-func listenFabrics(ctx C, c *fabricsClient) (*tagListener, error) {
-	d, err := c.dialer(ctx)
+func listenFabrics(ctx C, config *fabricsConfig) (*tagListener, error) {
+	d, err := makeFabricsDialer(ctx, config)
 	if err != nil {
 		return nil, err
 	}
@@ -107,6 +99,6 @@ func listenFabrics(ctx C, c *fabricsClient) (*tagListener, error) {
 	if err != nil {
 		return nil, errcode.Annotatef(err, "dial fabrics")
 	}
-	wrap := counting.WrapListener(lis, c.config.counters)
+	wrap := counting.WrapListener(lis, config.counters)
 	return newTagListener(wrap, tagFabrics), nil
 }

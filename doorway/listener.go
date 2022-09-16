@@ -71,9 +71,8 @@ func listen(ctx C, c *listenConfig) (tagConnListener, error) {
 		return lis, nil
 	}
 
-	fab := newFabricsClient(c.fabrics)
 	if c.local == nil {
-		lis, err := listenFabrics(ctx, fab)
+		lis, err := listenFabrics(ctx, c.fabrics)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +84,7 @@ func listen(ctx C, c *listenConfig) (tagConnListener, error) {
 	if err != nil {
 		return nil, err
 	}
-	fabLis, err := listenFabrics(ctx, fab)
+	fabLis, err := listenFabrics(ctx, c.fabrics)
 	if err != nil {
 		local.Close()
 		return nil, errcode.Annotate(err, "listen fabrics")
