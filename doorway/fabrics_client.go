@@ -65,13 +65,18 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 		return nil, errcode.Annotate(err, "read fabrics key")
 	}
 
-	dialer := &fabdial.Dialer{
+	router := &fabdial.SimpleRouter{
 		Host: config.host(),
 		User: config.User,
 		Key:  key,
 	}
+	dialer := &fabdial.Dialer{Router: router}
+
 	if config.InsecurelyDialTo != "" {
-		dialer.Transport = httpstest.InsecureSink(config.InsecurelyDialTo)
+		tr := httpstest.InsecureSink(config.InsecurelyDialTo)
+
+		router.Transport = tr
+		dialer.WebSocketDialer = fabdial.NewWebSocketDialer(tr)
 	}
 	return dialer, nil
 }
