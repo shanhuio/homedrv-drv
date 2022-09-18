@@ -17,7 +17,7 @@ package doorway
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 )
 
 // Identity provides an identity for dialing fabrics.
@@ -36,7 +36,7 @@ func newStaticIdentity(bs []byte) *staticIdentity {
 }
 
 func newFileIdentity(f string) (*staticIdentity, error) {
-	bs, err := ioutil.ReadFile(f)
+	bs, err := os.ReadFile(f)
 	if err != nil {
 		return nil, err
 	}
