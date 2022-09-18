@@ -11,7 +11,7 @@ require (
 	shanhu.io/aries v0.0.0-20220917234528-c8305925f07f
 	shanhu.io/misc v0.0.0-20220916024549-8aef592566a7
 	shanhu.io/pisces v0.0.0-20220917234542-907ed0b5e561
-	shanhu.io/virgo v0.0.0-20220917234546-d905eb72a7ea
+	shanhu.io/virgo v0.0.0-20220918054220-7c55a5a12d07
 )
 
 require (

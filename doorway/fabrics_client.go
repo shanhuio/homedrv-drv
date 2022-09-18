@@ -65,7 +65,7 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 		return nil, errcode.Annotate(err, "read fabrics key")
 	}
 
-	router := &fabdial.SimpleRouter{
+	router := &SimpleRouter{
 		Host: config.host(),
 		User: config.User,
 		Key:  key,
@@ -74,7 +74,6 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 
 	if config.InsecurelyDialTo != "" {
 		tr := httpstest.InsecureSink(config.InsecurelyDialTo)
-
 		router.Transport = tr
 		dialer.WebSocketDialer = fabdial.NewWebSocketDialer(tr)
 	}

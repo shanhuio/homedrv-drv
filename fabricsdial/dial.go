@@ -18,58 +18,14 @@ package fabricsdial
 import (
 	"context"
 	"net/http"
-	"net/url"
 
 	"github.com/gorilla/websocket"
-	"shanhu.io/aries/creds"
-	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/sniproxy"
 )
 
-// Router provides a host to connect with a token.
-type Router interface {
-	Route(ctx context.Context) (host string, token string, err error)
-}
-
-// SimpleRouter provides a simple endpoint based router. It directly contacts
-// the fabrics node for a token.
-type SimpleRouter struct {
-	Host    string // Host to route to.
-	User    string
-	Key     []byte
-	KeyFile string
-
-	Transport http.RoundTripper
-}
-
-// Route returns the host and the token.
-func (r *SimpleRouter) Route(ctx context.Context) (string, string, error) {
-	host := r.Host
-	ep := &creds.Endpoint{
-		Server:   (&url.URL{Scheme: "https", Host: host}).String(),
-		User:     r.User,
-		Key:      r.Key,
-		PemFile:  r.KeyFile,
-		Homeless: true,
-		NoTTY:    true,
-	}
-	if r.Transport != nil {
-		ep.Transport = r.Transport
-	}
-	login, err := creds.NewLogin(ep)
-	if err != nil {
-		return "", "", errcode.Annotate(err, "create login")
-	}
-	token, err := login.Token()
-	if err != nil {
-		return "", "", errcode.Annotate(err, "login")
-	}
-	return host, token, nil
-}
-
 // Dialer dials to a HomeDrive Fabrics service.
 type Dialer struct {
-	Router          Router
+	Router          sniproxy.Router
 	WebSocketDialer *websocket.Dialer
 	TunnelOptions   *sniproxy.Options
 }
@@ -83,33 +39,22 @@ func NewWebSocketDialer(tr *http.Transport) *websocket.Dialer {
 	}
 }
 
+var defaultTunnelOptions = &sniproxy.Options{
+	Siding:       true,
+	DialWithAddr: true,
+}
+
 // Dial connects to a HomeDrive Fabrics service, and returns
 // an SNI-proxy endpoint.
 func (d *Dialer) Dial(ctx context.Context) (*sniproxy.Endpoint, error) {
-	host, tok, err := d.Router.Route(ctx)
-	if err != nil {
-		return nil, errcode.Annotate(err, "pick server")
-	}
-
 	tunnOpts := d.TunnelOptions
 	if tunnOpts == nil {
-		tunnOpts = &sniproxy.Options{
-			Siding:       true,
-			DialWithAddr: true,
-		}
+		tunnOpts = defaultTunnelOptions
 	}
-
 	opt := &sniproxy.DialOption{
-		Token:         tok,
+		Path:          "/endpoint",
 		TunnelOptions: tunnOpts,
 		Dialer:        d.WebSocketDialer,
 	}
-
-	proxyURL := &url.URL{
-		Scheme: "wss",
-		Host:   host,
-		Path:   "/endpoint",
-	}
-
-	return sniproxy.Dial(ctx, proxyURL, opt)
+	return sniproxy.Dial(ctx, d.Router, opt)
 }
