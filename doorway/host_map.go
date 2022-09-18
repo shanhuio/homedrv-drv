@@ -16,11 +16,8 @@
 package doorway
 
 import (
-	"context"
 	"strings"
 	"sync"
-
-	"shanhu.io/misc/errcode"
 )
 
 // HomeHost is the destination mapping that maps to doorway's internal
@@ -71,42 +68,6 @@ func newMemHostMap(m map[string]string) *memHostMap {
 	}
 
 	return &memHostMap{m: entries}
-}
-
-func (m *memHostMap) save(ctx context.Context) error { return nil }
-
-func (m *memHostMap) add(ctx context.Context, from, to string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.m[from] = &hostEntry{
-		typ:  hostProxy,
-		host: to,
-	}
-
-	return m.save(ctx)
-}
-
-func (m *memHostMap) remove(ctx context.Context, from string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	if _, ok := m.m[from]; !ok {
-		return errcode.NotFoundf("host %q not found", from)
-	}
-	delete(m.m, from)
-	return m.save(ctx)
-}
-
-func (m *memHostMap) list() map[string]string {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-
-	cp := make(map[string]string)
-	for from, to := range m.m {
-		if to.typ == hostProxy {
-			cp[from] = to.host
-		}
-	}
-	return cp
 }
 
 func (m *memHostMap) mapHost(from string) *hostEntry {
