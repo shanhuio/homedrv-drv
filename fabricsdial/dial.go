@@ -17,7 +17,6 @@ package fabricsdial
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"net/url"
 
@@ -38,7 +37,7 @@ type Dialer struct {
 
 	TunnelOptions *sniproxy.Options
 
-	Transport http.RoundTripper
+	Transport *http.Transport
 }
 
 func (d *Dialer) hostToken(ctx context.Context) (string, string, error) {
@@ -105,11 +104,7 @@ func (d *Dialer) Dial(ctx context.Context) (*sniproxy.Endpoint, error) {
 		Path:   "/endpoint",
 	}
 
-	if d.Transport != nil {
-		tr, ok := d.Transport.(*http.Transport)
-		if !ok {
-			return nil, errors.New("transport is not an http transport")
-		}
+	if tr := d.Transport; tr != nil {
 		opt.Dialer = &websocket.Dialer{
 			NetDialContext:  tr.DialContext,
 			TLSClientConfig: tr.TLSClientConfig,

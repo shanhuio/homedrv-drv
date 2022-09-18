@@ -18,7 +18,6 @@ package doorway
 import (
 	"log"
 	"net"
-	"net/http"
 
 	"shanhu.io/aries/https/httpstest"
 	fabdial "shanhu.io/homedrv/drv/fabricsdial"
@@ -50,8 +49,6 @@ type fabricsConfig struct {
 	*FabricsConfig
 	identity Identity
 
-	dialTransport http.RoundTripper
-
 	// counters track the number of bytes communicated over the tunnel.
 	counters *counting.ConnCounters
 }
@@ -69,12 +66,10 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 	}
 
 	dialer := &fabdial.Dialer{
-		Host:      config.host(),
-		User:      config.User,
-		Key:       key,
-		Transport: config.dialTransport,
+		Host: config.host(),
+		User: config.User,
+		Key:  key,
 	}
-
 	if config.InsecurelyDialTo != "" {
 		dialer.Transport = httpstest.InsecureSink(config.InsecurelyDialTo)
 	}
