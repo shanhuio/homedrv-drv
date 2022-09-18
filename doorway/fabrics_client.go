@@ -65,7 +65,7 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 		return nil, errcode.Annotate(err, "read fabrics key")
 	}
 
-	router := &SimpleRouter{
+	router := &fabdial.SimpleRouter{
 		Host: config.host(),
 		User: config.User,
 		Key:  key,
