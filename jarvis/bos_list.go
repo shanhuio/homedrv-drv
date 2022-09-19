@@ -50,7 +50,7 @@ func parseBosListEntry(line string) (*bosListEntry, error) {
 		case "available":
 			entry.available = true
 		case "latest":
-			entry.available = true
+			entry.latest = true
 		}
 	}
 	return entry, nil

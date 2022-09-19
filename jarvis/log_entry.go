@@ -33,7 +33,7 @@ type LogEntry struct {
 
 	// The following fields are only used in Javascript.
 	TSec int64  `json:",omitempty"`
-	VStr string `json:",omitepmty"`
+	VStr string `json:",omitempty"`
 }
 
 func newLogEntryAt(t time.Time, user, text string) *LogEntry {

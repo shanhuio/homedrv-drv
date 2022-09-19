@@ -22,23 +22,7 @@ import (
 
 	"shanhu.io/homedrv/drv/burmilla"
 	"shanhu.io/misc/errcode"
-	"shanhu.io/virgo/bosinit"
 )
-
-func burmillaSourceInConfig(config *bosinit.Config) string {
-	if config == nil {
-		return ""
-	}
-	r := config.Rancher
-	if r == nil {
-		return ""
-	}
-	u := r.Upgrade
-	if u == nil {
-		return ""
-	}
-	return u.URL
-}
 
 func isOSUpdateSupported(d *drive) bool {
 	return checkOSUpdateSupported(d) == nil
