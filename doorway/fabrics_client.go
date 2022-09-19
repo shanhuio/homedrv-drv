@@ -64,6 +64,8 @@ var fallbackNetDialer = &net.Dialer{
 }
 
 var fabricsIPv4 = map[string]string{
+	"homedrive.io":             "167.172.10.171",
+	"www.homedrive.io":         "167.172.10.171",
 	"fabrics.homedrive.io":     "178.128.130.77",
 	"fabrics-ge.homedrive.io":  "157.245.24.167",
 	"fabrics-ge1.homedrive.io": "206.81.25.26",
