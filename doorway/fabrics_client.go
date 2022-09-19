@@ -16,9 +16,14 @@
 package doorway
 
 import (
+	"context"
 	"log"
 	"net"
+	"net/http"
+	"strings"
+	"time"
 
+	"github.com/gorilla/websocket"
 	"shanhu.io/aries/https/httpstest"
 	fabdial "shanhu.io/homedrv/drv/fabricsdial"
 	"shanhu.io/misc/errcode"
@@ -53,6 +58,32 @@ type fabricsConfig struct {
 	counters *counting.ConnCounters
 }
 
+var fallbackNetDialer = &net.Dialer{
+	Timeout:   10 * time.Second,
+	KeepAlive: 30 * time.Second,
+}
+
+var fabricsIPv4 = map[string]string{
+	"fabrics.homedrive.io":     "178.128.130.77",
+	"fabrics-ge.homedrive.io":  "157.245.24.167",
+	"fabrics-ge1.homedrive.io": "206.81.25.26",
+	"fabrics-sgp.homedrive.io": "149.28.152.149",
+}
+
+func fabricsNetDial(ctx context.Context, network, addr string) (
+	net.Conn, error,
+) {
+	if network == "tcp" || network == "tcp4" {
+		// Manually resolve IPv4 addresses for fabrics. This by passes DNS
+		// resolvers in user's home networks, which might be faulty.
+		trimmed := strings.TrimSuffix(addr, ".")
+		if ip, ok := fabricsIPv4[trimmed]; ok {
+			addr = ip // Directly resolve to IP address.
+		}
+	}
+	return fallbackNetDialer.DialContext(ctx, network, addr)
+}
+
 func makeFabricsDialer(ctx C, config *fabricsConfig) (
 	*fabdial.Dialer, error,
 ) {
@@ -76,6 +107,11 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 		tr := httpstest.InsecureSink(config.InsecurelyDialTo)
 		router.Transport = tr
 		dialer.WebSocketDialer = fabdial.NewWebSocketDialer(tr)
+	} else {
+		router.Transport = &http.Transport{DialContext: fabricsNetDial}
+		dialer.WebSocketDialer = &websocket.Dialer{
+			NetDialContext: fabricsNetDial,
+		}
 	}
 	return dialer, nil
 }
