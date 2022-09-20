@@ -20,8 +20,10 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/gorilla/websocket"
 	"shanhu.io/aries/https/httpstest"
 	fabdial "shanhu.io/homedrv/drv/fabricsdial"
+	"shanhu.io/homedrv/drv/homedial"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/counting"
 )
@@ -50,8 +52,6 @@ type fabricsConfig struct {
 	*FabricsConfig
 	identity Identity
 
-	dialTransport http.RoundTripper
-
 	// counters track the number of bytes communicated over the tunnel.
 	counters *counting.ConnCounters
 }
@@ -68,15 +68,22 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 		return nil, errcode.Annotate(err, "read fabrics key")
 	}
 
-	dialer := &fabdial.Dialer{
-		Host:      config.host(),
-		User:      config.User,
-		Key:       key,
-		Transport: config.dialTransport,
+	router := &fabdial.SimpleRouter{
+		Host: config.host(),
+		User: config.User,
+		Key:  key,
 	}
+	dialer := &fabdial.Dialer{Router: router}
 
 	if config.InsecurelyDialTo != "" {
-		dialer.Transport = httpstest.InsecureSink(config.InsecurelyDialTo)
+		tr := httpstest.InsecureSink(config.InsecurelyDialTo)
+		router.Transport = tr
+		dialer.WebSocketDialer = fabdial.NewWebSocketDialer(tr)
+	} else {
+		router.Transport = &http.Transport{DialContext: homedial.Dial}
+		dialer.WebSocketDialer = &websocket.Dialer{
+			NetDialContext: homedial.Dial,
+		}
 	}
 	return dialer, nil
 }

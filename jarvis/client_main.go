@@ -83,7 +83,7 @@ func declareJarvisSockFlag(flags *flagutil.FlagSet) *string {
 func cmdUpdate(args []string) error {
 	flags := cmdFlags.New()
 	sock := declareJarvisSockFlag(flags)
-	args = flags.ParseArgs(args)
+	_ = flags.ParseArgs(args)
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/admin/update", nil, nil)
 }
@@ -131,7 +131,7 @@ func cmdSetPassword(args []string) error {
 	flags := cmdFlags.New()
 	sock := declareJarvisSockFlag(flags)
 	pass := flags.String("pass", "", "password to set")
-	args = flags.ParseArgs(args)
+	_ = flags.ParseArgs(args)
 
 	if *pass == "" {
 		return errcode.InvalidArgf("new password is empty")
@@ -143,7 +143,7 @@ func cmdSetPassword(args []string) error {
 func cmdDisableTOTP(args []string) error {
 	flags := cmdFlags.New()
 	sock := declareJarvisSockFlag(flags)
-	args = flags.ParseArgs(args)
+	_ = flags.ParseArgs(args)
 	c := httputil.NewUnixClient(*sock)
 	return c.Call("/api/admin/disable-totp", rootUser, nil)
 }

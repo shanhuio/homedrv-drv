@@ -33,7 +33,7 @@ type fabricsConn struct {
 }
 
 func (c *fabricsConn) Addr() net.Addr {
-	return &fabricsAddr{addr: c.Addr().String()}
+	return &fabricsAddr{addr: c.Conn.RemoteAddr().String()}
 }
 
 type fabricsListener struct {

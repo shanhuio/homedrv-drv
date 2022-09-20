@@ -72,7 +72,7 @@ func (b *objects) Serve(c *aries.C) error {
 	if p == "" {
 		return errcode.InvalidArgf("path is empty")
 	}
-	if strings.Index(p, "/") >= 0 {
+	if strings.Contains(p, "/") {
 		return errcode.InvalidArgf("path contains slash")
 	}
 

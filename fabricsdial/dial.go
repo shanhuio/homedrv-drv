@@ -17,103 +17,44 @@ package fabricsdial
 
 import (
 	"context"
-	"errors"
 	"net/http"
-	"net/url"
 
 	"github.com/gorilla/websocket"
-	"shanhu.io/aries/creds"
-	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/sniproxy"
 )
 
 // Dialer dials to a HomeDrive Fabrics service.
 type Dialer struct {
-	HostTokenFunc func(ctx context.Context) (string, string, error)
-
-	Host    string
-	User    string
-	Key     []byte
-	KeyFile string
-
-	TunnelOptions *sniproxy.Options
-
-	Transport http.RoundTripper
+	Router          sniproxy.Router
+	WebSocketDialer *websocket.Dialer
+	TunnelOptions   *sniproxy.Options
 }
 
-func (d *Dialer) hostToken(ctx context.Context) (string, string, error) {
-	if d.HostTokenFunc != nil {
-		return d.HostTokenFunc(ctx)
+// NewWebSocketDialer creates a new WebSocket dialer from
+// a http transport.
+func NewWebSocketDialer(tr *http.Transport) *websocket.Dialer {
+	return &websocket.Dialer{
+		NetDialContext:  tr.DialContext,
+		TLSClientConfig: tr.TLSClientConfig,
 	}
-
-	host := d.Host
-	cep := &creds.Endpoint{
-		Server: (&url.URL{
-			Scheme: "https",
-			Host:   host,
-		}).String(),
-		User:     d.User,
-		Key:      d.Key,
-		PemFile:  d.KeyFile,
-		Homeless: true,
-		NoTTY:    true,
-	}
-	if d.Transport != nil {
-		cep.Transport = d.Transport
-	}
-	login, err := creds.NewLogin(cep)
-	if err != nil {
-		return "", "", errcode.Annotate(err, "create login")
-	}
-	token, err := login.Token()
-	if err != nil {
-		return "", "", errcode.Annotate(err, "login")
-	}
-	return host, token, nil
 }
 
-func (d *Dialer) dialOption(tok string) (*sniproxy.DialOption, error) {
-	tunnOptions := d.TunnelOptions
-	if tunnOptions == nil {
-		tunnOptions = &sniproxy.Options{
-			Siding:       true,
-			DialWithAddr: true,
-		}
-	}
-	return &sniproxy.DialOption{
-		Token:         tok,
-		TunnelOptions: tunnOptions,
-	}, nil
+var defaultTunnelOptions = &sniproxy.Options{
+	Siding:       true,
+	DialWithAddr: true,
 }
 
 // Dial connects to a HomeDrive Fabrics service, and returns
 // an SNI-proxy endpoint.
 func (d *Dialer) Dial(ctx context.Context) (*sniproxy.Endpoint, error) {
-	host, tok, err := d.hostToken(ctx)
-	if err != nil {
-		return nil, errcode.Annotate(err, "pick server")
+	tunnOpts := d.TunnelOptions
+	if tunnOpts == nil {
+		tunnOpts = defaultTunnelOptions
 	}
-
-	opt, err := d.dialOption(tok)
-	if err != nil {
-		return nil, errcode.Annotate(err, "prepare options")
+	opt := &sniproxy.DialOption{
+		Path:          "/endpoint",
+		TunnelOptions: tunnOpts,
+		Dialer:        d.WebSocketDialer,
 	}
-
-	proxyURL := &url.URL{
-		Scheme: "wss",
-		Host:   host,
-		Path:   "/endpoint",
-	}
-
-	if d.Transport != nil {
-		tr, ok := d.Transport.(*http.Transport)
-		if !ok {
-			return nil, errors.New("transport is not an http transport")
-		}
-		opt.Dialer = &websocket.Dialer{
-			NetDialContext:  tr.DialContext,
-			TLSClientConfig: tr.TLSClientConfig,
-		}
-	}
-	return sniproxy.Dial(ctx, proxyURL, opt)
+	return sniproxy.Dial(ctx, d.Router, opt)
 }

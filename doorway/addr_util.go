@@ -19,25 +19,6 @@ import (
 	"net"
 )
 
-func v4ZeroAddr(port int) *net.TCPAddr {
-	return &net.TCPAddr{
-		IP: net.IPv4zero, Port: port,
-	}
-}
-
 func lisAddr(lis net.Listener) string {
 	return lis.Addr().String()
-}
-
-var ipv4localhost = net.IPv4(127, 0, 0, 1)
-
-func localV4Addr(port int) *net.TCPAddr {
-	return &net.TCPAddr{
-		IP:   ipv4localhost,
-		Port: port,
-	}
-}
-
-func allIfaceAddr(port int) *net.TCPAddr {
-	return &net.TCPAddr{Port: port}
 }

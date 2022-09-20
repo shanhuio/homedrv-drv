@@ -17,7 +17,6 @@ package jarvis
 
 import (
 	"bytes"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -133,7 +132,7 @@ func updateBootPart(dev, osVersion string) error {
 	}
 
 	swap := filepath.Join(mnt, "boot/grub/grub.cfg.swap")
-	if err := ioutil.WriteFile(swap, configContent, 0755); err != nil {
+	if err := os.WriteFile(swap, configContent, 0755); err != nil {
 		return errcode.Annotate(err, "write grub config")
 	}
 	if err := os.Rename(swap, grubConfig); err != nil {

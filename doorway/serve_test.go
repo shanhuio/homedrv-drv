@@ -16,11 +16,11 @@
 package doorway
 
 import (
+	"io"
 	"testing"
 
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -40,7 +40,7 @@ func checkGet(t *testing.T, c *http.Client, url, want string) {
 	}
 	defer resp.Body.Close()
 
-	bs, err := ioutil.ReadAll(resp.Body)
+	bs, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Errorf("read body: %s", err)
 		return
@@ -67,7 +67,7 @@ func TestServe(t *testing.T) {
 		"shanhu.io":      lisAddr(s.Listener),
 	}
 
-	doorwayHome, err := ioutil.TempDir("", "doorway")
+	doorwayHome, err := os.MkdirTemp("", "doorway")
 	if err != nil {
 		t.Fatal("make doorway temp home:", err)
 	}

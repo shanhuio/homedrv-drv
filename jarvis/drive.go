@@ -16,6 +16,7 @@
 package jarvis
 
 import (
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -24,6 +25,7 @@ import (
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeboot"
+	"shanhu.io/homedrv/drv/homedial"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 	"shanhu.io/misc/osutil"
@@ -112,9 +114,10 @@ func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {
 	var ep *creds.RobotEndpoint
 	if server != nil {
 		ep = &creds.RobotEndpoint{
-			Server: server.String(),
-			User:   "~" + name,
-			Key:    key,
+			Server:    server.String(),
+			User:      "~" + name,
+			Key:       key,
+			Transport: &http.Transport{DialContext: homedial.Dial},
 		}
 	}
 

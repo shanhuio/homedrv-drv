@@ -40,7 +40,7 @@ func releaseImagesToKeep(r *drvapi.Release) map[string]bool {
 			if img == "" {
 				continue
 			}
-			if strings.Index(img, ":") < 0 {
+			if !strings.Contains(img, ":") {
 				img = "sha256:" + img
 			}
 			m[img] = true
@@ -49,7 +49,7 @@ func releaseImagesToKeep(r *drvapi.Release) map[string]bool {
 
 	for _, app := range r.Apps {
 		img := app.Image
-		if strings.Index(img, ":") < 0 {
+		if !strings.Contains(img, ":") {
 			img = "sha256:" + img
 		}
 		m[img] = true
