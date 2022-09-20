@@ -36,17 +36,28 @@ var homedrvIPv4 = map[string]string{
 	"fabrics-sgp.homedrive.io": "149.28.152.149",
 }
 
+func mapAddress(network, addr string) string {
+	if !(network == "tcp" || network == "tcp4") {
+		return addr
+	}
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return addr
+	}
+	// Manually resolve IPv4 addresses for fabrics. This by passes DNS
+	// resolvers in user's home networks, which might be faulty.
+	trimmed := strings.TrimSuffix(host, ".")
+	if ip, ok := homedrvIPv4[trimmed]; ok {
+		// Directly resolve to IP address.
+		return net.JoinHostPort(ip, port)
+	}
+	return addr
+}
+
 // Dial dials HomeDrive servers.
 func Dial(ctx context.Context, network, addr string) (
 	net.Conn, error,
 ) {
-	if network == "tcp" || network == "tcp4" {
-		// Manually resolve IPv4 addresses for fabrics. This by passes DNS
-		// resolvers in user's home networks, which might be faulty.
-		trimmed := strings.TrimSuffix(addr, ".")
-		if ip, ok := homedrvIPv4[trimmed]; ok {
-			addr = ip // Directly resolve to IP address.
-		}
-	}
+	addr = mapAddress(network, addr)
 	return fallbackNetDialer.DialContext(ctx, network, addr)
 }
