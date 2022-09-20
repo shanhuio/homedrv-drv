@@ -26,6 +26,7 @@ import (
 	"shanhu.io/homedrv/drv/homedial"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/virgo/counting"
+	"shanhu.io/virgo/sniproxy"
 )
 
 // FabricsConfig has the configuration for connecting HomeDrive Fabrics.
@@ -82,7 +83,9 @@ func makeFabricsDialer(ctx C, config *fabricsConfig) (
 	} else {
 		router.Transport = &http.Transport{DialContext: homedial.Dial}
 		dialer.WebSocketDialer = &websocket.Dialer{
-			NetDialContext: homedial.Dial,
+			NetDialContext:  homedial.Dial,
+			ReadBufferSize:  sniproxy.DefaultReadBufferSize,
+			WriteBufferSize: sniproxy.DefaultWriteBufferSize,
 		}
 	}
 	return dialer, nil
