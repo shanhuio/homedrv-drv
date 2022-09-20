@@ -135,5 +135,5 @@ shanhu.io/pisces v0.0.0-20220920041146-867d49fffc25 h1:O1nBoo9ys1fipkTZIp7IAOA9G
 shanhu.io/pisces v0.0.0-20220920041146-867d49fffc25/go.mod h1:tgef/hdD3skUhjqRo1jCGrpylEpWIUueoXNFKirAnq8=
 shanhu.io/text v0.0.0-20220403174149-0195ecfdda87 h1:5B5QyUHPdmsKzfhgJjG7LZ3gdIL7NSBAMtL4QCXx07E=
 shanhu.io/text v0.0.0-20220403174149-0195ecfdda87/go.mod h1:CexHuZjVSZj85hsKVcxZq80AMSdJNPFlOD4lSDEEE5g=
-shanhu.io/virgo v0.0.0-20220920041150-7f95907551a0 h1:eNyPCz6FjqW7wg98po1EnIkzIHf1ACrZo1nH4kC0dzQ=
-shanhu.io/virgo v0.0.0-20220920041150-7f95907551a0/go.mod h1:Dyk+VFGzHbnsEvsAPKWO3xwtyydvpVexACzyEF1qDTY=
+shanhu.io/virgo v0.0.0-20220920043105-8f85c3591132 h1:876tj0HeM5X+SwhFezWUvgidhjLyxoC4+g4pRKBKXds=
+shanhu.io/virgo v0.0.0-20220920043105-8f85c3591132/go.mod h1:Dyk+VFGzHbnsEvsAPKWO3xwtyydvpVexACzyEF1qDTY=
