@@ -6,17 +6,17 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/lib/pq v1.10.7
 	github.com/pquerna/otp v1.3.0
-	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0
+	golang.org/x/crypto v0.0.0-20220924013350-4ba4fb4dd9e7
 	modernc.org/sqlite v1.19.1
-	shanhu.io/aries v0.0.0-20220921190824-a035657a0bf1
-	shanhu.io/misc v0.0.0-20220921190814-df5eedd86479
-	shanhu.io/pisces v0.0.0-20220921190830-bb517164ca99
-	shanhu.io/virgo v0.0.0-20220921190836-1d116995c5fe
+	shanhu.io/aries v0.0.0-20220924060611-f5178690eb21
+	shanhu.io/misc v0.0.0-20220924060604-a30f053f63de
+	shanhu.io/pisces v0.0.0-20220924060621-3d346ae416d5
+	shanhu.io/virgo v0.0.0-20220924060625-e6dd0399f276
 )
 
 require (
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/digitalocean/godo v1.84.1 // indirect
+	github.com/digitalocean/godo v1.86.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -24,7 +24,7 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220921155015-db77216a4ee9 // indirect
+	golang.org/x/net v0.0.0-20220923203811-8be639271d50 // indirect
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
 	golang.org/x/term v0.0.0-20220919170432-7a66f970e087 // indirect
