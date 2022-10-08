@@ -8,10 +8,10 @@ require (
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b
 	modernc.org/sqlite v1.19.1
-	shanhu.io/aries v0.0.0-20221006032658-5b12ceeb1cac
-	shanhu.io/misc v0.0.0-20221006032650-f7e4a299c6c7
-	shanhu.io/pisces v0.0.0-20221006032707-2d703f54be64
-	shanhu.io/virgo v0.0.0-20221006032712-b36c417b761e
+	shanhu.io/aries v0.0.0-20221008181547-8025ffc68294
+	shanhu.io/misc v0.0.0-20221008181536-7c6aaa69306d
+	shanhu.io/pisces v0.0.0-20221008181602-889b3b9d6d22
+	shanhu.io/virgo v0.0.0-20221008181607-807f4e04ef24
 )
 
 require (
@@ -25,8 +25,8 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20221004154528-8021a29435af // indirect
-	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
-	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
+	golang.org/x/oauth2 v0.0.0-20221006150949-b44042a4b9c1 // indirect
+	golang.org/x/sys v0.0.0-20221006211917-84dc82d7e875 // indirect
 	golang.org/x/term v0.0.0-20220919170432-7a66f970e087 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
