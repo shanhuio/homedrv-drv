@@ -62,10 +62,14 @@ func fixVersion(cont *dock.Cont, s settings.Settings, major int) error {
 		return errcode.Annotate(err, "set cron mode")
 	}
 
-	// Might be also needed in minor upgrades.
-	const addIndexCmd = "db:add-missing-indices"
-	if _, err := occOutput(cont, []string{addIndexCmd, "-n"}); err != nil {
-		return errcode.Annotate(err, addIndexCmd)
+	// The following fixes might be also needed in minor upgrades.
+	for _, cmd := range []string{
+		"db:add-missing-indices",
+		"db:convert-filecache-bigint",
+	} {
+		if _, err := occOutput(cont, []string{cmd, "-n"}); err != nil {
+			return errcode.Annotate(err, cmd)
+		}
 	}
 
 	k := fixKey(major)
@@ -81,7 +85,6 @@ func fixVersion(cont *dock.Cont, s settings.Settings, major int) error {
 	}
 
 	for _, cmd := range []string{
-		"db:convert-filecache-bigint",
 		"db:add-missing-columns",
 		"db:add-missing-primary-keys",
 	} {
