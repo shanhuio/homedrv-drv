@@ -7,7 +7,7 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.1.0
-	modernc.org/sqlite v1.19.2
+	modernc.org/sqlite v1.19.3
 	shanhu.io/aries v0.0.0-20221027015750-e3fb64aaf4d4
 	shanhu.io/misc v0.0.0-20221027015739-c39e8e5a9960
 	shanhu.io/pisces v0.0.0-20221027015805-8d9957061359
