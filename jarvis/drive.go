@@ -114,7 +114,7 @@ func newDrive(config *drvcfg.Config, k *kernel) (*drive, error) {
 	var ep *creds.RobotEndpoint
 	if server != nil {
 		ep = &creds.RobotEndpoint{
-			Server:    server.String(),
+			Server:    server,
 			User:      "~" + name,
 			Key:       key,
 			Transport: &http.Transport{DialContext: homedial.Dial},

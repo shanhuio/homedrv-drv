@@ -128,7 +128,12 @@ func (b *boot) downloadCore(
 ) (string, error) {
 	drv := b.Drive
 	user := "~" + drv.Name
-	ep := &creds.RobotEndpoint{Server: drv.Server, User: user, Key: pem}
+
+	serverURL, err := url.Parse(drv.Server)
+	if err != nil {
+		return "", errcode.Annotate(err, "parse server URL")
+	}
+	ep := &creds.RobotEndpoint{Server: serverURL, User: user, Key: pem}
 	c, err := ep.Dial()
 	if err != nil {
 		return "", err

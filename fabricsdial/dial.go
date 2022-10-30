@@ -23,13 +23,6 @@ import (
 	"shanhu.io/virgo/sniproxy"
 )
 
-// Dialer dials to a HomeDrive Fabrics service.
-type Dialer struct {
-	Router          sniproxy.Router
-	WebSocketDialer *websocket.Dialer
-	TunnelOptions   *sniproxy.Options
-}
-
 // NewWebSocketDialer creates a new WebSocket dialer from
 // a http transport.
 func NewWebSocketDialer(tr *http.Transport) *websocket.Dialer {
@@ -37,6 +30,13 @@ func NewWebSocketDialer(tr *http.Transport) *websocket.Dialer {
 		NetDialContext:  tr.DialContext,
 		TLSClientConfig: tr.TLSClientConfig,
 	}
+}
+
+// Dialer dials to a HomeDrive Fabrics service.
+type Dialer struct {
+	Router          sniproxy.Router
+	WebSocketDialer *websocket.Dialer
+	TunnelOptions   *sniproxy.Options
 }
 
 var defaultTunnelOptions = &sniproxy.Options{

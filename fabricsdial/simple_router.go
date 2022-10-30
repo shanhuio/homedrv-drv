@@ -39,7 +39,7 @@ type SimpleRouter struct {
 func (r *SimpleRouter) Route(ctx context.Context) (string, string, error) {
 	host := r.Host
 	ep := &creds.Endpoint{
-		Server:   (&url.URL{Scheme: "https", Host: host}).String(),
+		Server:   &url.URL{Scheme: "https", Host: host},
 		User:     r.User,
 		Key:      r.Key,
 		PemFile:  r.KeyFile,
