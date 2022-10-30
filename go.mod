@@ -8,10 +8,10 @@ require (
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.1.0
 	modernc.org/sqlite v1.19.3
-	shanhu.io/aries v0.0.0-20221027015750-e3fb64aaf4d4
+	shanhu.io/aries v0.0.0-20221030224000-78984af845b4
 	shanhu.io/misc v0.0.0-20221027015739-c39e8e5a9960
-	shanhu.io/pisces v0.0.0-20221027015805-8d9957061359
-	shanhu.io/virgo v0.0.0-20221027015809-15244efe4592
+	shanhu.io/pisces v0.0.0-20221030224010-ae5d4f6d4802
+	shanhu.io/virgo v0.0.0-20221030224015-b125bfabd9fa
 )
 
 require (
@@ -21,10 +21,10 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
-	github.com/kr/pretty v0.3.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/oauth2 v0.1.0 // indirect
@@ -35,7 +35,6 @@ require (
 	golang.org/x/tools v0.2.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
