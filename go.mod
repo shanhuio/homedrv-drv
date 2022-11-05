@@ -7,16 +7,16 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/pquerna/otp v1.3.0
 	golang.org/x/crypto v0.1.0
-	modernc.org/sqlite v1.19.3
-	shanhu.io/aries v0.0.0-20221102031455-3ebeccf450ef
+	modernc.org/sqlite v1.19.4
+	shanhu.io/aries v0.0.0-20221105225524-43bb8072045b
 	shanhu.io/misc v0.0.0-20221027015739-c39e8e5a9960
-	shanhu.io/pisces v0.0.0-20221102031508-a3c2e92e3f14
-	shanhu.io/virgo v0.0.0-20221102031512-28085700549c
+	shanhu.io/pisces v0.0.0-20221105225544-2ca223ad2ce7
+	shanhu.io/virgo v0.0.0-20221105225548-c9163c1aa9b8
 )
 
 require (
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/digitalocean/godo v1.88.0 // indirect
+	github.com/digitalocean/godo v1.89.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
