@@ -18,9 +18,9 @@ package jarvis
 import (
 	"strings"
 
-	"shanhu.io/aries"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/timeutil"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/timeutil"
 )
 
 // DashboardDataRequest is the AJAX request to load dashboard data.

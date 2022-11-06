@@ -19,8 +19,8 @@ import (
 	"log"
 
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/strutil"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/strutil"
 )
 
 func sameAppVersion(m1, m2 *drvapi.AppMeta) bool {

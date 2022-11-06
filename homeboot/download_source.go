@@ -20,8 +20,8 @@ import (
 	"path"
 
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/httputil"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/httputil"
 )
 
 // FetchChannelRelease fetch the release from a particular channel.

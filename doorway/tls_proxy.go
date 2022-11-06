@@ -22,10 +22,10 @@ import (
 	"strings"
 
 	"golang.org/x/crypto/acme"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/netutil"
-	"shanhu.io/misc/strutil"
-	"shanhu.io/virgo/sniproxy"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/netutil"
+	"shanhu.io/pub/sniproxy"
+	"shanhu.io/pub/strutil"
 )
 
 // TLSProxyConfig is the configuration for the TLS proxy.

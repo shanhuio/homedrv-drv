@@ -18,7 +18,7 @@ package burmilla
 import (
 	"strings"
 
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 // HostIPs returns the ip addresses of the given network device.

@@ -18,8 +18,8 @@ package jarvis
 import (
 	"strings"
 
-	"shanhu.io/aries"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/errcode"
 )
 
 // DashboardSSHKeysData contains data for initializing SSH Keys dashboard page.

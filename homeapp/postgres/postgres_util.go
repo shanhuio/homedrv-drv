@@ -20,8 +20,8 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/sqlx"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/sqlx"
 )
 
 func createDB(db *sqlx.DB, name, pwd string) error {

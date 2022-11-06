@@ -19,8 +19,8 @@ import (
 	"errors"
 	"log"
 
-	"shanhu.io/misc/errcode"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
 )
 
 // ErrSameImage is returned when there is no image change.

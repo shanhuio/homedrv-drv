@@ -24,7 +24,7 @@ import (
 	"os"
 	"strings"
 
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 type installScript struct {

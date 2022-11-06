@@ -18,8 +18,8 @@ package jarvis
 import (
 	"fmt"
 
-	"shanhu.io/misc/errcode"
-	"shanhu.io/pisces"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/pisces"
 )
 
 type securityLogs struct {

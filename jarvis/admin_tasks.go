@@ -18,9 +18,9 @@ package jarvis
 import (
 	"fmt"
 
-	"shanhu.io/aries"
 	"shanhu.io/homedrv/drv/homeapp/nextcloud"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/errcode"
 )
 
 type adminTasks struct {

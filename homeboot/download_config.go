@@ -20,7 +20,7 @@ import (
 
 	"shanhu.io/homedrv/drv/drvapi"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/misc/semver"
+	"shanhu.io/pub/semver"
 )
 
 // DownloadConfig is the install config. This is the configuration

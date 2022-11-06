@@ -16,7 +16,7 @@
 package homeboot
 
 import (
-	"shanhu.io/misc/flagutil"
+	"shanhu.io/pub/flagutil"
 )
 
 // InitConfig is the configuration to initialize a homedrive.

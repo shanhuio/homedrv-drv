@@ -16,7 +16,7 @@
 package homeboot
 
 import (
-	"shanhu.io/misc/flagutil"
+	"shanhu.io/pub/flagutil"
 )
 
 var cmdFlags = flagutil.NewFactory("homeboot")

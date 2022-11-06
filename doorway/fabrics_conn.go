@@ -18,7 +18,7 @@ package doorway
 import (
 	"net"
 
-	"shanhu.io/virgo/sniproxy"
+	"shanhu.io/pub/sniproxy"
 )
 
 type fabricsAddr struct {

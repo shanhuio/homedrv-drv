@@ -22,8 +22,8 @@ import (
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeapp/postgres"
 	"shanhu.io/homedrv/drv/homeapp/redis"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
 )
 
 type extraMount struct {

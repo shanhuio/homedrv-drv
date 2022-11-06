@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drv/homeapp/nextcloud"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 type taskNextcloudCron struct{ drive *drive }

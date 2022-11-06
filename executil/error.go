@@ -16,7 +16,7 @@
 package executil
 
 import (
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 // RetError wraps the return value and the error. If err is not nil, it

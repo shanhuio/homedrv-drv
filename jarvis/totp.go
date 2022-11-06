@@ -24,9 +24,9 @@ import (
 
 	"github.com/pquerna/otp"
 	totppkg "github.com/pquerna/otp/totp"
-	"shanhu.io/aries"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/signer"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/signer"
 )
 
 const (

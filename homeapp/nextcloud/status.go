@@ -22,8 +22,8 @@ import (
 	"strings"
 	"time"
 
-	"shanhu.io/misc/errcode"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
 )
 
 type status struct {

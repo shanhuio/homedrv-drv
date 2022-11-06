@@ -19,7 +19,7 @@ import (
 	"strconv"
 	"strings"
 
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 func parseIDOutput(bs []byte) (int, error) {

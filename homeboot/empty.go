@@ -16,7 +16,7 @@
 package homeboot
 
 import (
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
 )
 
 const emptyDockerFile = `FROM scratch
