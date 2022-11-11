@@ -21,10 +21,10 @@ import (
 	"strings"
 
 	"shanhu.io/homedrv/drv/homeapp"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/httputil"
-	"shanhu.io/misc/nameutil"
-	"shanhu.io/pisces/settings"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/httputil"
+	"shanhu.io/pub/nameutil"
+	"shanhu.io/pub/settings"
 )
 
 func loadCustomSubs(s settings.Settings) (map[string]string, error) {

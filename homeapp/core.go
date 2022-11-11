@@ -17,8 +17,8 @@ package homeapp
 
 import (
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/pisces/settings"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/settings"
 )
 
 // Core provides the core interface to run an application.

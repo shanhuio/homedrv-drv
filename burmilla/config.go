@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"strings"
 
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/strutil"
-	"shanhu.io/virgo/bosinit"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/bosinit"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/strutil"
 )
 
 // ConfigExport exports the Bumilla OS's configuration.

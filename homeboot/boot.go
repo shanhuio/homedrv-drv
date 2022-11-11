@@ -25,16 +25,16 @@ import (
 	"runtime"
 	"strings"
 
-	"shanhu.io/aries/creds"
 	"shanhu.io/homedrv/drv/drvapi"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/flagutil"
-	"shanhu.io/misc/httputil"
-	"shanhu.io/misc/jsonx"
-	"shanhu.io/misc/rsautil"
-	"shanhu.io/misc/tarutil"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/creds"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/flagutil"
+	"shanhu.io/pub/httputil"
+	"shanhu.io/pub/jsonx"
+	"shanhu.io/pub/rsautil"
+	"shanhu.io/pub/tarutil"
 )
 
 // BootConfig is a JSON marshallable file that is saved on

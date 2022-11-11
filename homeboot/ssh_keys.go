@@ -19,9 +19,9 @@ import (
 	"net/url"
 
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/httputil"
-	"shanhu.io/virgo/bosinit"
+	"shanhu.io/pub/bosinit"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/httputil"
 )
 
 func fetchUserKeys(user string) ([]string, error) {

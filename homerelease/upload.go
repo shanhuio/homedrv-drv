@@ -22,8 +22,8 @@ import (
 	"os"
 	"path"
 
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/httputil"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/httputil"
 )
 
 // Uploader is an object uploader.

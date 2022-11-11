@@ -22,8 +22,8 @@ import (
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeapp/apputil"
 	"shanhu.io/homedrv/drv/homeapp/redis"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/pisces/settings"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/settings"
 )
 
 // Domains reads the nextcloud domains from the settings.

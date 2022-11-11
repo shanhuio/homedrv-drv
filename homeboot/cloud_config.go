@@ -20,9 +20,9 @@ import (
 	"os"
 	"text/template"
 
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/jsonx"
-	"shanhu.io/virgo/bosinit"
+	"shanhu.io/pub/bosinit"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/jsonx"
 )
 
 const rcLocal = `#!/bin/bash

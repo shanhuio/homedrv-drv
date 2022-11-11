@@ -24,9 +24,9 @@ import (
 	"text/template"
 
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/osutil"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/osutil"
 )
 
 var grubConfigTmpl = template.Must(template.New("grubcfg").Parse(`

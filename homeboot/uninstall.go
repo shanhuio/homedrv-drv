@@ -20,8 +20,8 @@ import (
 	"strings"
 
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
 )
 
 func findNameWithSuffix(suf string, names ...string) (string, bool) {

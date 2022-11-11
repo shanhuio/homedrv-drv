@@ -16,8 +16,8 @@
 package jarvis
 
 import (
-	"shanhu.io/aries"
-	"shanhu.io/aries/identity"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/identity"
 )
 
 func guestRouter(s *server) *aries.Router {

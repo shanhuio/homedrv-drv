@@ -19,8 +19,8 @@ import (
 	"sort"
 
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/pisces/settings"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/settings"
 )
 
 type appsState struct {

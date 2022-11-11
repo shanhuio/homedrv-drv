@@ -18,8 +18,8 @@ package jarvis
 import (
 	"net/url"
 
-	"shanhu.io/aries"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/errcode"
 )
 
 func serveSudo(s *server, c *aries.C) error {

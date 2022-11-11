@@ -17,7 +17,7 @@ package jarvis
 
 import (
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 type appClosure struct {

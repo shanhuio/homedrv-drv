@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drv/burmilla"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 func isOSUpdateSupported(d *drive) bool {

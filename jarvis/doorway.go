@@ -22,10 +22,10 @@ import (
 	doorwaypkg "shanhu.io/homedrv/drv/doorway"
 	"shanhu.io/homedrv/drv/drvapi"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/rsautil"
-	"shanhu.io/misc/tarutil"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/rsautil"
+	"shanhu.io/pub/tarutil"
 )
 
 const (

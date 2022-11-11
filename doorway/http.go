@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"shanhu.io/aries"
-	"shanhu.io/aries/redhttp"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/aries/redhttp"
 )
 
 // HTTPServerConfig is the configuration for the http redirection service.

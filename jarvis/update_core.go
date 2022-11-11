@@ -21,8 +21,8 @@ import (
 
 	"shanhu.io/homedrv/drv/homeapp/apputil"
 	"shanhu.io/homedrv/drv/homeboot"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
 )
 
 func killOldCoreIfExist(d *drive) error {

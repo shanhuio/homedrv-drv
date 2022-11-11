@@ -19,9 +19,9 @@ import (
 	"log"
 
 	"shanhu.io/homedrv/drv/homeapp"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/pisces/settings"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/settings"
 )
 
 func loadDoorwayConfig(d *drive) (*doorwayConfig, error) {

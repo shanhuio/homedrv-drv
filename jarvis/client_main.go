@@ -22,12 +22,12 @@ import (
 	"strings"
 
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/flagutil"
-	"shanhu.io/misc/httputil"
-	"shanhu.io/misc/jsonutil"
-	"shanhu.io/misc/jsonx"
-	"shanhu.io/misc/subcmd"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/flagutil"
+	"shanhu.io/pub/httputil"
+	"shanhu.io/pub/jsonutil"
+	"shanhu.io/pub/jsonx"
+	"shanhu.io/pub/subcmd"
 )
 
 func clientCommands() *subcmd.List {

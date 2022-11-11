@@ -21,7 +21,7 @@ import (
 
 	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/homedrv/drv/homeboot"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 func noOpenDockerInManual(_, _ string) (io.ReadCloser, error) {

@@ -24,8 +24,8 @@ import (
 	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/homedrv/drv/homeapp/apputil"
 	"shanhu.io/homedrv/drv/homeboot"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/httputil"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/httputil"
 )
 
 func updateAppsAndDoorway(d *drive, r *drvapi.Release) error {

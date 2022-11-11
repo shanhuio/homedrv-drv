@@ -21,11 +21,11 @@ import (
 	"time"
 
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/jsonutil"
-	"shanhu.io/misc/jsonx"
-	"shanhu.io/misc/semver"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/jsonutil"
+	"shanhu.io/pub/jsonx"
+	"shanhu.io/pub/semver"
 )
 
 type builder struct {

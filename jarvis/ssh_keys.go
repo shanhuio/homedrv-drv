@@ -18,11 +18,11 @@ package jarvis
 import (
 	"strings"
 
-	"shanhu.io/aries"
 	"shanhu.io/homedrv/drv/burmilla"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/tarutil"
-	"shanhu.io/virgo/bosinit"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/bosinit"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/tarutil"
 )
 
 type sshKeys struct {

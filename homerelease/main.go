@@ -16,7 +16,7 @@
 package homerelease
 
 import (
-	"shanhu.io/misc/subcmd"
+	"shanhu.io/pub/subcmd"
 )
 
 func cmd() *subcmd.List {

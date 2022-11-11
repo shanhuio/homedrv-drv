@@ -24,9 +24,9 @@ import (
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeapp/apputil"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/sqlx"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/sqlx"
 )
 
 // Name is the app's name.

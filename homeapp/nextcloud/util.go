@@ -21,8 +21,8 @@ import (
 	"strings"
 
 	"shanhu.io/homedrv/drv/executil"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/virgo/dock"
+	"shanhu.io/pub/dock"
+	"shanhu.io/pub/errcode"
 )
 
 func configSaysInstalled(config []byte) bool {

@@ -18,7 +18,7 @@ package jarvis
 import (
 	"strings"
 
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 type bosListEntry struct {

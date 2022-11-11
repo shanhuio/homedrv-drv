@@ -20,7 +20,7 @@ import (
 	"shanhu.io/homedrv/drv/homeapp/nextcloud"
 	"shanhu.io/homedrv/drv/homeapp/postgres"
 	"shanhu.io/homedrv/drv/homeapp/redis"
-	"shanhu.io/misc/errcode"
+	"shanhu.io/pub/errcode"
 )
 
 func appsStateForLegacyUpgrade(reg *appRegistry) (

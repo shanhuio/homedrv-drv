@@ -20,10 +20,10 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/aries"
-	"shanhu.io/misc/argon2"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/pisces"
+	"shanhu.io/pub/argon2"
+	"shanhu.io/pub/aries"
+	"shanhu.io/pub/errcode"
+	"shanhu.io/pub/pisces"
 )
 
 func hashPassword(password string) (*argon2.Password, error) {
