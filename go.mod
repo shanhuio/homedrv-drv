@@ -6,14 +6,14 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/lib/pq v1.10.7
 	github.com/pquerna/otp v1.3.0
-	golang.org/x/crypto v0.2.0
+	golang.org/x/crypto v0.3.0
 	modernc.org/sqlite v1.19.4
 	shanhu.io/pub v0.0.0-20221111223419-253bb5bc4164
 )
 
 require (
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/digitalocean/godo v1.89.0 // indirect
+	github.com/digitalocean/godo v1.90.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -42,5 +42,5 @@ require (
 	modernc.org/memory v1.4.0 // indirect
 	modernc.org/opt v0.1.3 // indirect
 	modernc.org/strutil v1.1.3 // indirect
-	modernc.org/token v1.0.1 // indirect
+	modernc.org/token v1.1.0 // indirect
 )
