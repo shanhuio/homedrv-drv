@@ -142,6 +142,8 @@ func fixKey(major int) string {
 		return Key23Fixed
 	case 24:
 		return Key24Fixed
+	case 25:
+		return Key25Fixed
 	}
 	return ""
 }
