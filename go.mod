@@ -7,8 +7,8 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.4.0
-	modernc.org/sqlite v1.20.0
-	shanhu.io/pub v0.0.0-20221217161818-829f21e68940
+	modernc.org/sqlite v1.20.1
+	shanhu.io/pub v0.0.0-20221231041726-bb8171b0b26d
 )
 
 require (
@@ -20,7 +20,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20220927061507-ef77025ab5aa // indirect
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
