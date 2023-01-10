@@ -8,7 +8,7 @@ require (
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.5.0
 	modernc.org/sqlite v1.20.2
-	shanhu.io/pub v0.0.0-20230109082237-33ccd22bc785
+	shanhu.io/pub v0.0.0-20230110080004-e11f5f871cb2
 )
 
 require (
