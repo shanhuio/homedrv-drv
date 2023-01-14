@@ -8,13 +8,13 @@ require (
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.5.0
 	modernc.org/sqlite v1.20.2
-	shanhu.io/pub v0.0.0-20230110080004-e11f5f871cb2
+	shanhu.io/pub v0.0.0-20230114091434-c4a81cb2e9e1
 )
 
 require (
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/digitalocean/godo v1.93.0 // indirect
-	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
