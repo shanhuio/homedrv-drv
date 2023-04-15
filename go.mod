@@ -4,11 +4,11 @@ go 1.19
 
 require (
 	github.com/gorilla/websocket v1.5.0
-	github.com/lib/pq v1.10.7
+	github.com/lib/pq v1.10.8
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.8.0
 	modernc.org/sqlite v1.21.1
-	shanhu.io/pub v0.0.0-20230409001542-a872eaef01f4
+	shanhu.io/pub v0.0.0-20230415014940-ac5eac531408
 )
 
 require (
