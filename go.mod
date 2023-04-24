@@ -7,8 +7,8 @@ require (
 	github.com/lib/pq v1.10.8
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.8.0
-	modernc.org/sqlite v1.21.1
-	shanhu.io/pub v0.0.0-20230416195941-d34b84cf61a7
+	modernc.org/sqlite v1.22.0
+	shanhu.io/pub v0.0.0-20230424015539-3db62d98facb
 )
 
 require (
@@ -38,7 +38,7 @@ require (
 	lukechampine.com/uint128 v1.3.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
 	modernc.org/ccgo/v3 v3.16.13 // indirect
-	modernc.org/libc v1.22.3 // indirect
+	modernc.org/libc v1.22.4 // indirect
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.5.0 // indirect
 	modernc.org/opt v0.1.3 // indirect
