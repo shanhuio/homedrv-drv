@@ -4,16 +4,16 @@ go 1.19
 
 require (
 	github.com/gorilla/websocket v1.5.0
-	github.com/lib/pq v1.10.8
+	github.com/lib/pq v1.10.9
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.8.0
-	modernc.org/sqlite v1.22.0
-	shanhu.io/pub v0.0.0-20230424015539-3db62d98facb
+	modernc.org/sqlite v1.22.1
+	shanhu.io/pub v0.0.0-20230502133215-e1a083a2bbd7
 )
 
 require (
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/digitalocean/godo v1.98.0 // indirect
+	github.com/digitalocean/godo v1.99.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
@@ -38,7 +38,7 @@ require (
 	lukechampine.com/uint128 v1.3.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
 	modernc.org/ccgo/v3 v3.16.13 // indirect
-	modernc.org/libc v1.22.4 // indirect
+	modernc.org/libc v1.22.5 // indirect
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.5.0 // indirect
 	modernc.org/opt v0.1.3 // indirect
