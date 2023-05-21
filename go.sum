@@ -113,5 +113,5 @@ modernc.org/tcl v1.15.2 h1:C4ybAYCGJw968e+Me18oW55kD/FexcHbqH2xak1ROSY=
 modernc.org/token v1.1.0 h1:Xl7Ap9dKaEs5kLoOQeQmPWevfnk/DM5qcLcYlA8ys6Y=
 modernc.org/token v1.1.0/go.mod h1:UGzOrNV1mAFSEB63lOFHIpNRUVMvYTc6yu1SMY/XTDM=
 modernc.org/z v1.7.3 h1:zDJf6iHjrnB+WRD88stbXokugjyc0/pB91ri1gO6LZY=
-shanhu.io/pub v0.0.0-20230514062034-34d0b6560c1e h1:8254pX5JmeubNEmioT7S/2BSFiaznsfREOYC34k2VD4=
-shanhu.io/pub v0.0.0-20230514062034-34d0b6560c1e/go.mod h1:ypa9aXhuF7Lw50SH4gkR88HfIcoaL1jbPMtJo8q4qV0=
+shanhu.io/pub v0.0.0-20230521031044-7d317e2fc953 h1:kKMOuFaZ5Z9pKYLijUji1VFVj5oXc74vOOr0pfkq6qA=
+shanhu.io/pub v0.0.0-20230521031044-7d317e2fc953/go.mod h1:qthgk6FmdUoHSGm54z6q+IDp6M7gFeGP+nvoRxBvu/I=
