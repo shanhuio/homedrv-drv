@@ -18,6 +18,7 @@ package jarvis
 import (
 	"log"
 
+	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/pub/dock"
 	"shanhu.io/pub/errcode"
@@ -66,8 +67,20 @@ func (t *taskRecreateDoorway) run() error {
 		return errcode.Annotate(err, "inspect current doorway")
 	}
 	// Force update current doorway to recreate the container.
-	if err := updateDoorway(d, info.Image); err != nil {
-		return errcode.Annotate(err, "recreate doorway")
+	return updateDoorway(d, info.Image)
+}
+
+type taskFixDoorway struct {
+	drive *drive
+}
+
+func (t *taskFixDoorway) run() error {
+	log.Println("fix doorwy.")
+
+	d := t.drive
+	var r drvapi.Release
+	if err := d.settings.Get(keyBuild, &r); err != nil {
+		return errcode.Annotate(err, "read build")
 	}
-	return nil
+	return updateDoorway(d, r.Doorway)
 }

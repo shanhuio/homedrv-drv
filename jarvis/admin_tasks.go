@@ -42,6 +42,12 @@ func (s *adminTasks) apiRecreateDoorway(c *aries.C) error {
 	return d.tasks.run("recreate doorway", t)
 }
 
+func (s *adminTasks) apiFixDoorway(c *aries.C) error {
+	d := s.server.drive
+	t := &taskFixDoorway{drive: d}
+	return d.tasks.run("fix doorway", t)
+}
+
 func (s *adminTasks) apiSetRootPassword(c *aries.C, pwd string) error {
 	return s.server.users.setPassword(rootUser, pwd, nil)
 }
@@ -102,6 +108,7 @@ func adminTasksAPI(s *server) *aries.Router {
 	r.Call("update", tasks.apiUpdate)
 	r.Call("push-update", tasks.apiPushUpdate)
 	r.Call("recreate-doorway", tasks.apiRecreateDoorway)
+	r.Call("fix-doorway", tasks.apiFixDoorway)
 	r.Call("set-root-password", tasks.apiSetRootPassword)
 	r.Call("disable-totp", tasks.apiDisableTOTP)
 	r.Call("reinstall-app", tasks.apiReinstallApp)
