@@ -6,14 +6,14 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/lib/pq v1.10.9
 	github.com/pquerna/otp v1.4.0
-	golang.org/x/crypto v0.10.0
-	modernc.org/sqlite v1.23.1
-	shanhu.io/pub v0.0.0-20230705001929-27d50e8d14d2
+	golang.org/x/crypto v0.11.0
+	modernc.org/sqlite v1.24.0
+	shanhu.io/pub v0.0.0-20230723013602-bb1f69f1e428
 )
 
 require (
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/digitalocean/godo v1.99.0 // indirect
+	github.com/digitalocean/godo v1.100.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
@@ -25,13 +25,13 @@ require (
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.11.0 // indirect
-	golang.org/x/oauth2 v0.9.0 // indirect
+	golang.org/x/net v0.12.0 // indirect
+	golang.org/x/oauth2 v0.10.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/term v0.9.0 // indirect
+	golang.org/x/term v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.10.0 // indirect
+	golang.org/x/tools v0.11.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
