@@ -18,10 +18,10 @@ package homerelease
 import (
 	"encoding/json"
 
+	"shanhu.io/g/creds"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/jsonutil"
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/pub/creds"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/jsonutil"
 )
 
 func cmdPush(server string, args []string) error {

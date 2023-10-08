@@ -21,9 +21,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"shanhu.io/pub/creds"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/rand"
+	"shanhu.io/g/creds"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/rand"
 )
 
 // MakeReleaseName makes a new release name.

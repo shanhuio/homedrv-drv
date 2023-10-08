@@ -16,11 +16,11 @@
 package homeboot
 
 import (
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/osutil"
+	"shanhu.io/g/tarutil"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/osutil"
-	"shanhu.io/pub/tarutil"
 )
 
 // CoreMount is the mount point of jarvis volume.

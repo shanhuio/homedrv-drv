@@ -16,8 +16,8 @@
 package jarvis
 
 import (
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/pub/errcode"
 )
 
 type appRegistry struct {

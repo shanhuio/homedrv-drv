@@ -20,9 +20,9 @@ import (
 	"io"
 	"strings"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/executil"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
 )
 
 func configSaysInstalled(config []byte) bool {

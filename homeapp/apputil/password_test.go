@@ -18,8 +18,8 @@ package apputil
 import (
 	"testing"
 
-	"shanhu.io/pub/pisces"
-	"shanhu.io/pub/settings"
+	"shanhu.io/g/pisces"
+	"shanhu.io/g/settings"
 )
 
 func TestReadPassword(t *testing.T) {

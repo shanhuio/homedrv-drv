@@ -21,12 +21,12 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"shanhu.io/g/counting"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/https/httpstest"
+	"shanhu.io/g/sniproxy"
 	fabdial "shanhu.io/homedrv/drv/fabricsdial"
 	"shanhu.io/homedrv/drv/homedial"
-	"shanhu.io/pub/counting"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/https/httpstest"
-	"shanhu.io/pub/sniproxy"
 )
 
 // FabricsConfig has the configuration for connecting HomeDrive Fabrics.

@@ -20,11 +20,11 @@ import (
 	"sort"
 	"strings"
 
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/httputil"
+	"shanhu.io/g/nameutil"
+	"shanhu.io/g/settings"
 	"shanhu.io/homedrv/drv/homeapp"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/httputil"
-	"shanhu.io/pub/nameutil"
-	"shanhu.io/pub/settings"
 )
 
 func loadCustomSubs(s settings.Settings) (map[string]string, error) {

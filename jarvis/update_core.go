@@ -19,10 +19,10 @@ import (
 	"log"
 	"time"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/homeapp/apputil"
 	"shanhu.io/homedrv/drv/homeboot"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
 )
 
 func killOldCoreIfExist(d *drive) error {

@@ -18,9 +18,9 @@ package jarvis
 import (
 	"sort"
 
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/pisces"
 	"shanhu.io/homedrv/drv/homeapp"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/pisces"
 )
 
 type appDomains struct {

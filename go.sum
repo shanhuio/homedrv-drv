@@ -147,5 +147,5 @@ modernc.org/token v1.1.0 h1:Xl7Ap9dKaEs5kLoOQeQmPWevfnk/DM5qcLcYlA8ys6Y=
 modernc.org/token v1.1.0/go.mod h1:UGzOrNV1mAFSEB63lOFHIpNRUVMvYTc6yu1SMY/XTDM=
 modernc.org/z v1.7.3 h1:zDJf6iHjrnB+WRD88stbXokugjyc0/pB91ri1gO6LZY=
 modernc.org/z v1.7.3/go.mod h1:Ipv4tsdxZRbQyLq9Q1M6gdbkxYzdlrciF2Hi/lS7nWE=
-shanhu.io/pub v0.0.0-20231008031213-fa3e70c81f91 h1:4gQJ18rHkqYT5VvRQ/LqCz38+DcoUoZk124pggGqA2s=
-shanhu.io/pub v0.0.0-20231008031213-fa3e70c81f91/go.mod h1:ko42BvYP27P5+3kHF/FDoDPhI8QvexCBQf6bHq33SFI=
+shanhu.io/g v0.0.0-20231008230140-8a0e4e24df94 h1:YDuC7yXa403uGeU9dsOTIc5RdWTLylK/DAJ1TtfL2kQ=
+shanhu.io/g v0.0.0-20231008230140-8a0e4e24df94/go.mod h1:YGBY7ARvD8TW9vqvBLPXz/YkpsIwv93QqGSzYj+13ps=

@@ -16,7 +16,7 @@
 package homerelease
 
 import (
-	"shanhu.io/pub/flagutil"
+	"shanhu.io/g/flagutil"
 )
 
 var cmdFlags = flagutil.NewFactory("homerelease")

@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"shanhu.io/pub/rand"
+	"shanhu.io/g/rand"
 )
 
 // LogEntry is a log entry for jarvis to display.

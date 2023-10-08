@@ -16,7 +16,7 @@
 package jarvis
 
 import (
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 func cmdUpdateGrubConfig(args []string) error {

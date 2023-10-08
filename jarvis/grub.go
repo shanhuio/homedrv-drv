@@ -23,10 +23,10 @@ import (
 	"strings"
 	"text/template"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/osutil"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/osutil"
 )
 
 var grubConfigTmpl = template.Must(template.New("grubcfg").Parse(`

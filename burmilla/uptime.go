@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 // Uptime returns the uptime of the system.

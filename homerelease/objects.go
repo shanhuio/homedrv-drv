@@ -19,8 +19,8 @@ import (
 	"os"
 	"sort"
 
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/tarutil"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/tarutil"
 )
 
 func writeObjects(p string, objects map[string]string) error {

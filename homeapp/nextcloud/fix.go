@@ -18,10 +18,10 @@ package nextcloud
 import (
 	"io"
 
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/semver"
-	"shanhu.io/pub/settings"
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/semver"
+	"shanhu.io/g/settings"
 )
 
 func fix(cont *dock.Cont, s settings.Settings) error {

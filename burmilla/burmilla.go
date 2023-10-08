@@ -20,8 +20,8 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/tarutil"
+	"shanhu.io/g/dock"
+	"shanhu.io/g/tarutil"
 )
 
 // Burmilla provides the

@@ -26,7 +26,7 @@ import (
 	"os"
 	"strings"
 
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 type dockerImage struct {

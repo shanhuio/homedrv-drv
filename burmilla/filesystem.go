@@ -19,7 +19,7 @@ import (
 	"bytes"
 	"text/template"
 
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 const mkdirCmdTmpl = `

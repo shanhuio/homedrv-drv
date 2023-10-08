@@ -22,10 +22,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"shanhu.io/pub/aries"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/hashutil"
-	"shanhu.io/pub/osutil"
+	"shanhu.io/g/aries"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/hashutil"
+	"shanhu.io/g/osutil"
 )
 
 type objects struct {

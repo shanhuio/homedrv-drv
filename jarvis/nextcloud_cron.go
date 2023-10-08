@@ -19,8 +19,8 @@ import (
 	"log"
 	"time"
 
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/homeapp/nextcloud"
-	"shanhu.io/pub/errcode"
 )
 
 type taskNextcloudCron struct{ drive *drive }

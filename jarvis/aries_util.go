@@ -16,8 +16,8 @@
 package jarvis
 
 import (
-	"shanhu.io/pub/aries"
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/aries"
+	"shanhu.io/g/errcode"
 )
 
 func parsePostForm(c *aries.C) error {

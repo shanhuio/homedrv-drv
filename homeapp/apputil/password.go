@@ -16,9 +16,9 @@
 package apputil
 
 import (
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/rand"
-	"shanhu.io/pub/settings"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/rand"
+	"shanhu.io/g/settings"
 )
 
 func randPassword() string {

@@ -19,14 +19,14 @@ import (
 	"log"
 	"time"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/semver"
+	"shanhu.io/g/settings"
 	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeapp/apputil"
 	"shanhu.io/homedrv/drv/homeapp/postgres"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/semver"
-	"shanhu.io/pub/settings"
 )
 
 // Nextcloud is the Nextcloud app.

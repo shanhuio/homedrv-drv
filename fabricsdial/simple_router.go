@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"shanhu.io/pub/creds"
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/creds"
+	"shanhu.io/g/errcode"
 )
 
 // SimpleRouter provides a simple endpoint based router. It directly contacts

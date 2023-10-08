@@ -18,8 +18,8 @@ package doorway
 import (
 	"net"
 
-	"shanhu.io/pub/counting"
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/counting"
+	"shanhu.io/g/errcode"
 )
 
 type localListenConfig struct {

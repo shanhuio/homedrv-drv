@@ -18,9 +18,9 @@ package jarvis
 import (
 	"net/url"
 
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/burmilla"
 	"shanhu.io/homedrv/drv/homeapp/nextcloud"
-	"shanhu.io/pub/errcode"
 )
 
 // DashboardOverviewData contains the data for dashboard overview.

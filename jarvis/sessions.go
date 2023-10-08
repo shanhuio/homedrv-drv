@@ -18,10 +18,10 @@ package jarvis
 import (
 	"time"
 
-	"shanhu.io/pub/aries"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/hashutil"
-	"shanhu.io/pub/signer"
+	"shanhu.io/g/aries"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/hashutil"
+	"shanhu.io/g/signer"
 )
 
 const sudoSessionsCookie = "sudo"

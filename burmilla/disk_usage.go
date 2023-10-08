@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"strings"
 
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 // DiskUsage contains disk usage data.

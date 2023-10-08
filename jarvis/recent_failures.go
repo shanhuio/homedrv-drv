@@ -18,7 +18,7 @@ package jarvis
 import (
 	"time"
 
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 const failureWindow = 3 * time.Minute

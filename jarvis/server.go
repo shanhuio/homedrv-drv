@@ -19,15 +19,15 @@ import (
 	"crypto/sha256"
 	"time"
 
+	"shanhu.io/g/aries"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/oauth2"
+	"shanhu.io/g/osutil"
+	"shanhu.io/g/settings"
+	"shanhu.io/g/signer"
 	"shanhu.io/homedrv/drv/drvapi"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/homedrv/drv/homeapp"
-	"shanhu.io/pub/aries"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/oauth2"
-	"shanhu.io/pub/osutil"
-	"shanhu.io/pub/settings"
-	"shanhu.io/pub/signer"
 )
 
 type server struct {

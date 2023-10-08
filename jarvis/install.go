@@ -20,12 +20,12 @@ import (
 	"log"
 	"time"
 
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/jsonx"
+	"shanhu.io/g/settings"
 	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeapp/nextcloud"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/jsonx"
-	"shanhu.io/pub/settings"
 )
 
 func endpointInitConfig(d *drive) (*drvapi.EndpointInitConfig, error) {

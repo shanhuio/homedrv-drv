@@ -19,7 +19,7 @@ import (
 	"io/ioutil"
 	"net/url"
 
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 func cmdEnroll(args []string) error {

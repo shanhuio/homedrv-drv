@@ -22,12 +22,12 @@ import (
 	"net"
 	"net/http"
 
+	"shanhu.io/g/aries"
+	"shanhu.io/g/counting"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/netutil"
+	"shanhu.io/g/sniproxy"
 	fabdial "shanhu.io/homedrv/drv/fabricsdial"
-	"shanhu.io/pub/aries"
-	"shanhu.io/pub/counting"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/netutil"
-	"shanhu.io/pub/sniproxy"
 )
 
 // Config is the config of a doorway.

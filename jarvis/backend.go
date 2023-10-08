@@ -19,12 +19,12 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/identity"
-	"shanhu.io/pub/osutil"
-	"shanhu.io/pub/pisces"
-	"shanhu.io/pub/rand"
-	"shanhu.io/pub/settings"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/identity"
+	"shanhu.io/g/osutil"
+	"shanhu.io/g/pisces"
+	"shanhu.io/g/rand"
+	"shanhu.io/g/settings"
 )
 
 type backend struct {

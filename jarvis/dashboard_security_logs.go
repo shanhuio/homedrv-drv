@@ -18,7 +18,7 @@ package jarvis
 import (
 	"time"
 
-	"shanhu.io/pub/aries"
+	"shanhu.io/g/aries"
 )
 
 // DashboardSecurityLogsData encapsulates security logs entries

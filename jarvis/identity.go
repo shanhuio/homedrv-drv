@@ -16,7 +16,7 @@
 package jarvis
 
 import (
-	"shanhu.io/pub/settings"
+	"shanhu.io/g/settings"
 )
 
 type identityStore struct {

@@ -19,9 +19,9 @@ import (
 	"log"
 	"strings"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
 )
 
 func findNameWithSuffix(suf string, names ...string) (string, bool) {

@@ -16,11 +16,11 @@
 package jarvis
 
 import (
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeapp/nextcloud"
 	"shanhu.io/homedrv/drv/homeapp/postgres"
 	"shanhu.io/homedrv/drv/homeapp/redis"
-	"shanhu.io/pub/errcode"
 )
 
 type builtInApps struct {

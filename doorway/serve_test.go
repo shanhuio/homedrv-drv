@@ -28,8 +28,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"shanhu.io/pub/https/httpstest"
-	"shanhu.io/pub/jsonx"
+	"shanhu.io/g/https/httpstest"
+	"shanhu.io/g/jsonx"
 )
 
 func checkGet(t *testing.T, c *http.Client, url, want string) {

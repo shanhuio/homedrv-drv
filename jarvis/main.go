@@ -19,11 +19,11 @@ import (
 	"flag"
 	"log"
 
+	"shanhu.io/g/aries"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/osutil"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/homedrv/drv/homeboot"
-	"shanhu.io/pub/aries"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/osutil"
 
 	_ "github.com/lib/pq"  // for postgres
 	_ "modernc.org/sqlite" // sqlite db driver

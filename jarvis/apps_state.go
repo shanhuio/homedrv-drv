@@ -18,9 +18,9 @@ package jarvis
 import (
 	"sort"
 
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/settings"
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/settings"
 )
 
 type appsState struct {

@@ -22,10 +22,10 @@ import (
 	"strings"
 	"time"
 
-	"shanhu.io/pub/httputil"
-	"shanhu.io/pub/jsonx"
-	"shanhu.io/pub/strutil"
-	"shanhu.io/pub/tarutil"
+	"shanhu.io/g/httputil"
+	"shanhu.io/g/jsonx"
+	"shanhu.io/g/strutil"
+	"shanhu.io/g/tarutil"
 )
 
 func addJSONXToTarStream(

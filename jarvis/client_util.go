@@ -16,9 +16,9 @@
 package jarvis
 
 import (
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/flagutil"
-	"shanhu.io/pub/osutil"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/flagutil"
+	"shanhu.io/g/osutil"
 )
 
 var cmdFlags = flagutil.NewFactory("jarvis")

@@ -19,9 +19,9 @@ import (
 	"encoding/json"
 	"io"
 
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/homedrv/drv/homeboot"
-	"shanhu.io/pub/errcode"
 )
 
 func noOpenDockerInManual(_, _ string) (io.ReadCloser, error) {

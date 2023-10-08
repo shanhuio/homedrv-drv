@@ -19,13 +19,13 @@ import (
 	"log"
 	"sort"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/rsautil"
+	"shanhu.io/g/tarutil"
 	doorwaypkg "shanhu.io/homedrv/drv/doorway"
 	"shanhu.io/homedrv/drv/drvapi"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/rsautil"
-	"shanhu.io/pub/tarutil"
 )
 
 const (

@@ -22,10 +22,10 @@ import (
 	"time"
 
 	totppkg "github.com/pquerna/otp/totp"
-	"shanhu.io/pub/aries"
-	"shanhu.io/pub/httputil"
-	"shanhu.io/pub/pisces"
-	"shanhu.io/pub/signer"
+	"shanhu.io/g/aries"
+	"shanhu.io/g/httputil"
+	"shanhu.io/g/pisces"
+	"shanhu.io/g/signer"
 )
 
 type noopChecker struct{}

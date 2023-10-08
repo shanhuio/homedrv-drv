@@ -19,9 +19,9 @@ import (
 	"log"
 	"strings"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
 )
 
 func releaseImagesToKeep(r *drvapi.Release) map[string]bool {

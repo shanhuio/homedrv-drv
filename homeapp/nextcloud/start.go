@@ -18,12 +18,12 @@ package nextcloud
 import (
 	"strings"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
 	"shanhu.io/homedrv/drv/homeapp"
 	"shanhu.io/homedrv/drv/homeapp/postgres"
 	"shanhu.io/homedrv/drv/homeapp/redis"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
 )
 
 type extraMount struct {

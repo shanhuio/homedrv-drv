@@ -16,7 +16,7 @@
 package homeboot
 
 import (
-	"shanhu.io/pub/dock"
+	"shanhu.io/g/dock"
 )
 
 const emptyDockerFile = `FROM scratch

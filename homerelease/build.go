@@ -20,12 +20,12 @@ import (
 	"runtime"
 	"time"
 
+	"shanhu.io/g/dock"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/jsonutil"
+	"shanhu.io/g/jsonx"
+	"shanhu.io/g/semver"
 	"shanhu.io/homedrv/drv/drvapi"
-	"shanhu.io/pub/dock"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/jsonutil"
-	"shanhu.io/pub/jsonx"
-	"shanhu.io/pub/semver"
 )
 
 type builder struct {

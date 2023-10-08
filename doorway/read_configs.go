@@ -25,9 +25,9 @@ import (
 	"time"
 
 	"golang.org/x/crypto/acme/autocert"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/jsonx"
-	"shanhu.io/pub/osutil"
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/jsonx"
+	"shanhu.io/g/osutil"
 )
 
 func readHostMap(p string) (map[string]string, error) {

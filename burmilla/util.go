@@ -16,7 +16,7 @@
 package burmilla
 
 import (
-	"shanhu.io/pub/errcode"
+	"shanhu.io/g/errcode"
 )
 
 func execError(ret int, err error) error {

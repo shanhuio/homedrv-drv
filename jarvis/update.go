@@ -21,11 +21,11 @@ import (
 	"log"
 	"time"
 
+	"shanhu.io/g/errcode"
+	"shanhu.io/g/httputil"
 	"shanhu.io/homedrv/drv/drvapi"
 	"shanhu.io/homedrv/drv/homeapp/apputil"
 	"shanhu.io/homedrv/drv/homeboot"
-	"shanhu.io/pub/errcode"
-	"shanhu.io/pub/httputil"
 )
 
 func updateAppsAndDoorway(d *drive, r *drvapi.Release) error {

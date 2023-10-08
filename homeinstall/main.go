@@ -16,7 +16,7 @@
 package homeinstall
 
 import (
-	"shanhu.io/pub/subcmd"
+	"shanhu.io/g/subcmd"
 )
 
 // Main is the main entrance for the command line.

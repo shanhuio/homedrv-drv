@@ -18,7 +18,7 @@
 package homeboot
 
 import (
-	"shanhu.io/pub/subcmd"
+	"shanhu.io/g/subcmd"
 )
 
 // Main is the main entrance of the command line.
