@@ -53,12 +53,9 @@ func (b *builder) buildRelease(name string) error {
 	images := make(map[string]*dockerImage)
 	imageObjs := make(map[string]string)
 	for _, d := range []string{
-		"nextcloud20",
-		"nextcloud21",
-		"nextcloud22",
-		"nextcloud23",
-		"nextcloud24",
-		"nextcloud25",
+		"nextcloud20", "nextcloud21", "nextcloud22", "nextcloud23",
+		"nextcloud24", "nextcloud25", "nextcloud26",
+
 		"postgres12",
 		"redis",
 
@@ -88,9 +85,8 @@ func (b *builder) buildRelease(name string) error {
 	}{{
 		name: "nextcloud",
 		images: []string{
-			"nextcloud20", "nextcloud21",
-			"nextcloud22", "nextcloud23",
-			"nextcloud24", "nextcloud25",
+			"nextcloud20", "nextcloud21", "nextcloud22", "nextcloud23",
+			"nextcloud24", "nextcloud25", "nextcloud26",
 		},
 		steps: &arts.Nextclouds,
 		final: &arts.Nextcloud,
@@ -194,7 +190,7 @@ func cmdBuild(args []string) error {
 	src := flags.String("src", "src", "source directory")
 	out := flags.String("out", "out", "output directory")
 	name := flags.String("name", "", "release name")
-	args = flags.ParseArgs(args)
+	_ = flags.ParseArgs(args)
 
 	b := &builder{
 		src: *src,
