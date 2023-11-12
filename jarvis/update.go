@@ -21,6 +21,7 @@ import (
 	"log"
 	"time"
 
+	"shanhu.io/g/dock"
 	"shanhu.io/g/errcode"
 	"shanhu.io/g/httputil"
 	"shanhu.io/homedrv/drv/drvapi"
@@ -84,6 +85,14 @@ type taskUpdate struct {
 func (t *taskUpdate) run() error {
 	d := t.drive
 	rel := t.rel
+
+	dockVer, err := dock.Version(d.dock)
+	if err != nil {
+		return errcode.Annotate(err, "get docker version")
+	}
+	if err := checkDockerVersion(dockVer); err != nil {
+		return errcode.Annotate(err, "check docker version")
+	}
 
 	dl, err := downloader(d)
 	if err != nil {

@@ -194,7 +194,7 @@ func updateOS(d *drive) error {
 	if err := setOSUpdateSource(b); err != nil {
 		return errcode.Annotate(err, "set OS upgrade source")
 	}
-	const target = "burmilla/os:v1.9.3"
+	const target = "burmilla/os:v1.9.6"
 	if err := upgradeBurmillaOS(d, target); err != nil {
 		return errcode.Annotate(err, "upgrade OS")
 	}

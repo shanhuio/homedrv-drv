@@ -35,7 +35,7 @@ func cmdPush(server string, args []string) error {
 	user := flags.String(
 		"user", "root", "user to call the push API",
 	)
-	args = flags.ParseArgs(args)
+	_ = flags.ParseArgs(args)
 
 	c, err := creds.DialAsUser(*user, server)
 	if err != nil {

@@ -51,13 +51,21 @@ func (u *Uploader) exists(h string) (bool, error) {
 	return found, nil
 }
 
+func shortKey(k string) string {
+	if len(k) > 12 {
+		return k[:12]
+	}
+	return k
+}
+
 // Upload uploads an objects tarball.
-func (u *Uploader) Upload(objs string) error {
-	f, err := os.Open(objs)
+func (u *Uploader) Upload(objsFile string) error {
+	f, err := os.Open(objsFile)
 	if err != nil {
 		return errcode.Annotate(err, "open objects file")
 	}
 	defer f.Close()
+
 	t := tar.NewReader(f)
 	for {
 		h, err := t.Next()
@@ -77,7 +85,7 @@ func (u *Uploader) Upload(objs string) error {
 			continue
 		}
 
-		log.Printf("uploading %q (%d bytes)", k, h.Size)
+		log.Printf("uploading %q (%d bytes)", shortKey(k), h.Size)
 		p := path.Join(u.DataURL, u.key(k))
 		if err := u.Client.PutN(p, t, h.Size); err != nil {
 			return errcode.Annotatef(err, "upload %q", k)

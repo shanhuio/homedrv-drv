@@ -80,6 +80,11 @@ var grubConfigMap = map[string]*grubConfig{
 		BootArgs: defaultBootArgs,
 		Initrd:   "/boot/initrd-v1.9.3",
 	},
+	"burmilla/os:v1.9.6": {
+		Vmlinuz:  "/boot/vmlinuz-4.14.300-burmilla",
+		BootArgs: defaultBootArgs,
+		Initrd:   "/boot/initrd-v1.9.6",
+	},
 }
 
 func makeGrubConfig(osVersion string) ([]byte, error) {
