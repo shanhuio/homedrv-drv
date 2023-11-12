@@ -82,16 +82,23 @@ type taskUpdate struct {
 	rel   *drvapi.Release
 }
 
-func (t *taskUpdate) run() error {
-	d := t.drive
-	rel := t.rel
-
+func checkSystem(d *drive) error {
 	dockVer, err := dock.Version(d.dock)
 	if err != nil {
 		return errcode.Annotate(err, "get docker version")
 	}
 	if err := checkDockerVersion(dockVer); err != nil {
 		return errcode.Annotate(err, "check docker version")
+	}
+	return nil
+}
+
+func (t *taskUpdate) run() error {
+	d := t.drive
+	rel := t.rel
+
+	if err := checkSystem(d); err != nil {
+		return errcode.Annotate(err, "check system")
 	}
 
 	dl, err := downloader(d)
@@ -262,5 +269,12 @@ func maybeFinishUpdate(d *drive) error {
 	if r.Name == "" {
 		return nil
 	}
+
+	// previous round was running on an older version of the core.
+	// so needs to recheck again here.
+	if err := checkSystem(d); err != nil {
+		return errcode.Annotate(err, "check system")
+	}
+
 	return updateAppsAndDoorway(d, r)
 }
