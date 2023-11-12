@@ -21,7 +21,6 @@ import (
 	"log"
 	"time"
 
-	"shanhu.io/g/dock"
 	"shanhu.io/g/errcode"
 	"shanhu.io/g/httputil"
 	"shanhu.io/homedrv/drv/drvapi"
@@ -80,17 +79,6 @@ func updateAppsAndDoorway(d *drive, r *drvapi.Release) error {
 type taskUpdate struct {
 	drive *drive
 	rel   *drvapi.Release
-}
-
-func checkSystem(d *drive) error {
-	dockVer, err := dock.Version(d.dock)
-	if err != nil {
-		return errcode.Annotate(err, "get docker version")
-	}
-	if err := checkDockerVersion(dockVer); err != nil {
-		return errcode.Annotate(err, "check docker version")
-	}
-	return nil
 }
 
 func (t *taskUpdate) run() error {

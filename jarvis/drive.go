@@ -225,3 +225,14 @@ func (d *drive) Settings() settings.Settings {
 	}
 	return d.settings
 }
+
+func checkSystem(d *drive) error {
+	dockVer, err := dock.Version(d.dock)
+	if err != nil {
+		return errcode.Annotate(err, "get docker version")
+	}
+	if err := checkDockerVersion(dockVer); err != nil {
+		return errcode.Annotate(err, "check docker version")
+	}
+	return nil
+}

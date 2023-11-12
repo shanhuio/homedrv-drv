@@ -154,6 +154,10 @@ func downloadAndInstall(d *drive) error {
 		return errcode.InvalidArgf("install channel not specified")
 	}
 
+	if err := checkSystem(d); err != nil {
+		return errcode.Annotate(err, "check system")
+	}
+
 	dl, err := downloader(d)
 	if err != nil {
 		return errcode.Annotate(err, "init downloader")
