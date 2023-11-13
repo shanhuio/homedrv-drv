@@ -100,6 +100,11 @@ func waitReady(
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 
+	// Always give nextcloud 2 minute for it to do its upgrade / bootup
+	// thing.
+	log.Println("wait for 2 minute for nextcloud container to start")
+	time.Sleep(2 * time.Minute)
+
 	i := 1
 	for range ticker.C {
 		now := time.Now()
