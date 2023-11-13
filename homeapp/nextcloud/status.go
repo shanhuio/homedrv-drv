@@ -97,7 +97,7 @@ func waitReady(
 ) error {
 	start := time.Now()
 	deadline := start.Add(timeout)
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
 
 	// Always give nextcloud 2 minute for it to do its upgrade / bootup
@@ -108,7 +108,8 @@ func waitReady(
 	i := 1
 	for range ticker.C {
 		now := time.Now()
-		if now.After(deadline) {
+		if i > 10 && now.After(deadline) {
+			// At least check for 10 times.
 			return errcode.TimeOutf(
 				"nextcloud install timeout in %s", timeout,
 			)
