@@ -149,7 +149,7 @@ func waitReady(
 		break // passed all checks
 	}
 
-	durSecs := time.Now().Sub(start).Seconds()
+	durSecs := time.Since(start).Seconds()
 	if v == "" {
 		log.Printf("nextcloud installed in %.1f second(s)", durSecs)
 	} else {
