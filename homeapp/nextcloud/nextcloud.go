@@ -103,17 +103,19 @@ func (n *Nextcloud) upgrade(
 		if !ok { // Out of the top of the upgrade ladder now.
 			break
 		}
+
+		if !first {
+			log.Println("wait for 1 minute between nextcloud upgrades")
+			// Give 1 minute gap between upgrades
+			time.Sleep(time.Minute)
+		}
+		first = false
+
 		if version == v.Version {
 			log.Printf("reinstalling nextcloud %q", version)
 		} else {
 			log.Printf("upgrade nextcloud from %q to %q", version, v.Version)
 		}
-
-		if !first {
-			// Give 1 minute gap between upgrades
-			time.Sleep(time.Minute)
-		}
-		first = false
 
 		if err := n.upgrade1(v.Image, v.Version, config); err != nil {
 			return errcode.Annotatef(
