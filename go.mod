@@ -10,12 +10,12 @@ require (
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.15.0
 	modernc.org/sqlite v1.27.0
-	shanhu.io/g v0.0.0-20231112003736-9093f11e1f04
+	shanhu.io/g v0.0.0-20231119014817-7ce883c239a0
 )
 
 require (
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/digitalocean/godo v1.105.1 // indirect
+	github.com/digitalocean/godo v1.106.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
@@ -41,7 +41,7 @@ require (
 	lukechampine.com/uint128 v1.3.0 // indirect
 	modernc.org/cc/v3 v3.41.0 // indirect
 	modernc.org/ccgo/v3 v3.16.15 // indirect
-	modernc.org/libc v1.34.0 // indirect
+	modernc.org/libc v1.34.5 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.2 // indirect
 	modernc.org/opt v0.1.3 // indirect
