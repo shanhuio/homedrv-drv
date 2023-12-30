@@ -52,8 +52,9 @@ func (u *Uploader) exists(h string) (bool, error) {
 }
 
 func shortKey(k string) string {
-	if len(k) > 12 {
-		return k[:12]
+	const n = 19
+	if len(k) > n {
+		return k[:n]
 	}
 	return k
 }
