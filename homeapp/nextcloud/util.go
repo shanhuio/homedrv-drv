@@ -17,6 +17,7 @@ package nextcloud
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"strings"
 
@@ -131,19 +132,8 @@ func cron(cont *dock.Cont) error {
 }
 
 func fixKey(major int) string {
-	switch major {
-	case 20:
-		return Key20Fixed
-	case 21:
-		return Key21Fixed
-	case 22:
-		return Key22Fixed
-	case 23:
-		return Key23Fixed
-	case 24:
-		return Key24Fixed
-	case 25:
-		return Key25Fixed
+	if major >= 18 && major < 10000 {
+		return fmt.Sprintf("nextcloud-%d-fixed", major)
 	}
 	return ""
 }

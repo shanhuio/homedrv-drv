@@ -25,12 +25,5 @@ const (
 	KeyExtraMounts = "nextcloud.extra-mounts"
 	KeyVersionHint = "nextcloud.version-hint" // version hint
 
-	Key18Fixed = "nextcloud-18-fixed"
-	Key19Fixed = "nextcloud-19-fixed"
-	Key20Fixed = "nextcloud-20-fixed"
-	Key21Fixed = "nextcloud-21-fixed"
-	Key22Fixed = "nextcloud-22-fixed"
-	Key23Fixed = "nextcloud-23-fixed"
-	Key24Fixed = "nextcloud-24-fixed"
-	Key25Fixed = "nextcloud-25-fixed"
+	// Nextcloud fixed keys are in the format of "nextcloud-%d-fixed"
 )
