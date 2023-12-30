@@ -16,6 +16,7 @@
 package homerelease
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 	"time"
@@ -38,6 +39,11 @@ type dockerSum struct {
 	Origin string `json:",omitempty"`
 }
 
+const (
+	nextcloudMinVersion = 20
+	nextcloudMaxVersion = 27 // NEXTCLOUD_UPGRADE
+)
+
 func (b *builder) buildRelease(name string) error {
 	arts := new(drvapi.Artifacts)
 	const repo = "shanhu.io/homedrv/dockers"
@@ -52,9 +58,19 @@ func (b *builder) buildRelease(name string) error {
 
 	images := make(map[string]*dockerImage)
 	imageObjs := make(map[string]string)
-	for _, d := range []string{
-		"nextcloud20", "nextcloud21", "nextcloud22", "nextcloud23",
-		"nextcloud24", "nextcloud25", "nextcloud26",
+
+	var imageNames []string
+	var nextcloudImageNames []string
+
+	for i := nextcloudMinVersion; i <= nextcloudMaxVersion; i++ {
+		nextcloudImageNames = append(
+			nextcloudImageNames, fmt.Sprintf("nextcloud%d", i),
+		)
+	}
+
+	imageNames = append(imageNames, nextcloudImageNames...)
+	imageNames = append(
+		imageNames,
 
 		"postgres12",
 		"redis",
@@ -64,7 +80,9 @@ func (b *builder) buildRelease(name string) error {
 		"ncfront",
 		"homeboot",
 		"toolbox",
-	} {
+	)
+
+	for _, d := range imageNames {
 		log.Printf("checksuming %s", d)
 		tgz := filePath(b.out, repo, d+".tar.gz")
 		img, err := sumDockerTgz(tgz)
@@ -83,13 +101,10 @@ func (b *builder) buildRelease(name string) error {
 		steps  *[]*drvapi.StepVersion
 		final  *string
 	}{{
-		name: "nextcloud",
-		images: []string{
-			"nextcloud20", "nextcloud21", "nextcloud22", "nextcloud23",
-			"nextcloud24", "nextcloud25", "nextcloud26",
-		},
-		steps: &arts.Nextclouds,
-		final: &arts.Nextcloud,
+		name:   "nextcloud",
+		images: nextcloudImageNames,
+		steps:  &arts.Nextclouds,
+		final:  &arts.Nextcloud,
 	}, {
 		name:   "postgres",
 		images: []string{"postgres12"},
