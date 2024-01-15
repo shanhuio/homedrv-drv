@@ -10,7 +10,7 @@ require (
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/crypto v0.18.0
 	modernc.org/sqlite v1.28.0
-	shanhu.io/g v0.0.0-20240114013841-64901e9be93c
+	shanhu.io/g v0.0.0-20240115180302-f19b29393742
 )
 
 require (
@@ -41,7 +41,7 @@ require (
 	lukechampine.com/uint128 v1.3.0 // indirect
 	modernc.org/cc/v3 v3.41.0 // indirect
 	modernc.org/ccgo/v3 v3.16.15 // indirect
-	modernc.org/libc v1.40.1 // indirect
+	modernc.org/libc v1.40.3 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.2 // indirect
 	modernc.org/opt v0.1.3 // indirect
