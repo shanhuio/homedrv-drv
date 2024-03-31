@@ -97,8 +97,8 @@ func sumDockerTgz(p string) (*dockerImage, error) {
 	if id == "" {
 		return nil, errcode.InvalidArgf("empty docker id")
 	}
-	if strings.HasPrefix(id, "blobs/sha256/") {
-		id = strings.TrimPrefix(id, "blobs/sha256")
+	if prefix := "blobs/sha256/"; strings.HasPrefix(id, prefix) {
+		id = strings.TrimPrefix(id, prefix)
 		id = "sha256:" + id
 	} else if !strings.Contains(id, ":") {
 		id = "sha256:" + id
