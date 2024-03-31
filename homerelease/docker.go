@@ -22,7 +22,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -55,7 +54,7 @@ func extractDockerManifest(r io.Reader) ([]*dockerManifest, error) {
 		}
 
 		if h.Typeflag == tar.TypeReg && h.Name == "manifest.json" {
-			bs, err := ioutil.ReadAll(t)
+			bs, err := io.ReadAll(t)
 			if err != nil {
 				return nil, errcode.Annotate(err, "read manifest")
 			}
@@ -98,7 +97,10 @@ func sumDockerTgz(p string) (*dockerImage, error) {
 	if id == "" {
 		return nil, errcode.InvalidArgf("empty docker id")
 	}
-	if !strings.Contains(id, ":") {
+	if strings.HasPrefix(id, "blobs/sha256/") {
+		id = strings.TrimPrefix(id, "blobs/sha256")
+		id = "sha256:" + id
+	} else if !strings.Contains(id, ":") {
 		id = "sha256:" + id
 	}
 	return &dockerImage{
