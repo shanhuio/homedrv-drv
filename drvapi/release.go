@@ -39,7 +39,8 @@ func EmptyRelease() *Release {
 
 // Artifacts contains a set of artifacts and docker images for a release.
 type Artifacts struct {
-	OS string // OS version.
+	// Deprecated. OS version. Now is directly encoded in jarvis code.
+	OS string
 
 	// Deprecated. Rancher OS release version.
 	RancherOS string `json:",omitempty"`

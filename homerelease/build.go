@@ -24,7 +24,6 @@ import (
 	"shanhu.io/g/dock"
 	"shanhu.io/g/errcode"
 	"shanhu.io/g/jsonutil"
-	"shanhu.io/g/jsonx"
 	"shanhu.io/g/semver"
 	"shanhu.io/homedrv/drv/drvapi"
 )
@@ -47,14 +46,6 @@ const (
 func (b *builder) buildRelease(name string) error {
 	arts := new(drvapi.Artifacts)
 	const repo = "shanhu.io/homedrv/dockers"
-
-	log.Println("reading os info")
-	osInfoFile := filePath(b.src, repo, "os.jsonx")
-	var osInfo struct{ Version string }
-	if err := jsonx.ReadFile(osInfoFile, &osInfo); err != nil {
-		return errcode.Annotate(err, "read os info")
-	}
-	arts.OS = osInfo.Version
 
 	images := make(map[string]*dockerImage)
 	imageObjs := make(map[string]string)
