@@ -18,7 +18,6 @@ package doorway
 import (
 	"net"
 
-	"shanhu.io/g/counting"
 	"shanhu.io/g/errcode"
 )
 
@@ -28,9 +27,6 @@ type localListenConfig struct {
 
 	// addr is the TCP address to listen on. This is used when listener is nil.
 	addr string
-
-	// counters track the number of bytes communicated over https listener.
-	counters *counting.ConnCounters
 }
 
 type listenConfig struct {
@@ -52,8 +48,7 @@ func listenLocal(c *localListenConfig) (*tagListener, error) {
 	if err != nil {
 		return nil, errcode.Annotate(err, "listen local")
 	}
-	lis := counting.WrapListener(tcp, c.counters)
-	return newTagListener(lis, tagTCP), nil
+	return newTagListener(tcp, tagTCP), nil
 }
 
 func listen(ctx C, c *listenConfig) (tagConnListener, error) {

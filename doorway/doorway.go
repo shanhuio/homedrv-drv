@@ -23,7 +23,6 @@ import (
 	"net/http"
 
 	"shanhu.io/g/aries"
-	"shanhu.io/g/counting"
 	"shanhu.io/g/errcode"
 	"shanhu.io/g/netutil"
 	"shanhu.io/g/sniproxy"
@@ -70,21 +69,16 @@ type internalConfig struct {
 func makeInternalConfig(config *Config) *internalConfig {
 	lisConfig := new(listenConfig)
 	if config.LocalAddr != "" {
-		lisConfig.local = &localListenConfig{
-			addr:     config.LocalAddr,
-			counters: counting.NewConnCounters(),
-		}
+		lisConfig.local = &localListenConfig{addr: config.LocalAddr}
 	}
 	if config.FabricsDialer != nil {
 		lisConfig.fabrics = &fabricsConfig{
-			dialer:   config.FabricsDialer,
-			counters: counting.NewConnCounters(),
+			dialer: config.FabricsDialer,
 		}
 	} else if config.Fabrics != nil {
 		lisConfig.fabrics = &fabricsConfig{
 			FabricsConfig: config.Fabrics,
 			identity:      config.FabricsIdentity,
-			counters:      counting.NewConnCounters(),
 		}
 	}
 

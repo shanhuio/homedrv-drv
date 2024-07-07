@@ -21,7 +21,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"shanhu.io/g/counting"
 	"shanhu.io/g/errcode"
 	"shanhu.io/g/https/httpstest"
 	"shanhu.io/g/sniproxy"
@@ -52,9 +51,6 @@ type fabricsConfig struct {
 
 	*FabricsConfig
 	identity Identity
-
-	// counters track the number of bytes communicated over the tunnel.
-	counters *counting.ConnCounters
 }
 
 func makeFabricsDialer(ctx C, config *fabricsConfig) (
@@ -109,6 +105,5 @@ func listenFabrics(ctx C, config *fabricsConfig) (*tagListener, error) {
 	if err != nil {
 		return nil, errcode.Annotatef(err, "dial fabrics")
 	}
-	wrap := counting.WrapListener(lis, config.counters)
-	return newTagListener(wrap, tagFabrics), nil
+	return newTagListener(lis, tagFabrics), nil
 }
