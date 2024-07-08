@@ -18,9 +18,9 @@ package homeboot
 import (
 	"log"
 
-	"shanhu.io/g/semver"
 	"shanhu.io/homedrv/drv/drvapi"
 	drvcfg "shanhu.io/homedrv/drv/drvconfig"
+	"shanhu.io/homedrv/drv/semver"
 )
 
 // DownloadConfig is the install config. This is the configuration

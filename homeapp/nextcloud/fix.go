@@ -20,8 +20,8 @@ import (
 
 	"shanhu.io/g/dock"
 	"shanhu.io/g/errcode"
-	"shanhu.io/g/semver"
 	"shanhu.io/g/settings"
+	"shanhu.io/homedrv/drv/semver"
 )
 
 func fix(cont *dock.Cont, s settings.Settings) error {

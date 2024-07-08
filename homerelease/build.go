@@ -24,8 +24,8 @@ import (
 	"shanhu.io/g/dock"
 	"shanhu.io/g/errcode"
 	"shanhu.io/g/jsonutil"
-	"shanhu.io/g/semver"
 	"shanhu.io/homedrv/drv/drvapi"
+	"shanhu.io/homedrv/drv/semver"
 )
 
 type builder struct {
