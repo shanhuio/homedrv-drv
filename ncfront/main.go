@@ -33,14 +33,6 @@ type front struct {
 func newFront(destHost string) *front {
 	u := &url.URL{Scheme: "http", Host: destHost}
 	p := httputil.NewSingleHostReverseProxy(u)
-
-	p.ModifyResponse = func(resp *http.Response) error {
-		// Per https://tinyurl.com/yvtxa7bu
-		resp.Header.Set("Strict-Transport-Security", "max-age=15552000")
-
-		return nil
-	}
-
 	return &front{proxy: p}
 }
 
