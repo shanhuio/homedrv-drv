@@ -40,7 +40,7 @@ type dockerSum struct {
 
 const (
 	nextcloudMinVersion = 20
-	nextcloudMaxVersion = 28 // NEXTCLOUD_UPGRADE
+	nextcloudMaxVersion = 30 // NEXTCLOUD_UPGRADE
 )
 
 func (b *builder) buildRelease(name string) error {
