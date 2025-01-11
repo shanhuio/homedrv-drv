@@ -17,6 +17,7 @@ package nextcloud
 
 import (
 	"io"
+	"strings"
 
 	"shanhu.io/g/dock"
 	"shanhu.io/g/errcode"
@@ -90,6 +91,14 @@ func fixVersion(cont *dock.Cont, s settings.Settings, major int) error {
 	} {
 		if _, err := occOutput(cont, []string{cmd, "-n"}); err != nil {
 			return errcode.Annotate(err, cmd)
+		}
+	}
+
+	if major >= 30 {
+		// Also perform heavy migrations.
+		cmd := []string{"maintenance:repair", "--include-expensive"}
+		if _, err := occOutput(cont, cmd); err != nil {
+			return errcode.Annotate(err, strings.Join(cmd, " "))
 		}
 	}
 
