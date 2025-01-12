@@ -1,4 +1,4 @@
-// Copyright (C) 2022  Shanhu Tech Inc.
+// Copyright (C) 2023  Shanhu Tech Inc.
 //
 // This program is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Affero General Public License as published by the
@@ -28,7 +28,7 @@ type DashboardSSHKeysData struct {
 	Disabled bool
 }
 
-func newDashboardSSHKeysData(s *server, c *aries.C) (
+func newDashboardSSHKeysData(s *server, _ *aries.C) (
 	*DashboardSSHKeysData, error,
 ) {
 	if !s.drive.hasSys() {
