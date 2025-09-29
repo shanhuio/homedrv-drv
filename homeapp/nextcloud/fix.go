@@ -37,15 +37,14 @@ func fix(cont *dock.Cont, s settings.Settings) error {
 }
 
 func fixVersion(cont *dock.Cont, s settings.Settings, major int) error {
-	if major >= 21 {
-		// For version 21+, this needs to be executed every time a new
+	if major >= 30 {
+		// For version 30+, this needs to be executed every time a new
 		// docker is installed.
 		if err := aptUpdate(cont, io.Discard); err != nil {
-			return errcode.Annotate(err, "apt update for nextcloud21+")
+			return errcode.Annotate(err, "apt update for nextcloud30+")
 		}
 
 		pkgs := []string{
-			"libmagickcore-6.q16-6-extra",
 			"smbclient",
 			"libsmbclient-dev",
 		}
