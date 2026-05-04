@@ -8,19 +8,19 @@ require (
 	github.com/pquerna/otp v1.5.0
 	golang.org/x/crypto v0.50.0
 	modernc.org/sqlite v1.50.0
-	shanhu.io/g v0.0.0-20260426070526-29bd408bf74a
+	shanhu.io/g v0.0.0-20260504061115-4ddd4995b60f
 )
 
 require (
 	github.com/boombuler/barcode v1.1.0 // indirect
-	github.com/digitalocean/godo v1.187.0 // indirect
+	github.com/digitalocean/godo v1.188.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.21 // indirect
+	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
