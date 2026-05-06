@@ -8,7 +8,7 @@ require (
 	github.com/pquerna/otp v1.5.0
 	golang.org/x/crypto v0.50.0
 	modernc.org/sqlite v1.50.0
-	shanhu.io/g v0.0.0-20260504061115-4ddd4995b60f
+	shanhu.io/g v0.0.0-20260506010501-2fb7493c94cd
 )
 
 require (
@@ -31,7 +31,7 @@ require (
 	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	modernc.org/libc v1.72.1 // indirect
+	modernc.org/libc v1.72.2 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
